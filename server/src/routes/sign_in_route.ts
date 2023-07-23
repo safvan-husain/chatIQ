@@ -16,8 +16,6 @@ router.post("/auth/sign-in", async (req, res) => {
       if (await new Password().validate(password, user.password)) {
         token = new Token().generate(user._id);
         res.status(200).json({ user: user, token: token });
-        user!.messages = [];
-        await user!.save();
       } else {
         res.status(401).json({ message: "Invalid password" });
       }
@@ -39,8 +37,6 @@ router.post("/auth/google-in", async (req, res) => {
 
         token = new Token().generate(user._id);
         res.status(200).json({ user: user, token: token });
-        user!.messages = [];
-        await user!.save();
       
     } else {
       res.status(401).json({ message: "User not found" });
@@ -56,8 +52,6 @@ router.get("/auth/token", auth, async (req: any, res: Response) => {
   try {
     var user = await UserModel.findById(req.userID);
     res.status(200).json(user);
-    user!.messages = [];
-    await user!.save();
   } catch (error: any) {
     console.log(error);
 

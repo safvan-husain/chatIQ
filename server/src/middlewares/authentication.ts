@@ -9,6 +9,8 @@ export const auth = (req: any, res: Response, next: NextFunction) => {
     req.userID = userID;
     next();
   } else {
+
+    
     res.status(401).json({ message: "Invalid Token" });
   }
 };

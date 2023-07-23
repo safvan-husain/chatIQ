@@ -29,8 +29,6 @@ router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, fun
             if (yield new password_hash_1.Password().validate(password, user.password)) {
                 token = new auth_token_1.Token().generate(user._id);
                 res.status(200).json({ user: user, token: token });
-                user.messages = [];
-                yield user.save();
             }
             else {
                 res.status(401).json({ message: "Invalid password" });
@@ -54,8 +52,6 @@ router.post("/auth/google-in", (req, res) => __awaiter(void 0, void 0, void 0, f
         if (user) {
             token = new auth_token_1.Token().generate(user._id);
             res.status(200).json({ user: user, token: token });
-            user.messages = [];
-            yield user.save();
         }
         else {
             res.status(401).json({ message: "User not found" });
@@ -71,8 +67,6 @@ router.get("/auth/token", authentication_1.auth, (req, res) => __awaiter(void 0,
     try {
         var user = yield user_model_1.default.findById(req.userID);
         res.status(200).json(user);
-        user.messages = [];
-        yield user.save();
     }
     catch (error) {
         console.log(error);

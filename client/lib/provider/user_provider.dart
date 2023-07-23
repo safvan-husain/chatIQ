@@ -10,7 +10,7 @@ class UserProvider extends ChangeNotifier {
   User get user => _user;
   void setUser(User user) {
     _user = user;
-    log(_user.username);
+    // log(_user.username);
     notifyListeners();
   }
 

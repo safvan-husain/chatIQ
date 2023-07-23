@@ -5,12 +5,14 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:client/constance/snack_bar.dart';
+import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/local_database/message_schema.dart';
-import 'package:client/pages/home/home_view.dart';
+import 'package:client/features/home/presentation/pages/default/home_view.dart';
 import 'package:client/provider/chat_list_provider.dart';
 import 'package:client/provider/stream_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../constance/constant_variebles.dart';
@@ -23,7 +25,7 @@ late IOWebSocketChannel channel;
 channelconnect(BuildContext context) {
   late StreamController<String> streamController =
       Provider.of<WsProvider>(context, listen: false).streamController;
-  var myid = context.read<UserProvider>().user.username;
+  var myid = context.read<AuthenticationCubit>().state.user!.email;
   late AppDatabase database = Provider.of<AppDatabase>(context, listen: false);
   try {
     channel = IOWebSocketChannel.connect(
@@ -35,7 +37,7 @@ channelconnect(BuildContext context) {
         var jsondata = json.decode(message);
         switch (jsondata["cmd"]) {
           case "connected":
-            Provider.of<UserProvider>(context, listen: false).setIsOnline(true);
+            // Provider.of<UserProvider>(context, listen: false).setIsOnline(true);
             break;
           case "success:send":
             // await database.into(database.messages).insert(
@@ -92,7 +94,6 @@ channelconnect(BuildContext context) {
       onDone: () {
         //if WebSocket is disconnected
         showSnackBar(context, "Web socket is closed");
-        Provider.of<UserProvider>(context, listen: false).setIsOnline(false);
         if (HomePageState().mounted) HomePageState().setState(() {});
       },
       onError: (error) {

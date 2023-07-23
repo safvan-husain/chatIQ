@@ -27,7 +27,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: () => context.router.push(const ProfileRoute()),
+                  onTap: () {},
                   child: const Card(
                     child: ListTile(
                       leading: Icon(Icons.account_circle_outlined),

@@ -77,9 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         : showAvatar(svgRoot!, 180),
                   ),
                   TextButton(
-                    onPressed: () {
-                      context.router.push(const HoemRoute());
-                    },
+                    onPressed: () {},
                     child: const Text('Change profile picture'),
                   ),
                   Padding(

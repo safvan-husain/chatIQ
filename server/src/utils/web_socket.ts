@@ -24,79 +24,22 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
       }
     }
     ws.on("message", async (message) => {
-      var datastring = message.toString();
-      if (datastring.charAt(0) == "{") {
-        datastring = datastring.replace(/\'/g, '"');
-        var data = JSON.parse(datastring);
-        if (data.auth == "chatapphdfgjd34534hjdfk") {
-          if (data.cmd == "send") {
-            var reciever = webSockets[data.receiverId]; //check if there is reciever connection
-            sendMessage({ title: `Message from ${data.senderId}`, body:data.msgtext,username: data.receiverId})
-            if (reciever) {
-              var cdata = JSON.stringify({
-                cmd: 'listen',
-                receiverId: data.receiverId,
-                senderId: data.senderId,
-                msgtext: data.msgtext,
-              });
-              reciever.send(cdata); //send message to reciever
-
-              ws.send(
-                JSON.stringify({
-                  cmd: "success:send",
-                  receiverId: data.receiverId,
-                  senderId: data.senderId,
-                  msgtext: data.msgtext,
-                })
-              );
-            } else {
-              try {
-                let user = await UserModel.findOne({
-                  username: data.receiverId,
-                });
-                if (user) {
-                  console.log(data.receiverId + data.senderId);
-                  
-                  var msg: Message = new Message({
-                    senderId: data.senderId,
-                    receiverId: data.receiverId,
-                    msgText: data.msgtext,
-                    isRead: false,
-                  });
-                  console.log(msg);
-                  
-                  user.messages.push(msg);
-                 user = await user.save();
-                //  console.log(user.messages);
-                 
-                }
-              } catch (error) {
-                console.log(error);
-                
-              }
-              console.log("No reciever user found.");
-              ws.send(JSON.stringify({ cmd: "send:error",msg: 'user is offline' }));
-            }
-          } else if (data.cmd == "available_users") {
-            console.log("called available users");
-
-            ws.send(
-              JSON.stringify({
-                cmd: "connected_devices",
-                connected_devices: conected_devices,
-              })
-            );
-          } else {
-            console.log("No send command");
-            ws.send(JSON.stringify({ cmd: "error" }));
-          }
-        } else {
-          console.log("App Authincation error");
-          ws.send(
-            JSON.stringify({ cmd: "error", msg: "App Authincation error" })
-          );
-        }
+      console.log(message.toString());
+      var data = JSON.parse(message.toString());
+      var reciever = webSockets[data.recieverUsername]
+      if(reciever != null) {
+        var response_data = JSON.stringify({
+          'eventName': 'recieve',
+          'senderUsername': data.senderUsername,
+          'recieverUsername': data.recieverUsername,
+          'message': data.message,
+        })
+        reciever.send(response_data); 
+      } else {
+        console.log(`${data.recieverUsername} is not online`);
+        
       }
+      
     });
     ws.on("close", function () {
       var userID = req.url!.substr(1);

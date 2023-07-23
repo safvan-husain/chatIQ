@@ -55,8 +55,10 @@ app.get("/", (req, res) => {
 });
 mongoose_1.default.set("strictQuery", true);
 mongoose_1.default.connect(process.env.MongoUrl, () => {
-    console.log("MongoDB connected!");
+    console.log(mongoose_1.default.connection.readyState == 1 ? "MongoDB connected!" : "MongoDB Not connected!");
 });
-const server = app.listen(process.env.PORT, () => console.log("port lisenting on " + process.env.PORT));
+const server = app.listen(process.env.PORT, function () {
+    console.log("port lisenting on " + process.env.PORT);
+});
 const wss = new websocket.Server({ server });
 (0, web_socket_1.onWebSocket)(wss);

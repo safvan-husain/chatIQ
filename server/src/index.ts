@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(SigninRouter);
 app.use(SignUpRouter);
 app.use(DataRouter);
-app.use(ProfileRouter);
+app.use(ProfileRouter); 
 app.use(aiRouter);
 
 app.get("/", (req, res) => {
@@ -33,13 +33,13 @@ app.get("/", (req, res) => {
 
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.MongoUrl!, () => {
-  console.log("MongoDB connected!");
+  console.log(mongoose.connection.readyState==1? "MongoDB connected!" : "MongoDB Not connected!"); 
 });
 
-const server = app.listen(process.env.PORT, () =>
-  console.log("port lisenting on " + process.env.PORT)
-);
+const server = app.listen(process.env.PORT, function () {
+  console.log("port lisenting on " + process.env.PORT);
+});
 
 const wss = new websocket.Server({ server });
 onWebSocket(wss);
-
+ 
