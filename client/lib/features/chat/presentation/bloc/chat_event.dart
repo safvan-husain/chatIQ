@@ -14,7 +14,7 @@ class ShowChatEvent extends ChatEvent {
 }
 
 class SendMessageEvent extends ChatEvent {
-  final String message;
+  final Message message;
   final String myid;
   final User to;
 
@@ -32,5 +32,12 @@ class CacheMessageEvent extends ChatEvent {
   const CacheMessageEvent({
     required this.message,
     required this.to,
+  });
+}
+
+class UpdateLastVisitEvent extends ChatEvent {
+  final User user;
+  const UpdateLastVisitEvent({
+    required this.user,
   });
 }

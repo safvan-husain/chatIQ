@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:client/common/entity/message.dart';
 import 'package:client/features/home/domain/entities/user.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
@@ -23,7 +24,7 @@ class HomeCubit extends Cubit<HomeState> {
     required this.logout,
     required this.getLocalChats,
     required this.cacheMessage,
-  }) : super(const HomeStateImpl(chats: []));
+  }) : super(HomeStateImpl(chats: const []));
 
   Future<void> getChats() async {
     Either<Failure, List<User>> result = await getLocalChats.call();
@@ -35,6 +36,19 @@ class HomeCubit extends Cubit<HomeState> {
         emit(HomeStateImpl(chats: r));
       },
     );
+  }
+
+  Future<void> newMessage(NewMessages newMessages) async {
+    if (!state.newMessages.any((element) {
+      if (element.chatId == newMessages.chatId) {
+        element.messageCount = newMessages.messageCount;
+      }
+      return element.chatId == newMessages.chatId;
+    })) {
+      state.newMessages.add(newMessages);
+    }
+
+    emit(NewMessageState(chats: state.chats, newMessages: state.newMessages));
   }
 
   Future<void> getContacts(String token) async {
@@ -55,16 +69,27 @@ class HomeCubit extends Cubit<HomeState> {
     result.fold(
       (l) {},
       (r) {
-        emit(const HomeLogOut(chats: []));
+        emit(HomeLogOut(chats: const []));
       },
     );
   }
 
-  Future<void> cachedMessage(String message, String from) async {
+  Future<void> cachedMessage(Message message, String from) async {
     var result = await cacheMessage
         .call(CacheMessageParams(message: message, from: from));
     result.fold((l) {}, (r) {
-      emit(HomeLogOut(chats: state.chats));
+      if (!state.newMessages.any((element) {
+        if (element.chatId == r.chatId) {
+          element.messageCount = r.messageCount;
+          emit(HomeStateImpl(
+              chats: state.chats, newMessages: state.newMessages));
+        }
+        return element.chatId == r.chatId;
+      })) {
+        emit(HomeStateImpl(
+            chats: state.chats, newMessages: [...state.newMessages, r]));
+      }
+      log(state.newMessages[0].messageCount.toString());
     });
   }
 }

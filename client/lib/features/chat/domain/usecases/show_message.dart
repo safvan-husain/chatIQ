@@ -4,7 +4,8 @@ import 'package:dartz/dartz.dart';
 import 'package:client/core/error/failure.dart';
 import 'package:client/core/usecases/use_case.dart';
 import 'package:client/features/chat/domain/repositories/chat_repository.dart';
-import 'package:client/features/chat/domain/entities/message.dart';
+
+import '../../../../common/entity/message.dart';
 
 class ShowMessage extends UseCase<List<Message>, ShowMessageParams> {
   final ChatRepository repository;

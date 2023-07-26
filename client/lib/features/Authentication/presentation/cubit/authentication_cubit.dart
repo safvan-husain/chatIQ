@@ -44,7 +44,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       },
       (user) {
         emit(AuthenticationSuccess(
-            authState: AuthState.authenticated, user: user));
+          authState: AuthState.authenticated,
+          user: user,
+        ));
       },
     );
   }
@@ -56,11 +58,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     ));
     result.fold(
       (failure) {
-        emit(AuthenticationFailure(
-          authState: AuthState.unauthenticated,
-          failure: failure,
-          time: DateTime.now(),
-        ));
+        emit(
+          AuthenticationFailure(
+              authState: AuthState.unauthenticated,
+              failure: failure,
+              time: DateTime.now()),
+        );
       },
       (user) {
         emit(
@@ -106,7 +109,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       },
       (user) {
-        log('success regiter on cubit');
         emit(
           AuthenticationSuccess(authState: AuthState.authenticated, user: user),
         );

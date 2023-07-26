@@ -20,18 +20,18 @@ abstract class AuthenticationState extends Equatable {
 }
 
 class AuthenticationInitial extends AuthenticationState {
-  AuthenticationInitial({required super.authState});
+  const AuthenticationInitial({required super.authState});
 }
 
 class AuthenticationSuccess extends AuthenticationState {
-  AuthenticationSuccess({
+  const AuthenticationSuccess({
     required super.authState,
     required super.user,
   });
 }
 
 class AuthenticationFailure extends AuthenticationState {
-  AuthenticationFailure({
+  const AuthenticationFailure({
     required super.authState,
     required super.failure,
     required super.time,

@@ -4,29 +4,30 @@ import 'package:dartz/dartz.dart';
 import '../entities/user.dart';
 
 abstract class UserRepository {
-  ///calls the http://server.com/getuser?email=email endpoint
+  ///going to reach out http://server.com/auth/sign-in
   ///
-  ///returns a [User] for success [Failure] for any error code
+  ///Fear not, for victory brings forth a glorious [User], but beware the cheeky [Failure]
   Future<Either<Failure, User>> getUser(
     String emailorUsername,
     String password,
   );
 
-  ///returns a [User] for success [Failure] for any error code
+  ///for victory brings forth a glorious [User],
   ///
+  /// but beware the cheeky [Failure]
   Future<Either<Failure, User>> getCachedUser();
 
-  ///post the http://server.com/registerUser?email=email endpoint
+  ///going to reach out http://server.com/auth/sign-up
   ///
-  ///returns a [User] for success [Failure] for any error code
+  ///Fear not, for victory brings forth a glorious [User], but beware any [Failure]
   Future<Either<Failure, User>> registerUser(
     String email,
     String username,
     String password,
   );
 
-  ///post the http://server.com/registerUser?email=email endpoint
+  ///going to reach out http://server.com/auth/google-in
   ///
-  ///returns a [User] for success [Failure] for any error code
+  ///Fear not, for victory brings forth a glorious [User], but beware any [Failure]
   Future<Either<Failure, User>> loginUsingGoogle(String email);
 }

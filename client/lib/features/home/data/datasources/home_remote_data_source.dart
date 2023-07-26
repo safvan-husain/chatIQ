@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:client/features/home/data/models/message_model.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:client/core/error/exception.dart';
@@ -16,7 +15,7 @@ abstract class HomeRemoteDataSource {
   HomeRemoteDataSource({
     required this.client,
   });
-  Future<List<User>> getUnreadChats({required String token});
+  Future<List<User>> getAllPeople({required String token});
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
@@ -24,7 +23,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
 
   HomeRemoteDataSourceImpl({required super.client});
   @override
-  Future<List<User>> getUnreadChats({required String token}) async {
+  Future<List<User>> getAllPeople({required String token}) async {
     http.Response response = await client.get(
       Uri.parse('$uri/get-data/all-user'),
       headers: <String, String>{
@@ -36,7 +35,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       List<User> chats = [];
       List<dynamic> decodedUsers = jsonDecode(response.body);
       for (int i = 0; i < decodedUsers.length; i++) {
-        chats.add(UserModel.fromMap(decodedUsers[i]));
+        chats.add(UserModel.fromApiMap(decodedUsers[i]));
       }
 
       return chats;

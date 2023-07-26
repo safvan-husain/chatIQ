@@ -30,7 +30,6 @@ class UserRepositoryImpl extends UserRepository {
   ) async {
     try {
       User user = await remoteDataSource.getUser(emailorUsername, password);
-      log(user.token);
       localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException {
@@ -44,13 +43,16 @@ class UserRepositoryImpl extends UserRepository {
     String username,
     String password,
   ) async {
-    if (await networkInfo.isConnected) {
-      User user =
-          await remoteDataSource.registerUser(email, username, password);
+    try {
+      User user = await remoteDataSource.registerUser(
+        email,
+        username,
+        password,
+      );
       localDataSource.cacheUser(user);
       return Right(user);
-    } else {
-      return Left(NetworkFailure());
+    } on ServerException {
+      return Left(ServerFailure());
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../common/entity/message.dart';
 import '../pages/chat_view.dart';
 
 class InputArea extends StatelessWidget {
@@ -36,7 +37,12 @@ class InputArea extends StatelessWidget {
               onPressed: () {
                 context.read<ChatBloc>().add(
                       SendMessageEvent(
-                        message: msgtext.text,
+                        message: Message(
+                          content: msgtext.text,
+                          chatId: null,
+                          time: DateTime.now(),
+                          isme: true,
+                        ),
                         myid: context
                             .read<AuthenticationCubit>()
                             .state

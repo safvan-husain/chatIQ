@@ -9,8 +9,9 @@ import 'package:client/features/home/domain/entities/user.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../domain/entities/message.dart';
+import '../../../../common/entity/message.dart';
 import '../../domain/repositories/home_repositoy.dart';
+import '../../presentation/cubit/home_cubit.dart';
 
 class HomeRepositoryImpl extends HomeRepository {
   final HomeLocalDataSource localDataSource;
@@ -22,12 +23,12 @@ class HomeRepositoryImpl extends HomeRepository {
     required this.remoteDataSource,
   });
   @override
-  Future<Either<Failure, List<User>>> getRemoteChats(
+  Future<Either<Failure, List<User>>> getAllPeople(
       {required String token}) async {
     List<User> users = [];
     if (await networkInfo.isConnected) {
       try {
-        users.addAll(await remoteDataSource.getUnreadChats(token: token));
+        users.addAll(await remoteDataSource.getAllPeople(token: token));
       } on ServerException {
         return Left(ServerFailure());
       }
@@ -57,9 +58,10 @@ class HomeRepositoryImpl extends HomeRepository {
   }
 
   @override
-  Future<Either<Failure, int>> cacheMessage(String message, String from) async {
+  Future<Either<Failure, NewMessages>> cacheMessage(
+      Message message, String from) async {
     try {
-      return Right(await localDataSource.cacheMessage(from, message));
+      return Right(await localDataSource.cacheMessage(message, from));
     } on CacheException {
       return Left(CacheFailure());
     }

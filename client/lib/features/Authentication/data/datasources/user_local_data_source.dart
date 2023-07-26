@@ -11,10 +11,14 @@ abstract class UserLocalDataSource {
 
   UserLocalDataSource({required this.sharedPreferences});
 
-  ///Get the cached [User] d
+  ///Who's there? It's the sneaky [User] hiding in the cache, waiting to be found!
   ///
-  ///throw [CacheException] if no cache data is present
+  ///But watch out! If the cache is empty, be ready to catch the thrown [CacheException]!
   Future<User> getUser();
+
+  ///wanna cache the [User]? use me
+  ///
+  ///but be careful, I will throw [CacheException] if couldn't do it.
   Future<void> cacheUser(User user);
 }
 
@@ -27,7 +31,6 @@ class UserLocalDataSourceImpl extends UserLocalDataSource {
     if (userJson == null || userJson == "") {
       throw CacheException();
     }
-    log(userJson);
     return UserModel.fromJson(userJson);
   }
 

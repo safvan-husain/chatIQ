@@ -1,28 +1,24 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, use_build_context_synchronously
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
-import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/features/home/presentation/widgets/user_wrapper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 
-import 'package:client/provider/chat_list_provider.dart';
 import 'package:client/provider/unread_messages.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:client/services/get_data_services.dart';
 
-import '../../../../../local_database/message_schema.dart';
+import '../../../../../common/entity/message.dart';
 import '../../../../../models/user_model.dart';
 import '../../../../../services/push_notification_services.dart';
-import '../../../../../services/web_socket_set_up.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,11 +38,9 @@ class HomePageState extends State<HomePage> {
     context.read<HomeCubit>().getChats();
     WSInjection.initInjection(
       context.read<AuthenticationCubit>().state.user!.username,
-      (String message, String from) async {
-        log('here');
-        await context
-            .read<HomeCubit>()
-            .cacheMessage(CacheMessageParams(message: message, from: from));
+      (Message message, String from) async {
+        await context.read<HomeCubit>().cachedMessage(message, from);
+        // await context.read<HomeCubit>().newMessage(r);
         context.read<ChatBloc>().add(ShowChatEvent(chatId: from));
       },
     );
@@ -95,8 +89,8 @@ class HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return UserWrapper(
                   user: state.chats.elementAt(index),
-                  allMessages: [],
                   index: index,
+                  newMessageCount: 2,
                 );
               },
             );

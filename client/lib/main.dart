@@ -11,6 +11,7 @@ import 'package:client/features/chat/data/repositories/chat_repository_impl.dart
 import 'package:client/features/chat/domain/repositories/chat_repository.dart';
 import 'package:client/features/chat/domain/usecases/send_message.dart';
 import 'package:client/features/chat/domain/usecases/show_message.dart';
+import 'package:client/features/chat/domain/usecases/update_last_visit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
@@ -90,11 +91,11 @@ void main() async {
               cacheMessage: CacheMessage(homeRepository)),
         ),
         BlocProvider(
-          create: (_) => ChatBloc(
-            SendMessage(repository: chatRepository),
-            ShowMessage(repository: chatRepository),
-          ),
-        ),
+            create: (_) => ChatBloc(
+                  SendMessage(repository: chatRepository),
+                  ShowMessage(repository: chatRepository),
+                  UpdateLastVisit(chatRepository: chatRepository),
+                )),
       ],
       child: MultiProvider(
         providers: [

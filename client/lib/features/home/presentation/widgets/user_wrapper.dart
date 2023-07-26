@@ -11,12 +11,12 @@ class UserWrapper extends StatelessWidget {
     Key? key,
     required this.index,
     required this.user,
-    required this.allMessages,
+    required this.newMessageCount,
   }) : super(key: key);
 
   final int index;
+  final int newMessageCount;
   final User user;
-  final List<Message> allMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,10 @@ class UserWrapper extends StatelessWidget {
             ),
           );
         },
-        child: UserTile(user: user),
+        child: UserTile(
+          user: user,
+          newMessageCount: newMessageCount,
+        ),
       ),
     );
   }

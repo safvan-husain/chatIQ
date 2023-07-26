@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onWebSocket = void 0;
+const ws_event_1 = require("./ws_event");
 function onWebSocket(wss) {
     var webSockets = {};
     var conected_devices = [];
@@ -28,20 +29,15 @@ function onWebSocket(wss) {
             }
         }
         ws.on("message", (message) => __awaiter(this, void 0, void 0, function* () {
-            console.log(message.toString());
-            var data = JSON.parse(message.toString());
-            var reciever = webSockets[data.recieverUsername];
+            var ws_event = ws_event_1.WSEvent.fromJson(message.toString());
+            console.log(ws_event.message);
+            var reciever = webSockets[ws_event.recieverUsername];
             if (reciever != null) {
-                var response_data = JSON.stringify({
-                    'eventName': 'recieve',
-                    'senderUsername': data.senderUsername,
-                    'recieverUsername': data.recieverUsername,
-                    'message': data.message,
-                });
-                reciever.send(response_data);
+                var response = ws_event.toJson("message");
+                reciever.send(response);
             }
             else {
-                console.log(`${data.recieverUsername} is not online`);
+                console.log(`${ws_event.recieverUsername} is not online`);
             }
         }));
         ws.on("close", function () {

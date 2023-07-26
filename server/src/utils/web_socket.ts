@@ -2,6 +2,7 @@ import * as websocket from "ws";
 import { Message } from "../model/message_model";
 import UserModel from "../model/user_model";
 import { sendMessage } from "./push_notification";
+import { WSEvent } from "./ws_event";
 
 export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
   var webSockets: any = {};
@@ -24,22 +25,15 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
       }
     }
     ws.on("message", async (message) => {
-      console.log(message.toString());
-      var data = JSON.parse(message.toString());
-      var reciever = webSockets[data.recieverUsername]
-      if(reciever != null) {
-        var response_data = JSON.stringify({
-          'eventName': 'recieve',
-          'senderUsername': data.senderUsername,
-          'recieverUsername': data.recieverUsername,
-          'message': data.message,
-        })
-        reciever.send(response_data); 
+      var ws_event: WSEvent = WSEvent.fromJson(message.toString());
+      console.log(ws_event.message);
+      var reciever = webSockets[ws_event.recieverUsername];
+      if (reciever != null) {
+        var response: string = ws_event.toJson("message");
+        reciever.send(response);
       } else {
-        console.log(`${data.recieverUsername} is not online`);
-        
+        console.log(`${ws_event.recieverUsername} is not online`);
       }
-      
     });
     ws.on("close", function () {
       var userID = req.url!.substr(1);

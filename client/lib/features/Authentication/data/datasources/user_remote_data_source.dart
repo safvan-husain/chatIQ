@@ -10,22 +10,22 @@ abstract class UserRemoteDataSource {
 
   UserRemoteDataSource({required this.httpClient});
 
-  ///calls the http://numberaoi.com/number endpoint
+  ///Attention! Prepare to make contact with http://server.com/auth/sign-in !
   ///
-  ///throws a [serverException] for all error codes.
+  ///But be warned! The sly [serverException] could be thrown!
   Future<UserModel> getUser(
     String emailorUsername,
     String password,
   );
 
-  ///calls the http://numberaoi.com/number endpoint
+  ///Attention! Prepare to make contact with http://server.com/auth/google-in !
   ///
-  ///throws a [serverException] for all error codes.
+  ///But be warned! The sly [serverException] could be thrown!
   Future<UserModel> getUserWithGoogle(String email);
 
-  ///calls the http://numberaoi.com/number endpoint
+  ///Attention! Prepare to make contact with http://server.com/auth/sign-up !
   ///
-  ///throws a [serverException] for all error codes.
+  ///But be warned! The sly [serverException] could be thrown!
   Future<UserModel> registerUser(
     String email,
     String username,
@@ -39,19 +39,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   Future<UserModel> getUser(
     String emailorUsername,
     String password,
-  ) =>
-      _getUserFromEmail(emailorUsername, password);
-
-  @override
-  Future<UserModel> registerUser(
-    String email,
-    String username,
-    String password,
-  ) =>
-      _registerUser(email, username, password);
-
-  Future<UserModel> _getUserFromEmail(
-      String emailorUsername, String password) async {
+  ) async {
     final http.Response response = await httpClient.post(
       Uri.parse('$uri/auth/sign-in'),
       headers: <String, String>{
@@ -70,11 +58,9 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
     }
   }
 
-  Future<UserModel> _registerUser(
-    String email,
-    String username,
-    String password,
-  ) async {
+  @override
+  Future<UserModel> registerUser(
+      String email, String username, String password) async {
     final http.Response response = await httpClient.post(
       Uri.parse('$uri/auth/sign-up'),
       headers: <String, String>{

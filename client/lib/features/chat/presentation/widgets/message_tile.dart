@@ -1,7 +1,7 @@
-import 'package:client/features/chat/domain/entities/message.dart';
-import 'package:client/models/message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../common/entity/message.dart';
 
 class MessageTile extends StatelessWidget {
   final Message onemsg;
@@ -13,10 +13,10 @@ class MessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(
+        margin: EdgeInsets.only(
           //if is my message, then it has margin 40 at left
-          left: 40,
-          right: 0, //else margin at right
+          left: onemsg.isme ? 40 : 0,
+          right: onemsg.isme ? 0 : 40, //else margin at right
         ),
         child: Card(
             shape:

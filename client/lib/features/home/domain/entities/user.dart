@@ -1,20 +1,27 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../common/entity/message.dart';
+
 class User extends Equatable {
   final String username;
-  final String email;
-  int? _id;
+  Message? lastMessage;
+  int? lastSeenMessageId;
+  final int id;
 
   User({
     required this.username,
-    required this.email,
+    required this.lastMessage,
+    required this.lastSeenMessageId,
+    required this.id,
   });
-  int? get id => _id;
+  setLastSeenMessage(int lastSeenMsgId) {
+    lastSeenMessageId = lastSeenMsgId;
+  }
 
-  void setId(int id) {
-    _id = id;
+  setLastMessageId(int lastMsg) {
+    lastMessage!.id = lastMsg;
   }
 
   @override
-  List<Object?> get props => [username, email];
+  List<Object?> get props => [username, lastMessage, id, lastSeenMessageId];
 }

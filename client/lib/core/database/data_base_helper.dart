@@ -28,13 +28,16 @@ class DatabaseHelper {
         ' user_name TEXT,'
         ' dp TEXT,'
         ' last_message INTEGER,'
-        'FOREIGN KEY (last_message) REFERENCES messages(id)'
+        ' last_seen_message INTEGER,'
+        'FOREIGN KEY (last_message) REFERENCES messages(id),'
+        'FOREIGN KEY (last_seen_message) REFERENCES messages(id)'
         ')');
     await db
         .execute('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT,'
-            ' message_text TEXT,'
-            ' timestamp TEXT,'
             ' chat_id INTEGER,'
+            ' time INTEGER,'
+            ' message TEXT,'
+            ' isme INTEGER,'
             ' FOREIGN KEY (chat_id) REFERENCES recent_chats(id)'
             ')');
   }

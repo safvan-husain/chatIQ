@@ -8,6 +8,6 @@ class GetRemoteChats {
   final HomeRepository homeRepository;
   GetRemoteChats({required this.homeRepository});
   Future<Either<Failure, List<User>>> call({required String appToken}) async {
-    return await homeRepository.getRemoteChats(token: appToken);
+    return await homeRepository.getAllPeople(token: appToken);
   }
 }

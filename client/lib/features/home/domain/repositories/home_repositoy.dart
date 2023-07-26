@@ -1,23 +1,29 @@
+import 'package:client/common/entity/message.dart';
 import 'package:client/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 
-import '../entities/message.dart';
+import '../../presentation/cubit/home_cubit.dart';
 import '../entities/user.dart';
 
 abstract class HomeRepository {
-  ///calls the http://server.com/getuser?email=email endpoint
+  ///will remove [User] from cache
   ///
-  ///returns a [User] for success [Failure] for any error code
+  ///for victory  [bool], but beware of the cheeky [Failure]
   Future<Either<Failure, bool>> logOut();
 
-  ///post the http://server.com/registerUser?email=email endpoint
+  ///Reaching out http://server.com/
   ///
-  ///returns a [User] for success [Failure] for any error code
-  Future<Either<Failure, List<User>>> getRemoteChats({required String token});
+  ///for victory  list of [User], but beware of the cheeky [Failure]
+  Future<Either<Failure, List<User>>> getAllPeople({required String token});
 
-  ///post the http://server.com/registerUser?email=email endpoint
+  ///list of [User] wating to be found in the cache who user chatted with
   ///
-  ///returns a [User] for success [Failure] for any error code
+  ///for victory  list of [User], but beware of the cheeky [Failure]
   Future<Either<Failure, List<User>>> getLocalChats();
-  Future<Either<Failure, int>> cacheMessage(String message, String from);
+
+  ///wanna cache a message to the storage? perfect!
+  ///
+  ///for victory [bool], but beware of the cheeky [Failure]
+  Future<Either<Failure, NewMessages>> cacheMessage(
+      Message message, String from);
 }

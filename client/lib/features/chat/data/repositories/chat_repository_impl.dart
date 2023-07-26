@@ -6,8 +6,8 @@ import 'package:dartz/dartz.dart';
 
 import 'package:client/core/error/failure.dart';
 import 'package:client/features/chat/data/datasources/chat_local_data_source.dart';
-import 'package:client/features/chat/domain/entities/message.dart';
 
+import '../../../../common/entity/message.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/chat_remote_data_source.dart';
 
@@ -24,7 +24,12 @@ class ChatRepositoryImpl implements ChatRepository {
       await localDataSource.cacheFriend(to);
 
       await remoteDataSource.sendMessage(message, myid, to);
-      return Right(await localDataSource.cacheMessage(to.username, message));
+      return Right(
+        await localDataSource.cacheMessage(
+          message,
+          to.username,
+        ),
+      );
     } on ServerException {
       return Left(ServerFailure());
     }
@@ -34,5 +39,10 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<Either<Failure, List<Message>>> showMessages(String chatId) async {
     var r = await localDataSource.showCachedMessages(chatId);
     return Right(r);
+  }
+
+  @override
+  Future<Either<Failure, void>> updateLasVisit(User user) async {
+    return Right(await localDataSource.updateLastVisit(user));
   }
 }

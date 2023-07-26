@@ -21,7 +21,7 @@ class ContactsPage extends StatelessWidget {
       },
       buildWhen: (previous, current) => current is ContactStateImpl,
       builder: (context, state) {
-        if (state.contacts.isEmpty) {
+        if (state.contacts!.isEmpty) {
           return const Scaffold(
               body: Center(
             child: CircularProgressIndicator(),
@@ -33,11 +33,11 @@ class ContactsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               return UserWrapper(
                 index: index,
-                user: state.contacts.elementAt(index),
-                allMessages: const [],
+                user: state.contacts!.elementAt(index),
+                newMessageCount: 0,
               );
             },
-            itemCount: state.contacts.length,
+            itemCount: state.contacts!.length,
           )),
         );
       },

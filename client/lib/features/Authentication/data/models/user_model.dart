@@ -4,10 +4,6 @@ import 'dart:convert';
 import 'package:client/features/Authentication/domain/entities/user.dart';
 
 class UserModel extends User {
-  // final String name;
-  // final String email;
-  // final String password;
-
   const UserModel({
     required super.username,
     required super.email,

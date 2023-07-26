@@ -1,6 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:developer';
+
+import 'package:auto_route/auto_route.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:multiavatar/multiavatar.dart';
@@ -50,7 +54,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Provider.of<Unread>(context, listen: false).setChat = "";
+          log(widget.user.id.toString());
+          context.router
+              .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
+          context.read<ChatBloc>().add(UpdateLastVisitEvent(user: widget.user));
           return true;
         },
         child: Scaffold(
