@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../../constance/full_width_button.dart';
 import '../../../../../routes/router.gr.dart';
-import '../../../../../services/google_auth_services.dart';
+import '../../../data/repositories/google_auth_services.dart';
 
 class GoogleSignUpPage extends StatelessWidget {
   const GoogleSignUpPage({super.key});

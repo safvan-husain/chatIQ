@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:client/common/entity/message.dart';
+import 'package:client/core/usecases/use_case.dart';
 import 'package:client/features/home/domain/entities/user.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
@@ -11,6 +12,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/error/failure.dart';
+import '../../domain/entities/contact.dart';
 
 part 'home_state.dart';
 
@@ -24,42 +26,44 @@ class HomeCubit extends Cubit<HomeState> {
     required this.logout,
     required this.getLocalChats,
     required this.cacheMessage,
-  }) : super(HomeStateImpl(chats: const []));
+  }) : super(HomeStateImpl());
 
   Future<void> getChats() async {
-    Either<Failure, List<User>> result = await getLocalChats.call();
+    Either<Failure, List<NewMessages>> result =
+        await getLocalChats.call(NoParams());
     result.fold(
       (l) {
-        log('failed to get chats');
+        log('failed to get chats ge');
       },
       (r) {
-        emit(HomeStateImpl(chats: r));
+        emit(HomeStateImpl(newMessages: r));
       },
     );
   }
 
   Future<void> newMessage(NewMessages newMessages) async {
     if (!state.newMessages.any((element) {
-      if (element.chatId == newMessages.chatId) {
+      if (element.user.id == newMessages.user.id) {
         element.messageCount = newMessages.messageCount;
+        element.user = newMessages.user;
       }
-      return element.chatId == newMessages.chatId;
+      return element.user.id == newMessages.user.id;
     })) {
       state.newMessages.add(newMessages);
     }
 
-    emit(NewMessageState(chats: state.chats, newMessages: state.newMessages));
+    emit(NewMessageState(newMessages: state.newMessages));
   }
 
   Future<void> getContacts(String token) async {
-    Either<Failure, List<User>> result =
+    Either<Failure, List<Contact>> result =
         await getRemoteChats.call(appToken: token);
     result.fold(
       (l) {
         log('failed to get chats');
       },
       (r) {
-        emit(ContactStateImpl(contacts: r, chats: state.chats));
+        emit(ContactStateImpl(contacts: r, newMessages: state.newMessages));
       },
     );
   }
@@ -69,7 +73,7 @@ class HomeCubit extends Cubit<HomeState> {
     result.fold(
       (l) {},
       (r) {
-        emit(HomeLogOut(chats: const []));
+        emit(HomeLogOut());
       },
     );
   }
@@ -77,19 +81,21 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> cachedMessage(Message message, String from) async {
     var result = await cacheMessage
         .call(CacheMessageParams(message: message, from: from));
-    result.fold((l) {}, (r) {
-      if (!state.newMessages.any((element) {
-        if (element.chatId == r.chatId) {
-          element.messageCount = r.messageCount;
-          emit(HomeStateImpl(
-              chats: state.chats, newMessages: state.newMessages));
+    result.fold(
+      (l) {},
+      (r) {
+        if (!state.newMessages.any((element) {
+          if (element.user.id == r.user.id) {
+            element.messageCount = r.messageCount;
+            element.user = r.user;
+            emit(HomeStateImpl(newMessages: state.newMessages));
+          }
+          return element.user.id == r.user.id;
+        })) {
+          emit(HomeStateImpl(newMessages: [...state.newMessages, r]));
         }
-        return element.chatId == r.chatId;
-      })) {
-        emit(HomeStateImpl(
-            chats: state.chats, newMessages: [...state.newMessages, r]));
-      }
-      log(state.newMessages[0].messageCount.toString());
-    });
+        log(state.newMessages[0].messageCount.toString());
+      },
+    );
   }
 }

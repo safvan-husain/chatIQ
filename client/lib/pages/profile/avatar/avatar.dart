@@ -3,20 +3,19 @@ import 'dart:math';
 import 'dart:developer' as dd;
 import 'package:auto_route/auto_route.dart';
 import 'package:client/constance/http_error_handler.dart';
-import 'package:client/provider/user_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:client/pages/profile/avatar/my_painter.dart';
 import 'package:client/pages/profile/avatar/svg_rapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:multiavatar/multiavatar.dart';
-import 'package:provider/provider.dart';
 
 import '../../../constance/constant_variebles.dart';
-import '../../../models/user_model.dart';
 import '../../../utils/get_token_storage.dart';
 
 class HoemPage extends StatefulWidget {
+  const HoemPage({super.key});
+
   @override
   _HoemPageState createState() => _HoemPageState();
 }
@@ -90,12 +89,6 @@ class _HoemPageState extends State<HoemPage> {
                           context: context,
                           response: response,
                           onSuccess: () {
-                            User user = Provider.of<UserProvider>(context,
-                                    listen: false)
-                                .user;
-                            User newUser = User.fromJson(response.body);
-                            Provider.of<UserProvider>(context, listen: false)
-                                .setUser(user.copyWith(avatar: newUser.avatar));
                             context.router.pop();
                           },
                         );

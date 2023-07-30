@@ -16,19 +16,16 @@ import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
 import 'package:client/features/home/domain/usecases/get_remote_chats.dart';
-import 'package:client/local_database/message_schema.dart';
+import 'package:client/features/video_call/domain/repositories/video_call_repository.dart';
+import 'package:client/features/video_call/domain/usecases/answer_call.dart';
+import 'package:client/features/video_call/domain/usecases/reject_call.dart';
 import 'package:client/platform/network_info.dart';
-import 'package:client/provider/chat_list_provider.dart';
-import 'package:client/provider/stream_provider.dart';
-import 'package:client/provider/unread_messages.dart';
-import 'package:client/provider/user_provider.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:client/services/push_notification_services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +40,11 @@ import 'features/home/data/repositories/home_repository_impl.dart';
 import 'features/home/domain/repositories/home_repositoy.dart';
 import 'features/home/domain/usecases/log_out.dart';
 import 'features/home/presentation/cubit/home_cubit.dart';
+import 'features/video_call/data/datasources/video_call_local_data_source.dart';
+import 'features/video_call/data/datasources/video_call_remote_data_source.dart';
+import 'features/video_call/data/repositories/video_call_repository_impl.dart';
+import 'features/video_call/domain/usecases/make_call.dart';
+import 'features/video_call/presentation/bloc/video_call_bloc.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -68,6 +70,10 @@ void main() async {
     localDataSource: ChatLocalDataSource(),
     remoteDataSource: ChatRemoteDataSource(),
   );
+  VideoCallRepository videoCallRepository = VideoCallRepositoryImpl(
+    VideoCallLocalDataSource(),
+    VideoCallRemoteDataSource(),
+  );
   runApp(
     MultiBlocProvider(
       providers: [
@@ -84,6 +90,13 @@ void main() async {
           ),
         ),
         BlocProvider(
+          create: (_) => VideoCallBloc(
+            MakeCall(videoCallRepository),
+            AnswerCall(videoCallRepository),
+            RejectCall(videoCallRepository),
+          ),
+        ),
+        BlocProvider(
           create: (_) => HomeCubit(
               getRemoteChats: GetRemoteChats(homeRepository: homeRepository),
               logout: Logout(homeRepository),
@@ -97,26 +110,7 @@ void main() async {
                   UpdateLastVisit(chatRepository: chatRepository),
                 )),
       ],
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => UserProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ChatListProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => WsProvider(),
-          ),
-          Provider(
-            create: (_) => AppDatabase(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => Unread(),
-          )
-        ],
-        child: const MyApp(),
-      ),
+      child: const MyApp(),
     ),
   );
 }
@@ -138,7 +132,7 @@ class _MyAppState extends State<MyApp> {
       routeInformationParser: _appRouter.defaultRouteParser(),
       debugShowCheckedModeBanner: false,
       title: 'Flutter Chat App',
-      theme: darkTheme,
+      theme: lightTheme,
       darkTheme: darkTheme,
     );
   }

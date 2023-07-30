@@ -11,7 +11,8 @@
 // ignore_for_file: type=lint
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i9;
+import 'package:auto_route/auto_route.dart' as _i14;
+import 'package:client/default.dart' as _i10;
 import 'package:client/features/Authentication/presentation/pages/sign_in/form_login.dart'
     as _i2;
 import 'package:client/features/Authentication/presentation/pages/sign_in/google_sign_in.dart'
@@ -22,23 +23,30 @@ import 'package:client/features/Authentication/presentation/pages/sign_up/google
     as _i5;
 import 'package:client/features/Authentication/presentation/pages/sign_up/sign_up_from.dart'
     as _i4;
-import 'package:client/features/chat/presentation/pages/chat_view.dart' as _i8;
-import 'package:client/features/home/domain/entities/user.dart' as _i12;
+import 'package:client/features/call_history/presentation/pages/call_history_page.dart'
+    as _i12;
+import 'package:client/features/chat/presentation/pages/chat_view.dart' as _i6;
 import 'package:client/features/home/presentation/pages/contacts/contacts.dart'
     as _i7;
 import 'package:client/features/home/presentation/pages/default/home_view.dart'
-    as _i6;
-import 'package:flutter/material.dart' as _i10;
-import 'package:google_sign_in/google_sign_in.dart' as _i11;
+    as _i11;
+import 'package:client/features/profile/presentation/pages/profile_page.dart'
+    as _i8;
+import 'package:client/features/settings/presentation/pages/settings_page.dart'
+    as _i13;
+import 'package:client/features/video_call/presentation/pages/video_call_page.dart'
+    as _i9;
+import 'package:flutter/material.dart' as _i15;
+import 'package:google_sign_in/google_sign_in.dart' as _i16;
 
-class AppRouter extends _i9.RootStackRouter {
-  AppRouter([_i10.GlobalKey<_i10.NavigatorState>? navigatorKey])
+class AppRouter extends _i14.RootStackRouter {
+  AppRouter([_i15.GlobalKey<_i15.NavigatorState>? navigatorKey])
       : super(navigatorKey);
 
   @override
-  final Map<String, _i9.PageFactory> pagesMap = {
+  final Map<String, _i14.PageFactory> pagesMap = {
     GoogleSignInRoute.name: (routeData) {
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i1.GoogleSignInPage(),
       );
@@ -46,13 +54,13 @@ class AppRouter extends _i9.RootStackRouter {
     LoginFormRoute.name: (routeData) {
       final args = routeData.argsAs<LoginFormRouteArgs>(
           orElse: () => const LoginFormRouteArgs());
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i2.LoginFormPage(key: args.key),
       );
     },
     GoogleSignUpRoute.name: (routeData) {
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i3.GoogleSignUpPage(),
       );
@@ -60,14 +68,14 @@ class AppRouter extends _i9.RootStackRouter {
     SignupFormRoute.name: (routeData) {
       final args = routeData.argsAs<SignupFormRouteArgs>(
           orElse: () => const SignupFormRouteArgs());
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i4.SignupFormPage(key: args.key),
       );
     },
     GoogleSignUpSetupRoute.name: (routeData) {
       final args = routeData.argsAs<GoogleSignUpSetupRouteArgs>();
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: _i5.GoogleSignUpSetupPage(
           account: args.account,
@@ -75,70 +83,125 @@ class AppRouter extends _i9.RootStackRouter {
         ),
       );
     },
-    HomeRoute.name: (routeData) {
-      return _i9.AdaptivePage<dynamic>(
+    ChatRoute.name: (routeData) {
+      final args = routeData.argsAs<ChatRouteArgs>();
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i6.HomePage(),
+        child: _i6.ChatPage(
+          key: args.key,
+          userame: args.userame,
+        ),
       );
     },
     ContactsRoute.name: (routeData) {
-      return _i9.AdaptivePage<dynamic>(
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
         child: const _i7.ContactsPage(),
       );
     },
-    ChatRoute.name: (routeData) {
-      final args = routeData.argsAs<ChatRouteArgs>();
-      return _i9.AdaptivePage<dynamic>(
+    ProfileRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i8.ChatPage(
-          key: args.key,
-          user: args.user,
-        ),
+        child: const _i8.ProfilePage(),
+      );
+    },
+    VideoCallRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i9.VideoCallPage(),
+      );
+    },
+    DefaultRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i10.DefaultPage(),
+      );
+    },
+    HomeRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i11.HomePage(),
+      );
+    },
+    CallHistoryRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i12.CallHistoryPage(),
+      );
+    },
+    SettingsRoute.name: (routeData) {
+      return _i14.AdaptivePage<dynamic>(
+        routeData: routeData,
+        child: const _i13.SettingsPage(),
       );
     },
   };
 
   @override
-  List<_i9.RouteConfig> get routes => [
-        _i9.RouteConfig(
+  List<_i14.RouteConfig> get routes => [
+        _i14.RouteConfig(
           GoogleSignInRoute.name,
           path: '/',
         ),
-        _i9.RouteConfig(
+        _i14.RouteConfig(
           LoginFormRoute.name,
           path: '/login-form-page',
         ),
-        _i9.RouteConfig(
+        _i14.RouteConfig(
           GoogleSignUpRoute.name,
           path: '/google-sign-up-page',
         ),
-        _i9.RouteConfig(
+        _i14.RouteConfig(
           SignupFormRoute.name,
           path: '/signup-form-page',
         ),
-        _i9.RouteConfig(
+        _i14.RouteConfig(
           GoogleSignUpSetupRoute.name,
           path: '/google-sign-up-setup-page',
         ),
-        _i9.RouteConfig(
-          HomeRoute.name,
-          path: '/home-page',
+        _i14.RouteConfig(
+          ChatRoute.name,
+          path: '/chat-page',
         ),
-        _i9.RouteConfig(
+        _i14.RouteConfig(
           ContactsRoute.name,
           path: '/contacts-page',
         ),
-        _i9.RouteConfig(
-          ChatRoute.name,
-          path: '/chat-page',
+        _i14.RouteConfig(
+          ProfileRoute.name,
+          path: '/profile-page',
+        ),
+        _i14.RouteConfig(
+          VideoCallRoute.name,
+          path: '/video-call-page',
+        ),
+        _i14.RouteConfig(
+          DefaultRoute.name,
+          path: '/',
+          children: [
+            _i14.RouteConfig(
+              HomeRoute.name,
+              path: 'home',
+              parent: DefaultRoute.name,
+            ),
+            _i14.RouteConfig(
+              CallHistoryRoute.name,
+              path: 'call-history',
+              parent: DefaultRoute.name,
+            ),
+            _i14.RouteConfig(
+              SettingsRoute.name,
+              path: 'settings',
+              parent: DefaultRoute.name,
+            ),
+          ],
         ),
       ];
 }
 
 /// generated route for
 /// [_i1.GoogleSignInPage]
-class GoogleSignInRoute extends _i9.PageRouteInfo<void> {
+class GoogleSignInRoute extends _i14.PageRouteInfo<void> {
   const GoogleSignInRoute()
       : super(
           GoogleSignInRoute.name,
@@ -150,8 +213,8 @@ class GoogleSignInRoute extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.LoginFormPage]
-class LoginFormRoute extends _i9.PageRouteInfo<LoginFormRouteArgs> {
-  LoginFormRoute({_i10.Key? key})
+class LoginFormRoute extends _i14.PageRouteInfo<LoginFormRouteArgs> {
+  LoginFormRoute({_i15.Key? key})
       : super(
           LoginFormRoute.name,
           path: '/login-form-page',
@@ -164,7 +227,7 @@ class LoginFormRoute extends _i9.PageRouteInfo<LoginFormRouteArgs> {
 class LoginFormRouteArgs {
   const LoginFormRouteArgs({this.key});
 
-  final _i10.Key? key;
+  final _i15.Key? key;
 
   @override
   String toString() {
@@ -174,7 +237,7 @@ class LoginFormRouteArgs {
 
 /// generated route for
 /// [_i3.GoogleSignUpPage]
-class GoogleSignUpRoute extends _i9.PageRouteInfo<void> {
+class GoogleSignUpRoute extends _i14.PageRouteInfo<void> {
   const GoogleSignUpRoute()
       : super(
           GoogleSignUpRoute.name,
@@ -186,8 +249,8 @@ class GoogleSignUpRoute extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.SignupFormPage]
-class SignupFormRoute extends _i9.PageRouteInfo<SignupFormRouteArgs> {
-  SignupFormRoute({_i10.Key? key})
+class SignupFormRoute extends _i14.PageRouteInfo<SignupFormRouteArgs> {
+  SignupFormRoute({_i15.Key? key})
       : super(
           SignupFormRoute.name,
           path: '/signup-form-page',
@@ -200,7 +263,7 @@ class SignupFormRoute extends _i9.PageRouteInfo<SignupFormRouteArgs> {
 class SignupFormRouteArgs {
   const SignupFormRouteArgs({this.key});
 
-  final _i10.Key? key;
+  final _i15.Key? key;
 
   @override
   String toString() {
@@ -211,10 +274,10 @@ class SignupFormRouteArgs {
 /// generated route for
 /// [_i5.GoogleSignUpSetupPage]
 class GoogleSignUpSetupRoute
-    extends _i9.PageRouteInfo<GoogleSignUpSetupRouteArgs> {
+    extends _i14.PageRouteInfo<GoogleSignUpSetupRouteArgs> {
   GoogleSignUpSetupRoute({
-    required _i11.GoogleSignInAccount account,
-    _i10.Key? key,
+    required _i16.GoogleSignInAccount account,
+    _i15.Key? key,
   }) : super(
           GoogleSignUpSetupRoute.name,
           path: '/google-sign-up-setup-page',
@@ -233,9 +296,9 @@ class GoogleSignUpSetupRouteArgs {
     this.key,
   });
 
-  final _i11.GoogleSignInAccount account;
+  final _i16.GoogleSignInAccount account;
 
-  final _i10.Key? key;
+  final _i15.Key? key;
 
   @override
   String toString() {
@@ -244,20 +307,42 @@ class GoogleSignUpSetupRouteArgs {
 }
 
 /// generated route for
-/// [_i6.HomePage]
-class HomeRoute extends _i9.PageRouteInfo<void> {
-  const HomeRoute()
-      : super(
-          HomeRoute.name,
-          path: '/home-page',
+/// [_i6.ChatPage]
+class ChatRoute extends _i14.PageRouteInfo<ChatRouteArgs> {
+  ChatRoute({
+    _i15.Key? key,
+    required String userame,
+  }) : super(
+          ChatRoute.name,
+          path: '/chat-page',
+          args: ChatRouteArgs(
+            key: key,
+            userame: userame,
+          ),
         );
 
-  static const String name = 'HomeRoute';
+  static const String name = 'ChatRoute';
+}
+
+class ChatRouteArgs {
+  const ChatRouteArgs({
+    this.key,
+    required this.userame,
+  });
+
+  final _i15.Key? key;
+
+  final String userame;
+
+  @override
+  String toString() {
+    return 'ChatRouteArgs{key: $key, userame: $userame}';
+  }
 }
 
 /// generated route for
 /// [_i7.ContactsPage]
-class ContactsRoute extends _i9.PageRouteInfo<void> {
+class ContactsRoute extends _i14.PageRouteInfo<void> {
   const ContactsRoute()
       : super(
           ContactsRoute.name,
@@ -268,35 +353,74 @@ class ContactsRoute extends _i9.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i8.ChatPage]
-class ChatRoute extends _i9.PageRouteInfo<ChatRouteArgs> {
-  ChatRoute({
-    _i10.Key? key,
-    required _i12.User user,
-  }) : super(
-          ChatRoute.name,
-          path: '/chat-page',
-          args: ChatRouteArgs(
-            key: key,
-            user: user,
-          ),
+/// [_i8.ProfilePage]
+class ProfileRoute extends _i14.PageRouteInfo<void> {
+  const ProfileRoute()
+      : super(
+          ProfileRoute.name,
+          path: '/profile-page',
         );
 
-  static const String name = 'ChatRoute';
+  static const String name = 'ProfileRoute';
 }
 
-class ChatRouteArgs {
-  const ChatRouteArgs({
-    this.key,
-    required this.user,
-  });
+/// generated route for
+/// [_i9.VideoCallPage]
+class VideoCallRoute extends _i14.PageRouteInfo<void> {
+  const VideoCallRoute()
+      : super(
+          VideoCallRoute.name,
+          path: '/video-call-page',
+        );
 
-  final _i10.Key? key;
+  static const String name = 'VideoCallRoute';
+}
 
-  final _i12.User user;
+/// generated route for
+/// [_i10.DefaultPage]
+class DefaultRoute extends _i14.PageRouteInfo<void> {
+  const DefaultRoute({List<_i14.PageRouteInfo>? children})
+      : super(
+          DefaultRoute.name,
+          path: '/',
+          initialChildren: children,
+        );
 
-  @override
-  String toString() {
-    return 'ChatRouteArgs{key: $key, user: $user}';
-  }
+  static const String name = 'DefaultRoute';
+}
+
+/// generated route for
+/// [_i11.HomePage]
+class HomeRoute extends _i14.PageRouteInfo<void> {
+  const HomeRoute()
+      : super(
+          HomeRoute.name,
+          path: 'home',
+        );
+
+  static const String name = 'HomeRoute';
+}
+
+/// generated route for
+/// [_i12.CallHistoryPage]
+class CallHistoryRoute extends _i14.PageRouteInfo<void> {
+  const CallHistoryRoute()
+      : super(
+          CallHistoryRoute.name,
+          path: 'call-history',
+        );
+
+  static const String name = 'CallHistoryRoute';
+}
+
+/// generated route for
+/// [_i13.SettingsPage]
+class SettingsRoute extends _i14.PageRouteInfo<void> {
+  const SettingsRoute()
+      : super(
+          SettingsRoute.name,
+          path: 'settings',
+        );
+
+  static const String name = 'SettingsRoute';
 }

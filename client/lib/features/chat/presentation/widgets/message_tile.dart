@@ -1,3 +1,4 @@
+import 'package:client/constance/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -5,39 +6,44 @@ import '../../../../common/entity/message.dart';
 
 class MessageTile extends StatelessWidget {
   final Message onemsg;
-  const MessageTile({
+  MessageTile({
     Key? key,
     required this.onemsg,
   }) : super(key: key);
-
+  late AppConfig _config;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    _config = AppConfig(context);
+    return Card(
         margin: EdgeInsets.only(
-          //if is my message, then it has margin 40 at left
-          left: onemsg.isme ? 40 : 0,
-          right: onemsg.isme ? 0 : 40, //else margin at right
+          top: 10,
+          left: onemsg.isme ? 20 : 0,
+          right: onemsg.isme ? 0 : 20,
         ),
-        child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            color: Colors.red[100],
-            //if its my message then, blue background else red background
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: Text(onemsg.content,
-                        style: const TextStyle(fontSize: 17)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        color: onemsg.isme
+            ? Theme.of(context).focusColor.withOpacity(1)
+            : Theme.of(context).primaryColorLight,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: Text(
+                    onemsg.content,
+                    style: TextStyle(fontSize: _config.smallTextSize),
                   ),
-                  Text(DateFormat.jm().format(onemsg.time),
-                      style: const TextStyle(fontSize: 10)),
-                ],
+                ),
               ),
-            )));
+              Text(DateFormat.jm().format(onemsg.time),
+                  style: TextStyle(fontSize: _config.smallTextSize - 5)),
+            ],
+          ),
+        ));
   }
 }

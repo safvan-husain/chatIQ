@@ -27,7 +27,7 @@ class ChatRepositoryImpl implements ChatRepository {
       return Right(
         await localDataSource.cacheMessage(
           message,
-          to.username,
+          to,
         ),
       );
     } on ServerException {
@@ -42,7 +42,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateLasVisit(User user) async {
-    return Right(await localDataSource.updateLastVisit(user));
+  Future<Either<Failure, void>> updateLasVisit(String userName) async {
+    return Right(await localDataSource.updateLastVisit(userName));
   }
 }

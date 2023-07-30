@@ -12,7 +12,7 @@ abstract class ChatRepository {
 
   ///
   ///returns a [List][Message] for success [Failure] for any error code
-  Future<Either<Failure, void>> updateLasVisit(User user);
+  Future<Either<Failure, void>> updateLasVisit(String userName);
 
   ///post a [Message] to the http://server.com/sendMessage
   ///
@@ -20,6 +20,6 @@ abstract class ChatRepository {
   Future<Either<Failure, Message>> sendMessage(
     Message message,
     String myid,
-    User to,
+    String to,
   );
 }

@@ -5,10 +5,6 @@ import 'package:client/features/Authentication/presentation/cubit/authentication
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../models/user_model.dart';
-import '../../../../../provider/user_provider.dart';
 
 class LoginFormPage extends StatelessWidget {
   LoginFormPage({super.key});
@@ -23,14 +19,8 @@ class LoginFormPage extends StatelessWidget {
         child: BlocListener<AuthenticationCubit, AuthenticationState>(
           listener: (context, state) {
             if (state.authState == AuthState.authenticated) {
-              Provider.of<UserProvider>(context, listen: false).setUser(User(
-                id: state.user!.email,
-                username: state.user!.username,
-                email: state.user!.email,
-                isOnline: true,
-              ));
               context.router.pushAndPopUntil(
-                const HomeRoute(),
+                const DefaultRoute(),
                 predicate: (route) => false,
               );
               log('uth');

@@ -8,14 +8,15 @@ import 'package:client/core/error/exception.dart';
 import 'package:client/features/home/data/models/user_model.dart';
 
 import '../../../../constance/constant_variebles.dart';
-import '../../domain/entities/user.dart';
+import '../../domain/entities/contact.dart';
+import '../models/contact_model.dart';
 
 abstract class HomeRemoteDataSource {
   final http.Client client;
   HomeRemoteDataSource({
     required this.client,
   });
-  Future<List<User>> getAllPeople({required String token});
+  Future<List<Contact>> getAllPeople({required String token});
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
@@ -23,7 +24,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
 
   HomeRemoteDataSourceImpl({required super.client});
   @override
-  Future<List<User>> getAllPeople({required String token}) async {
+  Future<List<Contact>> getAllPeople({required String token}) async {
     http.Response response = await client.get(
       Uri.parse('$uri/get-data/all-user'),
       headers: <String, String>{
@@ -32,13 +33,13 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       },
     );
     if (response.statusCode == 200) {
-      List<User> chats = [];
+      List<Contact> contacts = [];
       List<dynamic> decodedUsers = jsonDecode(response.body);
       for (int i = 0; i < decodedUsers.length; i++) {
-        chats.add(UserModel.fromApiMap(decodedUsers[i]));
+        contacts.add(ContactModel.fromMap(decodedUsers[i]));
       }
 
-      return chats;
+      return contacts;
     } else {
       log("${response.statusCode} from home remote ");
       throw ServerException();

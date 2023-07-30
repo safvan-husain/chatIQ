@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:client/local_database/message_schema.dart';
 import 'package:client/features/home/presentation/widgets/user_tile.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,7 @@ class UserWrapper extends StatelessWidget {
         onTap: () {
           context.router.push(
             ChatRoute(
-              user: user,
+              userame: user.username,
             ),
           );
         },

@@ -5,15 +5,13 @@ import 'package:dartz/dartz.dart';
 import 'package:client/core/error/failure.dart';
 import 'package:client/core/usecases/use_case.dart';
 
-import '../../../home/domain/entities/user.dart';
-
-class UpdateLastVisit extends UseCase<void, User> {
+class UpdateLastVisit extends UseCase<void, String> {
   final ChatRepository chatRepository;
   UpdateLastVisit({
     required this.chatRepository,
   });
   @override
-  Future<Either<Failure, void>> call(User user) {
-    return chatRepository.updateLasVisit(user);
+  Future<Either<Failure, void>> call(String userName) {
+    return chatRepository.updateLasVisit(userName);
   }
 }

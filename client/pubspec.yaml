@@ -35,16 +35,22 @@ dependencies:
   web_socket_channel: ^2.3.0
   sqflite:
   flutter_simple_dependency_injection:
+  salomon_bottom_bar: ^3.3.2
+  socket_io_client: ^1.0.2
+  search_page: ^2.3.0
+  font_awesome_flutter: ^9.0.0
+  sizer: ^2.0.15
+  flutter_webrtc:
+  sdp_transform:
 
 dev_dependencies:
-  auto_route_generator: ^5.0.3
-  build_runner: ^2.3.3
-  drift_dev: ^2.5.1
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+  auto_route_generator: ^5.0.3
+  build_runner: ^2.3.3
+  drift_dev: ^2.5.1
   mockito: ^5.4.0
-  socket_io_client: ^1.0.2
 
 flutter:
   uses-material-design: true

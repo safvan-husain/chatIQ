@@ -27,7 +27,7 @@ class SendMessage extends UseCase<Message, SendMessageParams> {
 class SendMessageParams extends Params {
   final Message message;
   final String myid;
-  final User to;
+  final String to;
 
   SendMessageParams(this.message, this.myid, this.to);
 }

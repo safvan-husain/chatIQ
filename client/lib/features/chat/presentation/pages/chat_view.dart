@@ -3,26 +3,25 @@
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:client/constance/app_config.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:multiavatar/multiavatar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
-import 'package:client/provider/unread_messages.dart';
 import 'package:client/utils/show_avatar.dart';
 
-import '../../../../pages/profile/avatar/svg_rapper.dart';
-import '../../../home/domain/entities/user.dart';
 import '../widgets/chat_view_area.dart';
 import '../widgets/input_area.dart';
 
 class ChatPage extends StatefulWidget {
-  final User user;
+  final String userame;
   const ChatPage({
     Key? key,
-    required this.user,
+    required this.userame,
   }) : super(key: key);
 
   @override
@@ -32,6 +31,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   late bool isThisFirstCall;
   DrawableRoot? svgRoot;
+  late AppConfig _config;
 
   // _generateSvg(String? svgCode) async {
   //   svgCode ??= multiavatar(widget.user.username);
@@ -45,19 +45,22 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     isThisFirstCall = true;
-    context.read<ChatBloc>().add(ShowChatEvent(chatId: widget.user.username));
+    context.read<ChatBloc>().add(ShowChatEvent(chatId: widget.userame));
+
     // _generateSvg(widget.user.avatar);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _config = AppConfig(context);
     return WillPopScope(
         onWillPop: () async {
-          log(widget.user.id.toString());
           context.router
-              .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
-          context.read<ChatBloc>().add(UpdateLastVisitEvent(user: widget.user));
+              .pushAndPopUntil(const DefaultRoute(), predicate: (_) => false);
+          context
+              .read<ChatBloc>()
+              .add(UpdateLastVisitEvent(userName: widget.userame));
           return true;
         },
         child: Scaffold(
@@ -65,7 +68,7 @@ class _ChatPageState extends State<ChatPage> {
           appBar: _buildAppBar(),
           body: Stack(
             children: [
-              const Positioned(
+              Positioned(
                 top: 0,
                 bottom: 70,
                 left: 0,
@@ -94,31 +97,53 @@ class _ChatPageState extends State<ChatPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
+      leadingWidth: _config.rW(9),
       elevation: 0,
-      title: Row(
-        children: [
-          Text(widget.user.username),
-        ],
+      title: FittedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            svgRoot == null
+                ? Padding(
+                    padding: EdgeInsets.only(right: _config.rWP(1)),
+                    child: const CircleAvatar(),
+                  )
+                : Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: showAvatar(svgRoot!, 0),
+                  ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                widget.userame,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: _config.rW(5)),
+              ),
+            ),
+          ],
+        ),
       ),
-      leading: svgRoot == null
-          ? const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: showAvatar(svgRoot!, 0)),
+      leading: const Icon(Icons.arrow_back_ios_outlined),
       titleSpacing: 0,
       actions: [
-        PopupMenuButton(
-            icon: const Icon(
-              Icons.more_vert,
+        FaIcon(
+          FontAwesomeIcons.video,
+          size: _config.rW(5),
+        ),
+        FaIcon(
+          FontAwesomeIcons.bars,
+          size: _config.rW(5),
+        ),
+      ]
+          .map(
+            (i) => Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all(5),
+              child: i,
             ),
-            itemBuilder: (ctx) => [
-                  _buildPopupItem('clear chat', () {}),
-                  _buildPopupItem('Block', () {}),
-                ])
-      ],
+          )
+          .toList(),
     );
   }
 }

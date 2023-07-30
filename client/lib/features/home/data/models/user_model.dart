@@ -24,7 +24,7 @@ class UserModel extends User {
     return UserModel(
       username: map['user_name'] as String,
       lastMessage: lastMessage,
-      lastSeenMessageId: map['last_seen_message'] as int,
+      lastSeenMessageId: map['last_seen_message'] as int?,
       id: map['id'] as int,
     );
   }

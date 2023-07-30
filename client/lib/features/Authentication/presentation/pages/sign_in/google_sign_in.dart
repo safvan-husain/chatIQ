@@ -1,14 +1,12 @@
 import 'package:client/constance/full_width_button.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
-import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:provider/provider.dart';
 
-import '../../../../../services/google_auth_services.dart';
+import '../../../data/repositories/google_auth_services.dart';
 
 class GoogleSignInPage extends StatefulWidget {
   const GoogleSignInPage({super.key});
@@ -43,7 +41,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
       listener: (context, state) {
         if (state.authState == AuthState.authenticated) {
           context.router.pushAndPopUntil(
-            const HomeRoute(),
+            const DefaultRoute(),
             predicate: (state) => false,
           );
         }
@@ -78,7 +76,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                   onPress: () => context.router.push(LoginFormRoute())),
               TextButton(
                 onPressed: () {
-                  context.router.push(GoogleSignUpRoute());
+                  context.router.push(const GoogleSignUpRoute());
                 },
                 child: const Text('Don\'t have an account? Sign Up'),
               )

@@ -3,6 +3,7 @@ import 'package:client/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../presentation/cubit/home_cubit.dart';
+import '../entities/contact.dart';
 import '../entities/user.dart';
 
 abstract class HomeRepository {
@@ -14,12 +15,12 @@ abstract class HomeRepository {
   ///Reaching out http://server.com/
   ///
   ///for victory  list of [User], but beware of the cheeky [Failure]
-  Future<Either<Failure, List<User>>> getAllPeople({required String token});
+  Future<Either<Failure, List<Contact>>> getAllPeople({required String token});
 
   ///list of [User] wating to be found in the cache who user chatted with
   ///
   ///for victory  list of [User], but beware of the cheeky [Failure]
-  Future<Either<Failure, List<User>>> getLocalChats();
+  Future<Either<Failure, List<NewMessages>>> getLocalChats();
 
   ///wanna cache a message to the storage? perfect!
   ///

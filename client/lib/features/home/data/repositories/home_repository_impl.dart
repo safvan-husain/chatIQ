@@ -10,6 +10,7 @@ import 'package:client/platform/network_info.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../common/entity/message.dart';
+import '../../domain/entities/contact.dart';
 import '../../domain/repositories/home_repositoy.dart';
 import '../../presentation/cubit/home_cubit.dart';
 
@@ -23,9 +24,9 @@ class HomeRepositoryImpl extends HomeRepository {
     required this.remoteDataSource,
   });
   @override
-  Future<Either<Failure, List<User>>> getAllPeople(
+  Future<Either<Failure, List<Contact>>> getAllPeople(
       {required String token}) async {
-    List<User> users = [];
+    List<Contact> users = [];
     if (await networkInfo.isConnected) {
       try {
         users.addAll(await remoteDataSource.getAllPeople(token: token));
@@ -49,7 +50,7 @@ class HomeRepositoryImpl extends HomeRepository {
   }
 
   @override
-  Future<Either<Failure, List<User>>> getLocalChats() async {
+  Future<Either<Failure, List<NewMessages>>> getLocalChats() async {
     try {
       return Right(await localDataSource.getChats());
     } on CacheException {

@@ -3,13 +3,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:client/models/user_model.dart';
 import 'package:client/pages/profile/profile_view_model.dart';
-import 'package:client/provider/user_provider.dart';
-import 'package:client/routes/router.gr.dart';
 import 'package:client/utils/show_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:multiavatar/multiavatar.dart';
-import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 
 import 'avatar/svg_rapper.dart';
@@ -40,11 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void assign() {
-    user = Provider.of<UserProvider>(context).user;
-    username_controller.text = user.username;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -52,9 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void didChangeDependencies() {
-    assign();
     super.didChangeDependencies();
-    _generateSvg(context.read<UserProvider>().user.avatar);
   }
 
   @override

@@ -13,13 +13,13 @@ class ChatRemoteDataSource {
   Future<bool> sendMessage(
     Message message,
     String myid,
-    User to,
+    String to,
   ) async {
     WebSocketHelper webSocketHelper = WSInjection.injector.get();
     webSocketHelper.channel.sink.add(WSEvent(
       'send',
       myid,
-      to.username,
+      to,
       message.content,
       message.time,
     ).toJson());

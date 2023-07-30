@@ -1,27 +1,37 @@
+import 'dart:developer';
+
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'message_tile.dart';
 
 class ChatViewArea extends StatelessWidget {
-  const ChatViewArea({
+  ChatViewArea({
     Key? key,
   }) : super(key: key);
-
+  final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Scroll to the beginning of the ListView (bottom of the original list)
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
     return BlocConsumer<ChatBloc, ChatState>(
       builder: (context, state) {
         return Container(
           padding: const EdgeInsets.all(15),
-          child: SingleChildScrollView(
-            reverse: true,
-            child: Column(
-              children: state.messages.map((onemsg) {
-                return MessageTile(onemsg: onemsg);
-              }).toList(),
-            ),
+          child: ListView(
+            controller: _scrollController,
+            dragStartBehavior: DragStartBehavior.down,
+            children: state.messages
+                .map((i) => Align(
+                      alignment:
+                          i.isme ? Alignment.bottomRight : Alignment.topLeft,
+                      child: MessageTile(onemsg: i),
+                    ))
+                .toList(),
           ),
         );
       },

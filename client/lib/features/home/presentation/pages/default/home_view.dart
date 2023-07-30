@@ -6,18 +6,17 @@ import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
+import 'package:client/features/home/presentation/widgets/user_tile.dart';
 import 'package:client/features/home/presentation/widgets/user_wrapper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:web_socket_channel/io.dart';
 
-import 'package:client/provider/unread_messages.dart';
 import 'package:client/routes/router.gr.dart';
-import 'package:client/services/get_data_services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../../common/entity/message.dart';
-import '../../../../../models/user_model.dart';
+import '../../../../../common/widgets/second_coustom.dart';
 import '../../../../../services/push_notification_services.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,11 +27,6 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  late IOWebSocketChannel channel; //channel varaible for websocket
-  List<Message> allMessages = [];
-  List<User> userList = [];
-  GetDataService getData = GetDataService();
-
   @override
   void initState() {
     context.read<HomeCubit>().getChats();
@@ -48,11 +42,7 @@ class HomePageState extends State<HomePage> {
       log('onmsg');
       bool canIshow = true;
       (message.data.forEach((key, value) {
-        if (key == "reciever") {
-          if (value == context.read<Unread>().currentChat) {
-            canIshow = false;
-          }
-        }
+        if (key == "reciever") {}
       }));
       if (canIshow) showFlutterNotification(message);
     });
@@ -70,69 +60,144 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => context.router.push(const ContactsRoute()),
-        ),
-        appBar: _buildAppBar(context),
-        body: BlocConsumer<HomeCubit, HomeState>(
-          listener: (context, state) {
-            if (state is HomeLogOut) {
-              context.router.pushAndPopUntil(const GoogleSignInRoute(),
-                  predicate: (_) => false);
-            }
-          },
-          buildWhen: (previous, current) => current is HomeStateImpl,
-          builder: (context, state) {
-            return ListView.builder(
-              itemCount: state.chats.length,
-              itemBuilder: (context, index) {
-                return UserWrapper(
-                  user: state.chats.elementAt(index),
-                  index: index,
-                  newMessageCount: 2,
-                );
-              },
-            );
-          },
-        ));
-  }
-
-  _buildAppBar(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size(double.infinity, 40),
-      child: AppBar(
-        title: const Text(
-          "Messenger",
-          style: TextStyle(color: Colors.blueGrey),
-        ),
-        elevation: 0,
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(
-              Icons.more_vert,
-            ),
-            itemBuilder: (ctx) => [
-              _buildPopupItem('search', () {}),
-              _buildPopupItem(
-                'settings',
-                () {},
-              ),
-              _buildPopupItem(
-                'Log out',
-                () => context.read<HomeCubit>().logOut(),
-              ),
-            ],
-          )
-        ],
-      ),
+    return BlocConsumer<HomeCubit, HomeState>(
+      listener: (context, state) {
+        if (state is HomeLogOut) {
+          context.router.pushAndPopUntil(const GoogleSignInRoute(),
+              predicate: (_) => false);
+        }
+      },
+      buildWhen: (previous, current) => current is HomeStateImpl,
+      builder: (context, state) {
+        return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            child: const FaIcon(FontAwesomeIcons.users),
+            onPressed: () {
+              context.router.popUntilRoot();
+              context.navigateTo(const ContactsRoute());
+            },
+          ),
+          appBar: _builtAppBar(context, state.newMessages),
+          body: ListView.builder(
+            itemCount: state.newMessages.length,
+            itemBuilder: (context, index) {
+              return UserWrapper(
+                user: state.newMessages.elementAt(index).user,
+                index: index,
+                newMessageCount: 2,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
-  PopupMenuItem _buildPopupItem(String action, VoidCallback onTap) {
-    return PopupMenuItem(
-      onTap: onTap,
-      child: Text(action),
+  PreferredSizeWidget _builtAppBar(
+      BuildContext context, List<NewMessages> people) {
+    return PreferredSize(
+      preferredSize: const Size(double.infinity, 50.0),
+      child: AppBar(
+        elevation: 0.0,
+        title: const Text('New friends'),
+        actions: [
+          InkWell(
+            child: const Icon(Icons.search),
+            onTap: () => showSearchForCustomiseSearchDelegate<NewMessages>(
+              context: context,
+              delegate: SearchScreen<NewMessages>(
+                itemStartsWith: true,
+                hintText: 'search here',
+                items: people,
+                filter: (t) => [t.user.username],
+                builder: (t) => UserTile(
+                  user: t.user,
+                  newMessageCount: t.messageCount,
+                ),
+                failure: const Center(
+                  child: Text('No Possible result found'),
+                ),
+                appBarBuilder:
+                    (controller, onSubmitted, textInputAction, focusNode) {
+                  return PreferredSize(
+                    preferredSize: const Size(double.infinity, 60.0),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColorLight,
+                                    border: Border.all(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(30)),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 10,
+                                          left: 10,
+                                        ),
+                                        child: TextField(
+                                          focusNode: focusNode,
+                                          controller: controller,
+                                          textInputAction: textInputAction,
+                                          keyboardType: TextInputType.text,
+                                          onSubmitted: onSubmitted,
+                                          decoration: const InputDecoration(
+                                            hintText: '',
+                                            border: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                        onTap: () =>
+                                            onSubmitted!(controller.text),
+                                        child: const Icon(Icons.search))
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            InkWell(
+                              onTap: () {
+                                controller.text = "";
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.black12,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(1),
+                                  child: CircleAvatar(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColorLight,
+                                    child: const Icon(
+                                      Icons.cancel_outlined,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

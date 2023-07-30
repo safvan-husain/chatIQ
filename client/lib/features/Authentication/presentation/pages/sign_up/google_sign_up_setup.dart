@@ -1,7 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../../../../routes/router.gr.dart';
 
 class GoogleSignUpSetupPage extends StatelessWidget {
   final GoogleSignInAccount account;
@@ -15,7 +18,19 @@ class GoogleSignUpSetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) {
-        // TODO: implement listener
+        if (state.authState == AuthState.authenticated) {
+          context.router.pushAndPopUntil(
+            const DefaultRoute(),
+            predicate: (route) => false,
+          );
+          if (state.authState == AuthState.unauthenticated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Unauthenticated.'),
+              ),
+            );
+          }
+        }
       },
       child: Scaffold(
           body: Center(

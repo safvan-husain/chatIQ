@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../common/entity/message.dart';
+import '../../../../constance/app_config.dart';
 import '../pages/chat_view.dart';
 
 class InputArea extends StatelessWidget {
@@ -13,27 +14,43 @@ class InputArea extends StatelessWidget {
   });
 
   final ChatPage widget;
+  late AppConfig _config;
   final TextEditingController msgtext = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    _config = AppConfig(context);
     return Container(
-      color: Colors.black12,
-      height: 70,
+      margin: const EdgeInsets.all(10),
+      height: _config.rH(7),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
       child: Row(
         children: [
           Expanded(
               child: Container(
-            margin: const EdgeInsets.all(10),
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.only(left: 15),
             child: TextField(
               textInputAction: TextInputAction.send,
               controller: msgtext,
-              decoration: const InputDecoration(hintText: "Enter your Message"),
+              decoration: InputDecoration(
+                hintText: "Enter your Message",
+                hintStyle: TextStyle(fontSize: _config.rW(3)),
+                border: InputBorder.none,
+              ),
             ),
           )),
           Container(
             margin: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              child: const Icon(Icons.send),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            alignment: Alignment.center,
+            child: IconButton(
+              icon: const Icon(Icons.send),
               onPressed: () {
                 context.read<ChatBloc>().add(
                       SendMessageEvent(
@@ -48,7 +65,7 @@ class InputArea extends StatelessWidget {
                             .state
                             .user!
                             .username,
-                        to: widget.user,
+                        to: widget.userame,
                       ),
                     );
                 msgtext.text = "";

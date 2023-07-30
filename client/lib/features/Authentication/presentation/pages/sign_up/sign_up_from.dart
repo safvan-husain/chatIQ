@@ -2,20 +2,16 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
-import 'package:client/models/user_model.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../provider/user_provider.dart';
 
 class SignupFormPage extends StatelessWidget {
   SignupFormPage({super.key});
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _ConfirmPasswordController =
+  final TextEditingController _confirmPasswordController =
       TextEditingController();
 
   @override
@@ -25,14 +21,8 @@ class SignupFormPage extends StatelessWidget {
         child: BlocListener<AuthenticationCubit, AuthenticationState>(
           listener: (context, state) {
             if (state.authState == AuthState.authenticated) {
-              Provider.of<UserProvider>(context, listen: false).setUser(User(
-                id: state.user!.email,
-                username: state.user!.username,
-                email: state.user!.email,
-                isOnline: true,
-              ));
               context.router.pushAndPopUntil(
-                const HomeRoute(),
+                const DefaultRoute(),
                 predicate: (route) => false,
               );
               log('uth');
@@ -89,7 +79,7 @@ class SignupFormPage extends StatelessWidget {
             },
           ),
           TextFormField(
-            controller: _ConfirmPasswordController,
+            controller: _confirmPasswordController,
             decoration: const InputDecoration(
               labelText: 'Confirm Password',
             ),

@@ -3,28 +3,20 @@ part of 'home_cubit.dart';
 
 //refactornot try to use object key-value insted of this classs
 class NewMessages {
-  final int chatId;
+  User user;
   late int messageCount;
   NewMessages({
-    required this.chatId,
+    required this.user,
     required this.messageCount,
   });
-  factory NewMessages.fromMap(Map<String, dynamic> map) {
-    return NewMessages(
-      chatId: map['chatId'] as int,
-      messageCount: map['messageCount'] as int,
-    );
-  }
 }
 
 abstract class HomeState extends Equatable {
-  final List<User>? contacts;
-  final List<User> chats;
+  final List<Contact>? contacts;
   List<NewMessages> newMessages;
   final DateTime time = DateTime.now();
 
   HomeState({
-    required this.chats,
     this.contacts,
     this.newMessages = const [],
   });
@@ -35,28 +27,22 @@ abstract class HomeState extends Equatable {
 
 class HomeStateImpl extends HomeState {
   HomeStateImpl({
-    required super.chats,
     super.newMessages = const [],
   });
 }
 
 class ContactStateImpl extends HomeState {
-  ContactStateImpl({
-    required super.chats,
-    required super.contacts,
-  });
+  ContactStateImpl({required super.contacts, super.newMessages});
 }
 
 class NewMessageState extends HomeState {
   NewMessageState({
-    required super.chats,
     required super.newMessages,
   });
 }
 
 class HomeLogOut extends HomeState {
   HomeLogOut({
-    super.chats = const [],
     super.contacts = const [],
   });
 }

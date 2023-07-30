@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 
 ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    visualDensity: const VisualDensity(vertical: 0.5, horizontal: 0.5),
-    // primarySwatch: const MaterialColor(
-    //   0xFFF5E0C3,
-    //   <int, Color>{
-    //     50: Color(0x1aF5E0C3),
-    //     100: Color(0xa1F5E0C3),
-    //     200: Color(0xaaF5E0C3),
-    //     300: Color(0xafF5E0C3),
-    //     400: Color(0xffF5E0C3),
-    //     500: Color(0xffEDD5B3),
-    //     600: Color(0xffDEC29B),
-    //     700: Color(0xffC9A87C),
-    //     800: Color(0xffB28E5E),
-    //     900: Color(0xff936F3E)
-    //   },
-    // ),
-    primarySwatch: Colors.blue,
-    primaryColor: const Color.fromARGB(255, 199, 199, 198),
-    primaryColorLight: const Color(0x1aF5E0C3),
-    primaryColorDark: const Color(0xff936F3E),
-    canvasColor: const Color(0xffE09E45),
-    scaffoldBackgroundColor: const Color.fromARGB(226, 255, 255, 255),
-    cardColor: const Color.fromARGB(255, 253, 253, 253),
-    dividerColor: const Color(0x1f6D42CE),
-    focusColor: const Color(0x1aF5E0C3));
+  brightness: Brightness.light,
+  visualDensity: const VisualDensity(vertical: 0.5, horizontal: 0.5),
+  primarySwatch: const MaterialColor(
+    0xFFE0E0E0, // Set the primary color to white
+    <int, Color>{
+      50: Color(0xFFFAFAFA),
+      100: Color(0xFFF5F5F5),
+      200: Color(0xFFEAEAEA),
+      300: Color(0xFFE0E0E0),
+      400: Color(0xFFD6D6D6),
+      500: Color(0xFFCCCCCC),
+      600: Color(0xFFC2C2C2),
+      700: Color(0xFFB8B8B8),
+      800: Color(0xFFADADAD),
+      900: Color(0xFFA3A3A3),
+    },
+  ),
+  primaryColorLight: const Color.fromARGB(224, 247, 246, 246),
+  primaryColorDark: const Color.fromARGB(255, 131, 130, 128),
+  canvasColor: const Color.fromARGB(255, 243, 240, 236),
+  scaffoldBackgroundColor: const Color.fromARGB(224, 247, 246, 246),
+  dividerColor: const Color(0x1f6D42CE),
+  focusColor: const Color.fromARGB(255, 103, 151, 239),
+  splashColor: Color.fromARGB(255, 31, 106, 245),
+);
 
 ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,

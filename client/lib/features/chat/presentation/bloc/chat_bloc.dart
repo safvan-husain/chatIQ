@@ -50,7 +50,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
     on<UpdateLastVisitEvent>(
       (event, emit) async {
-        var result = await updateLastVisit.call(event.user);
+        var result = await updateLastVisit.call(event.userName);
         result.fold((l) {
           emit(const ChatFailure());
         }, (r) {
