@@ -3,11 +3,13 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/core/Injector/ws_injector.dart';
+import 'package:client/core/websocket/ws_event.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/features/home/presentation/widgets/user_tile.dart';
 import 'package:client/features/home/presentation/widgets/user_wrapper.dart';
+import 'package:client/features/video_call/presentation/bloc/video_call_bloc.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,11 +33,26 @@ class HomePageState extends State<HomePage> {
   void initState() {
     context.read<HomeCubit>().getChats();
     WSInjection.initInjection(
-      context.read<AuthenticationCubit>().state.user!.username,
-      (Message message, String from) async {
+      myid: context.read<AuthenticationCubit>().state.user!.username,
+      onMessage: (Message message, String from) async {
+        log('new mwssage home');
         await context.read<HomeCubit>().cachedMessage(message, from);
         // await context.read<HomeCubit>().newMessage(r);
         context.read<ChatBloc>().add(ShowChatEvent(chatId: from));
+      },
+      onCall: (WSEvent event) {
+        if (event.eventName == "offer") {
+          log('offer');
+          context.router
+              .push(VideoCallRoute(recieverName: event.senderUsername));
+          context.read<VideoCallBloc>().add(ResponseCallEvent(event));
+        }
+      },
+      onAnswer: (event) {
+        context.read<VideoCallBloc>().add(ResponseAnswerEvent(event));
+      },
+      onCandidate: (event) {
+        context.read<VideoCallBloc>().add(CandidateEvent(event));
       },
     );
     FirebaseMessaging.onMessage.listen((message) {
@@ -195,6 +212,10 @@ class HomePageState extends State<HomePage> {
                 },
               ),
             ),
+          ),
+          InkWell(
+            onTap: () => context.read<HomeCubit>().logOut(),
+            child: const Icon(Icons.logout_outlined),
           )
         ],
       ),

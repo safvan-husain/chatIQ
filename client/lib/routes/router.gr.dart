@@ -106,9 +106,13 @@ class AppRouter extends _i14.RootStackRouter {
       );
     },
     VideoCallRoute.name: (routeData) {
+      final args = routeData.argsAs<VideoCallRouteArgs>();
       return _i14.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: const _i9.VideoCallPage(),
+        child: _i9.VideoCallPage(
+          key: args.key,
+          recieverName: args.recieverName,
+        ),
       );
     },
     DefaultRoute.name: (routeData) {
@@ -366,14 +370,36 @@ class ProfileRoute extends _i14.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i9.VideoCallPage]
-class VideoCallRoute extends _i14.PageRouteInfo<void> {
-  const VideoCallRoute()
-      : super(
+class VideoCallRoute extends _i14.PageRouteInfo<VideoCallRouteArgs> {
+  VideoCallRoute({
+    _i15.Key? key,
+    required String recieverName,
+  }) : super(
           VideoCallRoute.name,
           path: '/video-call-page',
+          args: VideoCallRouteArgs(
+            key: key,
+            recieverName: recieverName,
+          ),
         );
 
   static const String name = 'VideoCallRoute';
+}
+
+class VideoCallRouteArgs {
+  const VideoCallRouteArgs({
+    this.key,
+    required this.recieverName,
+  });
+
+  final _i15.Key? key;
+
+  final String recieverName;
+
+  @override
+  String toString() {
+    return 'VideoCallRouteArgs{key: $key, recieverName: $recieverName}';
+  }
 }
 
 /// generated route for

@@ -29,15 +29,46 @@ function onWebSocket(wss) {
             }
         }
         ws.on("message", (message) => __awaiter(this, void 0, void 0, function* () {
-            var ws_event = ws_event_1.WSEvent.fromJson(message.toString());
-            console.log(ws_event.message);
-            var reciever = webSockets[ws_event.recieverUsername];
-            if (reciever != null) {
-                var response = ws_event.toJson("message");
-                reciever.send(response);
+            if (message.toString()[0] === "{") {
+                var ws_event = ws_event_1.WSEvent.fromJson(message.toString());
+                // console.log(ws_event.message);
+                var reciever = webSockets[ws_event.recieverUsername];
+                if (reciever != null) {
+                    console.log(`${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`);
+                    if (ws_event.eventName == "message") {
+                        var response = ws_event.toJson("message");
+                        reciever.send(response);
+                    }
+                    else if (ws_event.eventName == "offer") {
+                        var response = ws_event.toJson("offer");
+                        // console.log(response);
+                        webSockets[ws_event.recieverUsername].send(response);
+                        // for (const userID in webSockets) {
+                        //   //sending to every client in the network
+                        //   webSockets[userID].send(response);
+                        // }
+                    }
+                    else if (ws_event.eventName == "answer") {
+                        var response = ws_event.toJson("answer");
+                        // console.log(response);
+                        webSockets[ws_event.recieverUsername].send(response);
+                        // for (const userID in webSockets) {
+                        //   //sending to every client in the network
+                        //   webSockets[userID].send(response);
+                        // }
+                    }
+                    else if (ws_event.eventName === "candidate") {
+                        var response = ws_event.toJson("candidate");
+                        // console.log(response);
+                        webSockets[ws_event.recieverUsername].send(response);
+                    }
+                }
+                else {
+                    console.log(`${ws_event.recieverUsername} is not online`);
+                }
             }
             else {
-                console.log(`${ws_event.recieverUsername} is not online`);
+                console.log(message.toString());
             }
         }));
         ws.on("close", function () {

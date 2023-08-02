@@ -13,19 +13,33 @@ class WebSocketHelper {
   factory WebSocketHelper() => _instance;
   late IOWebSocketChannel _channel;
   IOWebSocketChannel get channel => _channel;
-  initSocket(myid, void Function(Message, String) onMessage) {
+  initSocket({
+    required myid,
+    required void Function(Message, String) onMessage,
+    required void Function(WSEvent) onCall,
+    required void Function(WSEvent) onAnswer,
+    required void Function(WSEvent) onCandidate,
+  }) {
     try {
       log('connecting websocket with $myid');
       _channel = IOWebSocketChannel.connect("ws://$ipAddress:3000/$myid");
       _channel.stream.listen(
         (message) async {
           if (json.decode(message)['cmd'] != null) {
-            log(message);
+            // log(message);
           } else {
             WSEvent event = WSEvent.fromJson(message);
             if (event.eventName == 'message') {
               onMessage(event.toMessage(), event.senderUsername);
+            } else if (event.eventName == "offer") {
+              log('on offer event');
+              onCall(event);
+            } else if (event.eventName == "answer") {
+              onAnswer(event);
+            } else if (event.eventName == "candidate") {
+              onCandidate(event);
             }
+            // log(event.toJson());
           }
         },
         onDone: () {

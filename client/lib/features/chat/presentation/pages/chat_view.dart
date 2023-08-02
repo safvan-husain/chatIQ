@@ -14,6 +14,8 @@ import 'package:sizer/sizer.dart';
 
 import 'package:client/utils/show_avatar.dart';
 
+import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
+import '../../../video_call/presentation/bloc/video_call_bloc.dart';
 import '../widgets/chat_view_area.dart';
 import '../widgets/input_area.dart';
 
@@ -127,9 +129,23 @@ class _ChatPageState extends State<ChatPage> {
       leading: const Icon(Icons.arrow_back_ios_outlined),
       titleSpacing: 0,
       actions: [
-        FaIcon(
-          FontAwesomeIcons.video,
-          size: _config.rW(5),
+        InkWell(
+          onTap: () {
+            context.router.push(VideoCallRoute(recieverName: widget.userame));
+            context.read<VideoCallBloc>().add(
+                  MakeCallEvent(
+                      recieverName: widget.userame,
+                      my_name: context
+                          .read<AuthenticationCubit>()
+                          .state
+                          .user!
+                          .username),
+                );
+          },
+          child: FaIcon(
+            FontAwesomeIcons.video,
+            size: _config.rW(5),
+          ),
         ),
         FaIcon(
           FontAwesomeIcons.bars,

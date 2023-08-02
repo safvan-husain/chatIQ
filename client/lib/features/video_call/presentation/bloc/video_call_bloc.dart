@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:client/core/websocket/ws_event.dart';
 import 'package:client/features/video_call/domain/usecases/answer_call.dart';
 import 'package:client/features/video_call/domain/usecases/make_call.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
 
+import '../../../../core/Injector/ws_injector.dart';
+import '../../../../core/websocket/websocket_helper.dart';
 import '../../domain/usecases/reject_call.dart';
 
 part 'video_call_event.dart';
@@ -17,20 +20,63 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
   final MakeCall _makeCall;
   final AnswerCall _answerCall;
   final RejectCall _jejectCall;
+  late String caller;
+  final WebSocketHelper _webSocketHelper = WSInjection.injector.get();
   VideoCallBloc(this._makeCall, this._answerCall, this._jejectCall)
-      : super(VideoCallInitial()) {
+      : super(const VideoCallInitial()) {
     on<VideoCallEvent>((event, emit) {
       // TODO: implement event handler
     });
-    on<InitCallEvent>((event, emit) async {
-      await _initRenderer();
-      await _createPeerConnecion();
-      emit(MakeCallState(localVideoRenderer: _localVideoRenderer));
-    });
+    on<MakeCallEvent>(
+      (event, emit) async {
+        log('make call');
+        await _initRenderer();
+        await _createPeerConnecion();
+        _makeVideoCall(event.recieverName, event.my_name);
+        emit(MakeCallState(localVideoRenderer: _localVideoRenderer));
+      },
+    );
+    on<ResponseCallEvent>(
+      (event, emit) async {
+        log('on response');
+        await _initRenderer();
+        await _createPeerConnecion();
+        await _setRemoteDescription(json.encode(event.wsEvent.message));
+        caller = event.wsEvent.senderUsername;
+        _createAnswer(
+          event.wsEvent.senderUsername,
+          event.wsEvent.recieverUsername,
+        );
+        emit(AnswerCallState(
+            localVideoRenderer: _localVideoRenderer,
+            remoteVideoRenderer: _remoteVideoRenderer));
+      },
+    );
+    on<ResponseAnswerEvent>(
+      (event, emit) {
+        log('on answer response');
+        _setRemoteDescription(json.encode(event.wsEvent.message));
+        emit(AnswerCallState(
+            localVideoRenderer: _localVideoRenderer,
+            remoteVideoRenderer: _remoteVideoRenderer));
+        for (String data in candidateList) {
+          _webSocketHelper.channel.sink.add(
+              WSEvent('candidate', 'me', caller, data, DateTime.now())
+                  .toJson());
+        }
+      },
+    );
+    on<CandidateEvent>(
+      (event, emit) {
+        log('candidate event');
+        _addCandidate(event.wsEvent.message);
+      },
+    );
   }
   final _localVideoRenderer = RTCVideoRenderer();
   final _remoteVideoRenderer = RTCVideoRenderer();
   List<String> candidates = [];
+  List<String> candidateList = [];
   bool isConnected = false;
   bool isRemoteSetted = false;
   bool _offer = false;
@@ -38,6 +84,48 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
 
   RTCPeerConnection? _peerConnection;
   late MediaStream _localStream;
+  void _makeVideoCall(String reciever, String sender) async {
+    caller = reciever;
+    _webSocketHelper.channel.sink.add('hi hello');
+    RTCSessionDescription description =
+        await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
+    Map<String, dynamic> session = parse(description.sdp.toString());
+    _offer = true;
+
+    _peerConnection!.setLocalDescription(description);
+    _webSocketHelper.channel.sink.add(
+        WSEvent('offer', sender, reciever, json.encode(session), DateTime.now())
+            .toJson());
+  }
+
+  Future<void> _createAnswer(String reciever, String sender) async {
+    log("creating answer to $reciever");
+    RTCSessionDescription description =
+        await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
+
+    Map<String, dynamic> session = parse(description.sdp.toString());
+
+    _peerConnection!.setLocalDescription(description);
+    _webSocketHelper.channel.sink.add(WSEvent(
+            'answer', sender, reciever, json.encode(session), DateTime.now())
+        .toJson());
+  }
+
+  void _addCandidate(jsonString) async {
+    dynamic session = await jsonDecode(jsonString);
+    if (session is! Map<String, dynamic>) {
+      session = json.decode(session);
+    }
+    // print(session);
+    dynamic candidate = RTCIceCandidate(
+        session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
+    _peerConnection!
+        .addCandidate(candidate)
+        .then((value) => print('candidate added'))
+        .catchError((e) {
+      print('error candidate $e');
+    });
+  }
 
   Future<void> _initRenderer() async {
     eventHandler();
@@ -60,9 +148,13 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
     return stream;
   }
 
-  Future<void> _setRemoteDescription(jsonString) async {
-    dynamic session = await jsonDecode(jsonString);
-
+  Future<void> _setRemoteDescription(String jsonString) async {
+    log('jsonString: $jsonString');
+    dynamic session = json.decode(jsonString);
+    if (session is String) {
+      session = json.decode(session);
+    }
+    log(session is Map<String, dynamic> ? 'session is map' : session);
     String sdp = write(session, null);
 
     RTCSessionDescription description =
@@ -144,10 +236,15 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
           'sdpMid': e.sdpMid.toString(),
           'sdpMlineIndex': e.sdpMLineIndex,
         });
+        if (_offer) {
+          candidateList.add(data);
+        } else {
+          _webSocketHelper.channel.sink.add(
+              WSEvent('candidate', 'me', caller, data, DateTime.now())
+                  .toJson());
+        }
 
         // socketConnection.sent('candidate', data);
-        count = count + 1;
-        log("$count on candidate");
       }
     };
 

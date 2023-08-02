@@ -92,9 +92,10 @@ class HomeCubit extends Cubit<HomeState> {
           }
           return element.user.id == r.user.id;
         })) {
+          log('adding new');
           emit(HomeStateImpl(newMessages: [...state.newMessages, r]));
         }
-        log(state.newMessages[0].messageCount.toString());
+        log(state.newMessages.length.toString());
       },
     );
   }
