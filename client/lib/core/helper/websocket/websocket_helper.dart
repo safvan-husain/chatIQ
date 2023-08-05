@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:client/core/websocket/ws_event.dart';
+import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../../common/entity/message.dart';
-import '../../constance/constant_variebles.dart';
+import '../../../common/entity/message.dart';
+import '../../../constance/constant_variebles.dart';
 
 class WebSocketHelper {
   static final WebSocketHelper _instance = WebSocketHelper.internal();
@@ -19,6 +19,7 @@ class WebSocketHelper {
     required void Function(WSEvent) onCall,
     required void Function(WSEvent) onAnswer,
     required void Function(WSEvent) onCandidate,
+    required void Function(WSEvent) onEnd,
   }) {
     try {
       log('connecting websocket with $myid');
@@ -38,6 +39,8 @@ class WebSocketHelper {
               onAnswer(event);
             } else if (event.eventName == "candidate") {
               onCandidate(event);
+            } else if (event.eventName == "end") {
+              onEnd(event);
             }
             // log(event.toJson());
           }

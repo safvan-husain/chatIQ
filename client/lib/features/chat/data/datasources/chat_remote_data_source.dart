@@ -2,10 +2,10 @@
 // import 'package:http/http.dart' as http;
 
 import 'package:client/common/entity/message.dart';
-import 'package:client/core/websocket/websocket_helper.dart';
+import 'package:client/core/helper/websocket/websocket_helper.dart';
 
 import '../../../../core/Injector/ws_injector.dart';
-import '../../../../core/websocket/ws_event.dart';
+import '../../../../core/helper/websocket/ws_event.dart';
 
 class ChatRemoteDataSource {
   ChatRemoteDataSource();

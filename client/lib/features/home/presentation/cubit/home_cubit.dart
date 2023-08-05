@@ -82,7 +82,9 @@ class HomeCubit extends Cubit<HomeState> {
     var result = await cacheMessage
         .call(CacheMessageParams(message: message, from: from));
     result.fold(
-      (l) {},
+      (l) {
+        log('failure chache message home cubit');
+      },
       (r) {
         if (!state.newMessages.any((element) {
           if (element.user.id == r.user.id) {
@@ -92,7 +94,6 @@ class HomeCubit extends Cubit<HomeState> {
           }
           return element.user.id == r.user.id;
         })) {
-          log('adding new');
           emit(HomeStateImpl(newMessages: [...state.newMessages, r]));
         }
         log(state.newMessages.length.toString());

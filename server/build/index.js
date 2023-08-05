@@ -59,6 +59,14 @@ mongoose_1.default.connect(process.env.MongoUrl, () => {
 });
 const server = app.listen(process.env.PORT, function () {
     console.log("port lisenting on " + process.env.PORT);
+}).on("error", function (err) {
+    process.once("SIGUSR2", function () {
+        process.kill(process.pid, "SIGUSR2");
+    });
+    process.on("SIGINT", function () {
+        // this is only called on ctrl+c, not restart
+        process.kill(process.pid, "SIGINT");
+    });
 });
 const wss = new websocket.Server({ server });
 (0, web_socket_1.onWebSocket)(wss);

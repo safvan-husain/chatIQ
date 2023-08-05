@@ -1,7 +1,7 @@
 import * as websocket from "ws";
 import { Message } from "../model/message_model";
 import UserModel from "../model/user_model";
-import { sendMessage } from "./push_notification";
+import { sendMessage, makeCall } from "./push_notification";
 import { WSEvent } from "./ws_event";
 
 export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
@@ -19,7 +19,7 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
         webSockets[userID].send(
           JSON.stringify({
             cmd: "connected_devices",
-            connected_devices: conected_devices,
+            connected_devices: conected_devices, 
           })
         );
       }
@@ -30,23 +30,26 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
         // console.log(ws_event.message);
         var reciever = webSockets[ws_event.recieverUsername];
         if (reciever != null) {
-          console.log(`${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`);
+          console.log(
+            `${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`
+          );
 
           if (ws_event.eventName == "message") {
+            sendMessage({
+              title: ws_event.senderUsername,
+              body: ws_event.message,
+              username: ws_event.recieverUsername,
+            }); 
             var response: string = ws_event.toJson("message");
             reciever.send(response);
-          } else if (ws_event.eventName == "offer") {
+          } else if (ws_event.eventName == "request") {
+            
+            makeCall(ws_event.recieverUsername, ws_event.senderUsername);
+
+          }  else if (ws_event.eventName == "offer") {
             var response = ws_event.toJson("offer");
-            // console.log(response);
-            webSockets[ws_event.recieverUsername].send(response);
-
-            // for (const userID in webSockets) {
-
-            //   //sending to every client in the network
-            //   webSockets[userID].send(response);
-            // }
-          }
-           else if (ws_event.eventName == "answer") {
+            webSockets[ws_event.recieverUsername].send(response);  
+          } else if (ws_event.eventName == "answer") {
             var response = ws_event.toJson("answer");
             // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
@@ -56,12 +59,24 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
             //   //sending to every client in the network
             //   webSockets[userID].send(response);
             // }
-          } else if(ws_event.eventName === "candidate" ) {
+          } else if (ws_event.eventName === "candidate") {
             var response = ws_event.toJson("candidate");
             // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
           }
-        } else {  
+        } else {
+          if (ws_event.eventName === "message") {
+            console.log(ws_event.message);
+
+            sendMessage({
+              title: ws_event.senderUsername,
+              body: ws_event.message,
+              username: ws_event.recieverUsername,
+            });
+          }else if(ws_event.eventName === "request"){
+            makeCall(ws_event.recieverUsername, ws_event.senderUsername);
+          }
+
           console.log(`${ws_event.recieverUsername} is not online`);
         }
       } else {

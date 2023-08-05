@@ -32,6 +32,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constance/theme.dart';
 import 'core/Injector/injector.dart';
+import 'core/helper/firebase/firebase_background_message_handler.dart';
 import 'features/Authentication/data/datasources/user_local_data_source.dart';
 import 'features/Authentication/data/datasources/user_remote_data_source.dart';
 import 'features/home/data/datasources/home_local_data_source.dart';
@@ -45,12 +46,13 @@ import 'features/video_call/data/datasources/video_call_remote_data_source.dart'
 import 'features/video_call/data/repositories/video_call_repository_impl.dart';
 import 'features/video_call/domain/usecases/make_call.dart';
 import 'features/video_call/presentation/bloc/video_call_bloc.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Injection.initInjection();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp();
+
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   if (!kIsWeb) {
     await setupFlutterNotifications();

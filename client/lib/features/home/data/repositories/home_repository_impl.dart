@@ -62,6 +62,7 @@ class HomeRepositoryImpl extends HomeRepository {
   Future<Either<Failure, NewMessages>> cacheMessage(
       Message message, String from) async {
     try {
+      await localDataSource.cacheFriend(from);
       return Right(await localDataSource.cacheMessage(message, from));
     } on CacheException {
       return Left(CacheFailure());

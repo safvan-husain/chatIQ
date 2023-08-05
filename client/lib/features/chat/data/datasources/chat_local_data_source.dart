@@ -6,7 +6,7 @@ import 'package:client/features/home/domain/entities/user.dart';
 import '../../../../common/entity/message.dart';
 import '../../../../common/model/message_model.dart';
 import '../../../../core/Injector/injector.dart';
-import '../../../../core/database/data_base_helper.dart';
+import '../../../../core/helper/database/data_base_helper.dart';
 import '../../../home/data/models/user_model.dart';
 
 abstract class ChatLocalData {

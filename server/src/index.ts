@@ -30,7 +30,7 @@ app.use(aiRouter);
 app.get("/", (req, res) => {
   res.send("privacy policy");
 });
-
+     
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.MongoUrl!, () => {
   console.log(mongoose.connection.readyState==1? "MongoDB connected!" : "MongoDB Not connected!"); 
@@ -38,6 +38,14 @@ mongoose.connect(process.env.MongoUrl!, () => {
 
 const server = app.listen(process.env.PORT, function () {
   console.log("port lisenting on " + process.env.PORT);
+}).on("error", function (err) {
+  process.once("SIGUSR2", function () {
+    process.kill(process.pid, "SIGUSR2");
+  });
+  process.on("SIGINT", function () {
+    // this is only called on ctrl+c, not restart
+    process.kill(process.pid, "SIGINT");
+  });
 });
 
 const wss = new websocket.Server({ server });

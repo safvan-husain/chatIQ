@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../../../constance/constant_variebles.dart';
 import '../../../../core/error/exception.dart';
 import '../models/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 abstract class UserRemoteDataSource {
   http.Client httpClient;
@@ -35,11 +39,18 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   UserRemoteDataSourceImpl({required super.httpClient});
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   Future<UserModel> getUser(
     String emailorUsername,
     String password,
   ) async {
+    String? token;
+    if (!kIsWeb) {
+      token = await _firebaseMessaging.getToken();
+    }
+
     final http.Response response = await httpClient.post(
       Uri.parse('$uri/auth/sign-in'),
       headers: <String, String>{
@@ -49,6 +60,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       body: jsonEncode({
         'emailorUsername': emailorUsername,
         'password': password,
+        'apptoken': token
       }),
     );
     if (response.statusCode == 200) {
@@ -61,6 +73,10 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
   @override
   Future<UserModel> registerUser(
       String email, String username, String password) async {
+    String? token;
+    if (!kIsWeb) {
+      token = await _firebaseMessaging.getToken();
+    }
     final http.Response response = await httpClient.post(
       Uri.parse('$uri/auth/sign-up'),
       headers: <String, String>{
@@ -71,6 +87,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
         'username': username,
         'password': password,
         'email': email,
+        'apptoken': token,
       }),
     );
     if (response.statusCode == 200) {
@@ -82,6 +99,11 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
 
   @override
   Future<UserModel> getUserWithGoogle(String email) async {
+    String? token;
+    if (!kIsWeb) {
+      token = await _firebaseMessaging.getToken();
+      log("token: $token");
+    }
     final http.Response response = await httpClient.post(
       Uri.parse('$uri/auth/google-in'),
       headers: <String, String>{
@@ -90,6 +112,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       },
       body: jsonEncode({
         'email': email,
+        'apptoken': token,
       }),
     );
     if (response.statusCode == 200) {

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onWebSocket = void 0;
+const push_notification_1 = require("./push_notification");
 const ws_event_1 = require("./ws_event");
 function onWebSocket(wss) {
     var webSockets = {};
@@ -36,17 +37,20 @@ function onWebSocket(wss) {
                 if (reciever != null) {
                     console.log(`${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`);
                     if (ws_event.eventName == "message") {
+                        (0, push_notification_1.sendMessage)({
+                            title: ws_event.senderUsername,
+                            body: ws_event.message,
+                            username: ws_event.recieverUsername,
+                        });
                         var response = ws_event.toJson("message");
                         reciever.send(response);
                     }
+                    else if (ws_event.eventName == "request") {
+                        (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);
+                    }
                     else if (ws_event.eventName == "offer") {
                         var response = ws_event.toJson("offer");
-                        // console.log(response);
                         webSockets[ws_event.recieverUsername].send(response);
-                        // for (const userID in webSockets) {
-                        //   //sending to every client in the network
-                        //   webSockets[userID].send(response);
-                        // }
                     }
                     else if (ws_event.eventName == "answer") {
                         var response = ws_event.toJson("answer");
@@ -64,6 +68,17 @@ function onWebSocket(wss) {
                     }
                 }
                 else {
+                    if (ws_event.eventName === "message") {
+                        console.log(ws_event.message);
+                        (0, push_notification_1.sendMessage)({
+                            title: ws_event.senderUsername,
+                            body: ws_event.message,
+                            username: ws_event.recieverUsername,
+                        });
+                    }
+                    else if (ws_event.eventName === "request") {
+                        (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);
+                    }
                     console.log(`${ws_event.recieverUsername} is not online`);
                 }
             }

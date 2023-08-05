@@ -6,7 +6,7 @@ import { Password } from "../utils/password_hash";
 const router = Router();
 
 router.post("/auth/sign-up",async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, username, password, apptoken } = req.body;
   // console.log(email, username, password);
   const hashedpassword =new Password().hash(password);
   let user = new UserModel({
@@ -14,6 +14,7 @@ router.post("/auth/sign-up",async (req, res) => {
     email: email,
     password:await hashedpassword, 
     isOnline: false,
+    appToken: apptoken
   });
   // console.log(user);
 

@@ -42,6 +42,8 @@ dependencies:
   sizer: ^2.0.15
   flutter_webrtc:
   sdp_transform:
+  flutter_callkit_incoming: ^2.0.0+1
+  uuid:
 
 dev_dependencies:
   flutter_lints: ^2.0.0

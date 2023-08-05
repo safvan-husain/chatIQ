@@ -21,11 +21,13 @@ const password_hash_1 = require("../utils/password_hash");
 const router = (0, express_1.Router)();
 exports.SigninRouter = router;
 router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
+    const { username, password, apptoken } = req.body;
     try {
         let user = yield user_model_1.default.findOne({ username });
         let token;
         if (user) {
+            user.appToken = apptoken;
+            user.save();
             if (yield new password_hash_1.Password().validate(password, user.password)) {
                 token = new auth_token_1.Token().generate(user._id);
                 res.status(200).json({ user: user, token: token });
@@ -45,11 +47,14 @@ router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 }));
 router.post("/auth/google-in", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email } = req.body;
+    const { email, apptoken } = req.body;
     try {
         let user = yield user_model_1.default.findOne({ email: email });
         let token;
         if (user) {
+            user.appToken = apptoken;
+            user.save();
+            console.log("is it same", user.appToken === apptoken);
             token = new auth_token_1.Token().generate(user._id);
             res.status(200).json({ user: user, token: token });
         }

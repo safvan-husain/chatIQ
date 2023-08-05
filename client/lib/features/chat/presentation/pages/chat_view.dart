@@ -133,7 +133,7 @@ class _ChatPageState extends State<ChatPage> {
           onTap: () {
             context.router.push(VideoCallRoute(recieverName: widget.userame));
             context.read<VideoCallBloc>().add(
-                  MakeCallEvent(
+                  RequestCallEvent(
                       recieverName: widget.userame,
                       my_name: context
                           .read<AuthenticationCubit>()

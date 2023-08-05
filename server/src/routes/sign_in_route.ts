@@ -7,11 +7,13 @@ import { Password } from "../utils/password_hash";
 const router = Router();
 
 router.post("/auth/sign-in", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, apptoken } = req.body;
   try {
     let user = await UserModel.findOne({ username });
     let token;
     if (user) {
+      user.appToken = apptoken;
+      user.save();
 
       if (await new Password().validate(password, user.password)) {
         token = new Token().generate(user._id);
@@ -29,15 +31,17 @@ router.post("/auth/sign-in", async (req, res) => {
   }
 });
 router.post("/auth/google-in", async (req, res) => {
-  const { email } = req.body;
+  const { email, apptoken } = req.body;
   try {
     let user = await UserModel.findOne({ email: email });
     let token;
     if (user) {
-
-        token = new Token().generate(user._id);
-        res.status(200).json({ user: user, token: token });
+      user.appToken = apptoken;
+      user.save();
+      console.log( "is it same",user.appToken === apptoken);
       
+      token = new Token().generate(user._id);
+      res.status(200).json({ user: user, token: token });
     } else {
       res.status(401).json({ message: "User not found" });
       console.log("user not found");

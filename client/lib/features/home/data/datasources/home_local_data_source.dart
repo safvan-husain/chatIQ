@@ -7,7 +7,7 @@ import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/Injector/injector.dart';
-import '../../../../core/database/data_base_helper.dart';
+import '../../../../core/helper/database/data_base_helper.dart';
 
 abstract class HomeLocalDataSource {
   ///get all account[User] that user chatted with
@@ -22,6 +22,7 @@ abstract class HomeLocalDataSource {
   ///
   ///for victory [bool], but be redy to catch throwned [CacheException]
   Future<NewMessages> cacheMessage(Message message, String from);
+  Future<void> cacheFriend(String username);
 }
 
 DatabaseHelper databaseHelper = Injection.injector.get();
@@ -78,6 +79,21 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
 
       return NewMessages(user: user, messageCount: newMessagesCount);
     } catch (e) {
+      print(e);
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<void> cacheFriend(String username) async {
+    try {
+      var re = await databaseHelper.db
+          .rawQuery("SELECT * FROM recent_chats WHERE user_name = '$username'");
+      if (re.isEmpty) {
+        await databaseHelper.db.insert('recent_chats', {'user_name': username});
+      }
+    } catch (e) {
+      print(e);
       throw CacheException();
     }
   }

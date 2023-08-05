@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/core/Injector/ws_injector.dart';
-import 'package:client/core/websocket/ws_event.dart';
+import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
@@ -15,11 +15,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:client/routes/router.gr.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../../common/entity/message.dart';
 import '../../../../../common/widgets/second_coustom.dart';
-import '../../../../../services/push_notification_services.dart';
+import '../../../../../core/helper/firebase/firebase_background_message_handler.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,16 +29,23 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    checkAndNavigationCallingPage();
     context.read<HomeCubit>().getChats();
-    WSInjection.initInjection(
+    WSInjection.initWebSocket(
       myid: context.read<AuthenticationCubit>().state.user!.username,
       onMessage: (Message message, String from) async {
         log('new mwssage home');
         await context.read<HomeCubit>().cachedMessage(message, from);
-        // await context.read<HomeCubit>().newMessage(r);
         context.read<ChatBloc>().add(ShowChatEvent(chatId: from));
       },
       onCall: (WSEvent event) {
@@ -54,25 +62,57 @@ class HomePageState extends State<HomePage> {
       onCandidate: (event) {
         context.read<VideoCallBloc>().add(CandidateEvent(event));
       },
+      onEnd: (event) {},
     );
-    FirebaseMessaging.onMessage.listen((message) {
-      log('onmsg');
-      bool canIshow = true;
-      (message.data.forEach((key, value) {
-        if (key == "reciever") {}
-      }));
-      if (canIshow) showFlutterNotification(message);
-    });
+    FirebaseMessaging.onMessage.listen(firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
+      log('A new onMessageOpenedApp event was published!');
     });
 
     super.initState();
   }
 
+  Future<dynamic> getCurrentCall() async {
+    //check current call from pushkit if possible
+    var calls = await FlutterCallkitIncoming.activeCalls();
+    if (calls is List) {
+      if (calls.isNotEmpty) {
+        // _currentUuid = calls[0]['id'];
+        return calls[0];
+      } else {
+        // _currentUuid = "";
+        return null;
+      }
+    }
+  }
+
+  Future<void> checkAndNavigationCallingPage() async {
+    var currentCall = await getCurrentCall();
+    if (currentCall != null) {
+      //making an offer when he accecept the call
+      if (currentCall['accepted'] == true) {
+        log(currentCall['nameCaller']);
+        context.router
+            .push(VideoCallRoute(recieverName: currentCall['nameCaller']));
+        context.read<VideoCallBloc>().add(
+              MakeCallEvent(
+                  recieverName: currentCall['nameCaller'],
+                  my_name:
+                      context.read<AuthenticationCubit>().state.user!.username),
+            );
+      }
+      // NavigationService.instance
+      //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
+    } else {
+      log('no currentcalling');
+    }
+  }
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      checkAndNavigationCallingPage();
+    }
   }
 
   @override

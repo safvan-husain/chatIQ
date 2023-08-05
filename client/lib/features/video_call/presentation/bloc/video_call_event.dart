@@ -10,6 +10,15 @@ abstract class VideoCallEvent extends Equatable {
 
 class InitCallEvent extends VideoCallEvent {}
 
+class RequestCallEvent extends VideoCallEvent {
+  final String recieverName;
+  final String my_name;
+  const RequestCallEvent({
+    required this.recieverName,
+    required this.my_name,
+  });
+}
+
 class MakeCallEvent extends VideoCallEvent {
   final String recieverName;
   final String my_name;
@@ -35,4 +44,13 @@ class CandidateEvent extends VideoCallEvent {
   final WSEvent wsEvent;
 
   const CandidateEvent(this.wsEvent);
+}
+
+class EndCallEvent extends VideoCallEvent {
+  final String myid;
+  final String reciever;
+  const EndCallEvent(
+    this.myid,
+    this.reciever,
+  );
 }
