@@ -9,12 +9,45 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../routes/router.gr.dart';
 import '../bloc/video_call_bloc.dart';
 
-class VideoCallPage extends StatelessWidget {
+class VideoCallPage extends StatefulWidget {
   final String recieverName;
   const VideoCallPage({
     Key? key,
     required this.recieverName,
   }) : super(key: key);
+
+  @override
+  State<VideoCallPage> createState() => _VideoCallPageState();
+}
+
+class _VideoCallPageState extends State<VideoCallPage>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      context.read<VideoCallBloc>().add(EndCallEvent(
+            context.read<AuthenticationCubit>().state.user!.username,
+            widget.recieverName,
+          ));
+      context.router.pushAndPopUntil(
+        const DefaultRoute(),
+        predicate: (_) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +58,54 @@ class VideoCallPage extends StatelessWidget {
       builder: (context, state) {
         if (state is MakeCallState) {
           return Scaffold(
-            body: RTCVideoView(state.localVideoRenderer!),
+            body: Stack(children: [
+              RTCVideoView(
+                state.localVideoRenderer!,
+                mirror: true,
+                objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          context.read<VideoCallBloc>().add(EndCallEvent(
+                                context
+                                    .read<AuthenticationCubit>()
+                                    .state
+                                    .user!
+                                    .username,
+                                widget.recieverName,
+                              ));
+                          context.router.pushAndPopUntil(
+                            const DefaultRoute(),
+                            predicate: (_) => false,
+                          );
+                        },
+                        child: const FaIcon(
+                          FontAwesomeIcons.phoneAlt,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                      ),
+                      const SizedBox(width: 30),
+                      InkWell(
+                        onTap: () {},
+                        child: const FaIcon(
+                          FontAwesomeIcons.microscope,
+                          color: Colors.blue,
+                          size: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ]),
           );
         } else if (state is AnswerCallState) {
           return Scaffold(
@@ -64,7 +144,7 @@ class VideoCallPage extends StatelessWidget {
                                         .state
                                         .user!
                                         .username,
-                                    recieverName,
+                                    widget.recieverName,
                                   ));
                               context.router.pushAndPopUntil(
                                 const DefaultRoute(),

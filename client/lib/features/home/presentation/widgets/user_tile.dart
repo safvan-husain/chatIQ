@@ -1,18 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:developer';
-
 import 'package:client/constance/app_config.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
-import 'package:client/utils/show_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:multiavatar/multiavatar.dart';
 
-import '../../../../pages/profile/avatar/svg_rapper.dart';
 import '../../domain/entities/user.dart';
 
 class UserTile extends StatefulWidget {
@@ -29,14 +24,6 @@ class UserTile extends StatefulWidget {
 
 class _UserTileState extends State<UserTile> {
   DrawableRoot? svgRoot;
-  _generateSvg(String? svgCode) async {
-    svgCode ??= multiavatar(widget.user.username);
-    return SvgWrapper(svgCode).generateLogo().then((value) {
-      setState(() {
-        svgRoot = value!;
-      });
-    });
-  }
 
   late AppConfig _config;
   @override
@@ -56,23 +43,20 @@ class _UserTileState extends State<UserTile> {
             .toList();
         if (s.isEmpty) {
           return ListTile(
-            leading: svgRoot == null
-                ? const CircleAvatar()
-                : showAvatar(svgRoot!, 50),
+            leading: const CircleAvatar(),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   widget.user.username,
-                  style: TextStyle(fontSize: 2),
+                  style: const TextStyle(fontSize: 2),
                 ),
               ],
             ),
           );
         }
         return ListTile(
-          leading:
-              svgRoot == null ? const CircleAvatar() : showAvatar(svgRoot!, 50),
+          leading: const CircleAvatar(),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

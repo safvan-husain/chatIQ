@@ -33,11 +33,12 @@ class WSInjection {
     }
   }
 
-  // static Future initWebRTCPeerConnection() async {
-  //   await _webrtcHelper.createPeerConnecion(_websocketHelper);
-  //   injector = Injector();
-  //   if (!injector.isMapped<WebrtcHelper>()) {
-  //     injector.map<WebrtcHelper>((i) => _webrtcHelper, isSingleton: true);
-  //   }
-  // }
+  static Future initWebRTCPeerConnection() async {
+    final WebrtcHelper webrtcHelper = WebrtcHelper(_websocketHelper);
+    await webrtcHelper.createPeerConnecion();
+    injector = Injector();
+    if (!injector.isMapped<WebrtcHelper>()) {
+      injector.map<WebrtcHelper>((i) => webrtcHelper, isSingleton: true);
+    }
+  }
 }

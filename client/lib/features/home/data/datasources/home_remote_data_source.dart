@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 import 'package:client/core/error/exception.dart';
-import 'package:client/features/home/data/models/user_model.dart';
 
 import '../../../../constance/constant_variebles.dart';
 import '../../domain/entities/contact.dart';

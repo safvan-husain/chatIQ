@@ -5,7 +5,6 @@ import 'package:client/core/error/exception.dart';
 import 'package:client/core/error/failure.dart';
 import 'package:client/features/home/data/datasources/home_local_data_source.dart';
 import 'package:client/features/home/data/datasources/home_remote_data_source.dart';
-import 'package:client/features/home/domain/entities/user.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:dartz/dartz.dart';
 
@@ -36,7 +35,6 @@ class HomeRepositoryImpl extends HomeRepository {
     } else {
       return Left(NetworkFailure());
     }
-    log(users.length.toString());
     return Right(users);
   }
 

@@ -101,8 +101,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       context.read<AuthenticationCubit>().state.user!.username),
             );
       }
-      // NavigationService.instance
-      //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
     } else {
       log('no currentcalling');
     }

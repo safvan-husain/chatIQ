@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:client/constance/app_config.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
@@ -10,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
-
-import 'package:client/utils/show_avatar.dart';
 
 import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
 import '../../../video_call/presentation/bloc/video_call_bloc.dart';
@@ -34,15 +29,6 @@ class _ChatPageState extends State<ChatPage> {
   late bool isThisFirstCall;
   DrawableRoot? svgRoot;
   late AppConfig _config;
-
-  // _generateSvg(String? svgCode) async {
-  //   svgCode ??= multiavatar(widget.user.username);
-  //   return SvgWrapper(svgCode).generateLogo().then((value) {
-  //     setState(() {
-  //       svgRoot = value!;
-  //     });
-  //   });
-  // }
 
   @override
   void initState() {
@@ -105,16 +91,10 @@ class _ChatPageState extends State<ChatPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            svgRoot == null
-                ? Padding(
-                    padding: EdgeInsets.only(right: _config.rWP(1)),
-                    child: const CircleAvatar(),
-                  )
-                : Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: showAvatar(svgRoot!, 0),
-                  ),
+            Padding(
+              padding: EdgeInsets.only(right: _config.rWP(1)),
+              child: const CircleAvatar(),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

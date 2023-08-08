@@ -21,7 +21,6 @@ import 'package:client/features/video_call/domain/usecases/answer_call.dart';
 import 'package:client/features/video_call/domain/usecases/reject_call.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:client/routes/router.gr.dart';
-import 'package:client/services/push_notification_services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constance/theme.dart';
 import 'core/Injector/injector.dart';
+import 'core/helper/database/data_base_helper.dart';
 import 'core/helper/firebase/firebase_background_message_handler.dart';
 import 'features/Authentication/data/datasources/user_local_data_source.dart';
 import 'features/Authentication/data/datasources/user_remote_data_source.dart';
@@ -57,6 +57,7 @@ void main() async {
   if (!kIsWeb) {
     await setupFlutterNotifications();
   }
+  DatabaseHelper dataBaseHelper = Injection.injector.get();
   UserRepository userRepository = UserRepositoryImpl(
     localDataSource: UserLocalDataSourceImpl(
         sharedPreferences: await SharedPreferences.getInstance()),
@@ -64,12 +65,12 @@ void main() async {
     networkInfo: NetworkInfo(isConnected: Future.value(true)),
   );
   HomeRepository homeRepository = HomeRepositoryImpl(
-    localDataSource: HomeLocalDataSourceImpl(),
+    localDataSource: HomeLocalDataSourceImpl(databaseHelper: dataBaseHelper),
     remoteDataSource: HomeRemoteDataSourceImpl(client: http.Client()),
     networkInfo: NetworkInfo(isConnected: Future.value(true)),
   );
   ChatRepository chatRepository = ChatRepositoryImpl(
-    localDataSource: ChatLocalDataSource(),
+    localDataSource: ChatLocalDataSource(databaseHelper: dataBaseHelper),
     remoteDataSource: ChatRemoteDataSource(),
   );
   VideoCallRepository videoCallRepository = VideoCallRepositoryImpl(

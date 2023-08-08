@@ -30,6 +30,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
   VideoCallBloc(this._makeCall, this._answerCall, this._jejectCall)
       : super(const VideoCallInitial()) {
     _webrtcHelper = WebrtcHelper(_webSocketHelper);
+    // _webrtcHelper.initVideoRenders();
     on<RequestCallEvent>((event, emit) {
       _webSocketHelper.channel.sink.add(
         WSEvent(
@@ -79,9 +80,9 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
             localVideoRenderer: _webrtcHelper.localVideoRenderer,
             remoteVideoRenderer: _webrtcHelper.remoteVideoRenderer));
         for (String data in _webrtcHelper.candidateList) {
-          _webSocketHelper.channel.sink.add(
-              WSEvent('candidate', 'me', caller, data, DateTime.now())
-                  .toJson());
+          _webSocketHelper.channel.sink.add(WSEvent('candidate',
+                  event.wsEvent.senderUsername, caller, data, DateTime.now())
+              .toJson());
         }
       },
     );
@@ -100,8 +101,8 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
             await FlutterCallkitIncoming.endCall(call['id']);
           }
         }
-        _webrtcHelper.localVideoRenderer.dispose();
-        _webrtcHelper.remoteVideoRenderer.dispose();
+        // _webrtcHelper.localVideoRenderer.dispose();
+        // _webrtcHelper.remoteVideoRenderer.dispose();
         _webrtcHelper.closeConnection(event.myid, event.reciever);
       },
     );
