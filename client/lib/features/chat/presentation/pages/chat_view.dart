@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/Injector/ws_injector.dart';
 import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
 import '../../../video_call/presentation/bloc/video_call_bloc.dart';
 import '../widgets/chat_view_area.dart';

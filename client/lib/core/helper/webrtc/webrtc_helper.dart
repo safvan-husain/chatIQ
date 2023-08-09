@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
 
+import '../../../constance/color_log.dart';
 import '../websocket/websocket_helper.dart';
 import '../websocket/ws_event.dart';
 
@@ -18,66 +19,129 @@ class WebrtcHelper {
   bool _offer = false;
   late String _caller;
 
+  bool _isCreatedPC = false;
+  bool _isRenderSetted = false;
+  bool _isRemoteSetted = false;
+
+  bool get isCreatedPC => _isCreatedPC;
+  bool get isRenderSetted => _isRenderSetted;
+
   WebrtcHelper(this._webSocketHelper);
 
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
   RTCVideoRenderer get remoteVideoRenderer => _remoteVideoRenderer;
 
   Future<void> initVideoRenders() async {
-    await _localVideoRenderer.initialize();
-    await _remoteVideoRenderer.initialize();
+    if (!_isRenderSetted) {
+      log('initilizing renders, webrtcHelper');
+      await _localVideoRenderer.initialize();
+      await _remoteVideoRenderer.initialize();
+      log('success renders, webrtcHelper');
+    } else {
+      log("could not init renders, it seems already exists");
+    }
+    _isRenderSetted = true;
   }
 
   Future<void> setRemoteDescription(String jsonString) async {
-    log('jsonString: $jsonString');
-    dynamic session = json.decode(jsonString);
-    if (session is String) {
-      session = json.decode(session);
+    if (_isCreatedPC) {
+      logInfo('setting remote description, webrtcHelper');
+      dynamic session = json.decode(jsonString);
+      if (session is String) {
+        session = json.decode(session);
+      }
+      log(session is Map<String, dynamic> ? 'session is map' : session);
+      String sdp = write(session, null);
+
+      RTCSessionDescription description =
+          RTCSessionDescription(sdp, _offer ? 'answer' : 'offer');
+      // print(description.toMap());
+      try {
+        await _peerConnection.setRemoteDescription(description);
+        _isRemoteSetted = true;
+        logInfo('success remote description, webrtcHelper');
+      } catch (e) {
+        logError(e.toString());
+      }
+    } else {
+      logError("can't set remote description, don't have a peer connection");
     }
-    log(session is Map<String, dynamic> ? 'session is map' : session);
-    String sdp = write(session, null);
-
-    RTCSessionDescription description =
-        RTCSessionDescription(sdp, _offer ? 'answer' : 'offer');
-    // print(description.toMap());
-
-    await _peerConnection.setRemoteDescription(description);
   }
 
-  void closeConnection(String myid, String reciever) async {
-    await _peerConnection.close();
-    _webSocketHelper.channel.sink
-        .add(WSEvent('end', myid, reciever, '', DateTime.now()).toJson());
+  void disposeRenders() {
+    if (_isRenderSetted) {
+      log('disposing renders, webrtcHelper');
+      _localVideoRenderer.dispose();
+      _remoteVideoRenderer.dispose();
+    } else {
+      log("could not dispose because it seems already disposed");
+    }
+    _isRenderSetted = false;
+  }
+
+  void closeConnectionWithEvent(String myid, String reciever) async {
+    if (_isCreatedPC) {
+      log('closing connection, webrtcHelper');
+      await _peerConnection.close();
+      _isCreatedPC = false;
+      _webSocketHelper.channel.sink
+          .add(WSEvent('end', myid, reciever, '', DateTime.now()).toJson());
+    } else {
+      log("peer connection is alredy closed, webrtc helper");
+    }
+  }
+
+  void closeConnection() async {
+    if (_isCreatedPC) {
+      log('closing connection, webrtcHelper');
+      await _peerConnection.close();
+    } else {
+      log("peer connection is alredy closed, webrtc helper");
+    }
+
+    _isCreatedPC = false;
   }
 
   void addCandidate(jsonString) async {
-    dynamic session = await jsonDecode(jsonString);
-    if (session is! Map<String, dynamic>) {
-      session = json.decode(session);
+    if (_isRemoteSetted) {
+      dynamic session = jsonDecode(jsonString);
+      if (session is! Map<String, dynamic>) {
+        session = json.decode(session);
+      }
+      // print(session);
+      dynamic candidate = RTCIceCandidate(
+          session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
+      _peerConnection
+          .addCandidate(candidate)
+          .then((value) => print('candidate added'))
+          .catchError((e) {
+        print('error candidate $e');
+      });
+    } else {
+      logError('cannot add candidate because remote is not setted');
     }
-    // print(session);
-    dynamic candidate = RTCIceCandidate(
-        session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
-    _peerConnection
-        .addCandidate(candidate)
-        .then((value) => print('candidate added'))
-        .catchError((e) {
-      print('error candidate $e');
-    });
   }
 
   Future<void> createAnswer(String reciever, String sender) async {
-    _caller = sender;
-    log("creating answer to $reciever");
-    RTCSessionDescription description =
-        await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
+    if (_isCreatedPC) {
+      if (_isRemoteSetted) {
+        _caller = sender;
+        log("creating answer to $reciever");
+        RTCSessionDescription description =
+            await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
 
-    Map<String, dynamic> session = parse(description.sdp.toString());
+        Map<String, dynamic> session = parse(description.sdp.toString());
 
-    _peerConnection.setLocalDescription(description);
-    _webSocketHelper.channel.sink.add(WSEvent(
-            'answer', sender, reciever, json.encode(session), DateTime.now())
-        .toJson());
+        _peerConnection.setLocalDescription(description);
+        _webSocketHelper.channel.sink.add(WSEvent('answer', sender, reciever,
+                json.encode(session), DateTime.now())
+            .toJson());
+      } else {
+        logError("con't create answer becuase remote not settd");
+      }
+    } else {
+      logError('cannot create answer, no peer connection');
+    }
   }
 
   void makeVideoCall(String reciever, String sender) async {
@@ -94,70 +158,77 @@ class WebrtcHelper {
   }
 
   Future<void> createPeerConnecion() async {
-    Map<String, dynamic> configuration = {
-      "iceServers": [
-        {
-          // "url": "stun:stun.l.google.com:19302",
-          "urls": [
-            'stun:stun1.l.google.com:19302',
-            'stun:stun2.l.google.com:19302',
-          ]
+    if (!_isCreatedPC) {
+      log('creating connection, webrtcHelper');
+      Map<String, dynamic> configuration = {
+        "iceServers": [
+          {
+            // "url": "stun:stun.l.google.com:19302",
+            "urls": [
+              'stun:stun1.l.google.com:19302',
+              'stun:stun2.l.google.com:19302',
+            ]
+          },
+        ]
+      };
+
+      final Map<String, dynamic> offerSdpConstraints = {
+        "mandatory": {
+          "OfferToReceiveAudio": true,
+          "OfferToReceiveVideo": true,
         },
-      ]
-    };
+        "optional": [],
+      };
 
-    final Map<String, dynamic> offerSdpConstraints = {
-      "mandatory": {
-        "OfferToReceiveAudio": true,
-        "OfferToReceiveVideo": true,
-      },
-      "optional": [],
-    };
+      _localStream = await _getUserMedia();
+      MediaStreamTrack audioTrack = _localStream.getAudioTracks()[0];
+      MediaStreamTrack videoTrack = _localStream.getVideoTracks()[0];
 
-    _localStream = await _getUserMedia();
-    MediaStreamTrack audioTrack = _localStream.getAudioTracks()[0];
-    MediaStreamTrack videoTrack = _localStream.getVideoTracks()[0];
+      RTCPeerConnection pc =
+          await createPeerConnection(configuration, offerSdpConstraints);
 
-    RTCPeerConnection pc =
-        await createPeerConnection(configuration, offerSdpConstraints);
+      pc.addTrack(audioTrack, _localStream);
+      pc.addTrack(videoTrack, _localStream);
 
-    pc.addTrack(audioTrack, _localStream);
-    pc.addTrack(videoTrack, _localStream);
+      pc.onIceCandidate = (e) {
+        if (e.candidate != null) {
+          String data = json.encode({
+            'candidate': e.candidate.toString(),
+            'sdpMid': e.sdpMid.toString(),
+            'sdpMlineIndex': e.sdpMLineIndex,
+          });
+          if (_offer) {
+            candidateList.add(data);
+          } else {
+            _webSocketHelper.channel.sink.add(
+                WSEvent('candidate', 'me', _caller, data, DateTime.now())
+                    .toJson());
+          }
 
-    pc.onIceCandidate = (e) {
-      if (e.candidate != null) {
-        String data = json.encode({
-          'candidate': e.candidate.toString(),
-          'sdpMid': e.sdpMid.toString(),
-          'sdpMlineIndex': e.sdpMLineIndex,
-        });
-        if (_offer) {
-          candidateList.add(data);
-        } else {
-          _webSocketHelper.channel.sink.add(
-              WSEvent('candidate', 'me', _caller, data, DateTime.now())
-                  .toJson());
+          // socketConnection.sent('candidate', data);
         }
+      };
 
-        // socketConnection.sent('candidate', data);
-      }
-    };
+      pc.onIceConnectionState = (RTCIceConnectionState e) {
+        if (e == RTCIceConnectionState.RTCIceConnectionStateConnected) {}
+        log(e.toString());
+      };
+      // pc.;
+      pc.onTrack = (event) {
+        print('Track added: ${event.track.kind}');
+        // if video track is added set the track to rtc renderer
+        if (event.track.kind == 'video') {
+          log('remote src setted');
+          _remoteVideoRenderer.srcObject = event.streams[0];
+        }
+      };
 
-    pc.onIceConnectionState = (RTCIceConnectionState e) {
-      if (e == RTCIceConnectionState.RTCIceConnectionStateConnected) {}
-      log(e.toString());
-    };
-
-    pc.onTrack = (event) {
-      print('Track added: ${event.track.kind}');
-      // if video track is added set the track to rtc renderer
-      if (event.track.kind == 'video') {
-        log('remote src setted');
-        _remoteVideoRenderer.srcObject = event.streams[0];
-      }
-    };
-
-    _peerConnection = pc;
+      _peerConnection = pc;
+      _isCreatedPC = true;
+      log('success connection, webrtcHelper');
+    } else {
+      log("could not create peer connection, it seems already exists");
+    }
   }
 
   Future<MediaStream> _getUserMedia() async {

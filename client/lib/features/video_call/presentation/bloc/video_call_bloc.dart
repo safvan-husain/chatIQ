@@ -25,12 +25,10 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
   late String caller;
   final WebSocketHelper _webSocketHelper =
       WSInjection.injector.get<WebSocketHelper>();
-  late WebrtcHelper _webrtcHelper;
+  final WebrtcHelper _webrtcHelper = WSInjection.injector.get<WebrtcHelper>();
 
   VideoCallBloc(this._makeCall, this._answerCall, this._jejectCall)
       : super(const VideoCallInitial()) {
-    _webrtcHelper = WebrtcHelper(_webSocketHelper);
-    // _webrtcHelper.initVideoRenders();
     on<RequestCallEvent>((event, emit) {
       _webSocketHelper.channel.sink.add(
         WSEvent(
@@ -41,6 +39,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
           DateTime.now(),
         ).toJson(),
       );
+      emit(MakeCallState(localVideoRenderer: _webrtcHelper.localVideoRenderer));
     });
     on<MakeCallEvent>(
       (event, emit) async {
@@ -101,9 +100,16 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
             await FlutterCallkitIncoming.endCall(call['id']);
           }
         }
+        var currentCall = await getCurrentCall();
+        if (currentCall != null) {
+          log('call could not end in end call event');
+        } else {
+          log('call ended in end call event');
+        }
         // _webrtcHelper.localVideoRenderer.dispose();
         // _webrtcHelper.remoteVideoRenderer.dispose();
-        _webrtcHelper.closeConnection(event.myid, event.reciever);
+        _webrtcHelper.closeConnectionWithEvent(event.myid, event.reciever);
+        emit(const VideoCallInitial());
       },
     );
   }

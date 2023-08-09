@@ -11,7 +11,7 @@ class WSInjection {
   static final WebSocketHelper _websocketHelper = WebSocketHelper();
 
   static late Injector injector;
-  static Future initWebSocket({
+  static Future<void> initWebSocket({
     required myid,
     required void Function(Message, String) onMessage,
     required void Function(WSEvent) onCall,
@@ -33,11 +33,13 @@ class WSInjection {
     }
   }
 
-  static Future initWebRTCPeerConnection() async {
+  static Future<void> initWebRTCPeerConnection() async {
     final WebrtcHelper webrtcHelper = WebrtcHelper(_websocketHelper);
-    await webrtcHelper.createPeerConnecion();
+
     injector = Injector();
     if (!injector.isMapped<WebrtcHelper>()) {
+      // await webrtcHelper.createPeerConnecion();
+      // await webrtcHelper.initVideoRenders();
       injector.map<WebrtcHelper>((i) => webrtcHelper, isSingleton: true);
     }
   }

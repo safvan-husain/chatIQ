@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/core/Injector/ws_injector.dart';
+import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
@@ -62,8 +63,21 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       onCandidate: (event) {
         context.read<VideoCallBloc>().add(CandidateEvent(event));
       },
-      onEnd: (event) {},
-    );
+      onEnd: (event) async {
+        var currentCalls = await getCurrentCall();
+        if (currentCalls != null) {
+          for (var call in currentCalls) {
+            await FlutterCallkitIncoming.endCall(call['id']);
+          }
+        }
+        context.router
+            .pushAndPopUntil(const DefaultRoute(), predicate: (_) => false);
+        WSInjection.injector.get<WebrtcHelper>().closeConnection();
+      },
+    ).then((_) {
+      WSInjection.initWebRTCPeerConnection();
+    });
+
     FirebaseMessaging.onMessage.listen(firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       log('A new onMessageOpenedApp event was published!');
@@ -91,7 +105,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (currentCall != null) {
       //making an offer when he accecept the call
       if (currentCall['accepted'] == true) {
-        log(currentCall['nameCaller']);
+        log("${currentCall['nameCaller']} is now on call list");
         context.router
             .push(VideoCallRoute(recieverName: currentCall['nameCaller']));
         context.read<VideoCallBloc>().add(

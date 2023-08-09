@@ -44,7 +44,6 @@ dependencies:
   sdp_transform:
   flutter_callkit_incoming: ^2.0.0+1
   uuid:
-
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

@@ -31,6 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constance/theme.dart';
 import 'core/Injector/injector.dart';
+import 'core/Injector/ws_injector.dart';
 import 'core/helper/database/data_base_helper.dart';
 import 'core/helper/firebase/firebase_background_message_handler.dart';
 import 'features/Authentication/data/datasources/user_local_data_source.dart';

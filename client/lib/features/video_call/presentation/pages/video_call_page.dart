@@ -1,5 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:client/core/Injector/ws_injector.dart';
+import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,15 +26,28 @@ class VideoCallPage extends StatefulWidget {
 
 class _VideoCallPageState extends State<VideoCallPage>
     with WidgetsBindingObserver {
+  final WebrtcHelper _webrtcHelper = WSInjection.injector.get<WebrtcHelper>();
+  late Future<String> _data;
   @override
   void initState() {
     super.initState();
+    log("calling init state videoscall");
+    _data = setUpConnection();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<String> setUpConnection() async {
+    await _webrtcHelper.initVideoRenders();
+    await _webrtcHelper.createPeerConnecion();
+    return 'setted';
   }
 
   @override
   void dispose() {
+    log("calling dispose videoscall");
     WidgetsBinding.instance.removeObserver(this);
+    // _webrtcHelper.disposeRenders();
+    _webrtcHelper.closeConnection();
     super.dispose();
   }
 
@@ -51,18 +68,37 @@ class _VideoCallPageState extends State<VideoCallPage>
 
   @override
   Widget build(BuildContext context) {
+    log('is video rendered : ${_webrtcHelper.isRenderSetted.toString()}');
     return BlocConsumer<VideoCallBloc, VideoCallState>(
       listener: (context, state) {
         // TODO: implement listener
       },
       builder: (context, state) {
-        if (state is MakeCallState) {
+        if (state.localVideoRenderer == null) {
+          log("render is null");
+        } else {
+          log("render is not null");
+        }
+        if (state is MakeCallState || state is RejectCallState) {
           return Scaffold(
             body: Stack(children: [
-              RTCVideoView(
-                state.localVideoRenderer!,
-                mirror: true,
-                objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+              FutureBuilder(
+                future: _data,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const CircularProgressIndicator();
+                    case ConnectionState.done:
+                      return RTCVideoView(
+                        _webrtcHelper.localVideoRenderer,
+                        mirror: true,
+                        objectFit:
+                            RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                      );
+                    default:
+                      return const CircularProgressIndicator();
+                  }
+                },
               ),
               Align(
                 alignment: Alignment.bottomCenter,
