@@ -45,7 +45,8 @@ class WebrtcHelper {
 
   Future<void> setRemoteDescription(String jsonString) async {
     if (_isCreatedPC) {
-      logInfo('setting remote description, webrtcHelper');
+      logInfo(
+          'setting remote description and connection alredy there, webrtcHelper');
       dynamic session = json.decode(jsonString);
       if (session is String) {
         session = json.decode(session);
@@ -64,7 +65,26 @@ class WebrtcHelper {
         logError(e.toString());
       }
     } else {
-      logError("can't set remote description, don't have a peer connection");
+      logInfo(
+          'setting remote description and creating connection, webrtcHelper');
+      await createPeerConnecion();
+      dynamic session = json.decode(jsonString);
+      if (session is String) {
+        session = json.decode(session);
+      }
+      log(session is Map<String, dynamic> ? 'session is map' : session);
+      String sdp = write(session, null);
+
+      RTCSessionDescription description =
+          RTCSessionDescription(sdp, _offer ? 'answer' : 'offer');
+      // print(description.toMap());
+      try {
+        await _peerConnection.setRemoteDescription(description);
+        _isRemoteSetted = true;
+        logInfo('success remote description, webrtcHelper');
+      } catch (e) {
+        logError(e.toString());
+      }
     }
   }
 
@@ -89,6 +109,7 @@ class WebrtcHelper {
     } else {
       log("peer connection is alredy closed, webrtc helper");
     }
+    _offer = false;
   }
 
   void closeConnection() async {
@@ -98,7 +119,7 @@ class WebrtcHelper {
     } else {
       log("peer connection is alredy closed, webrtc helper");
     }
-
+    _offer = false;
     _isCreatedPC = false;
   }
 
@@ -126,7 +147,7 @@ class WebrtcHelper {
     if (_isCreatedPC) {
       if (_isRemoteSetted) {
         _caller = sender;
-        log("creating answer to $reciever");
+        logError("creating answer to $reciever and conection alredy there");
         RTCSessionDescription description =
             await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
 
@@ -140,21 +161,48 @@ class WebrtcHelper {
         logError("con't create answer becuase remote not settd");
       }
     } else {
-      logError('cannot create answer, no peer connection');
+      logSuccess("creating answer to $reciever and creating conection");
+      await createPeerConnecion();
+      _caller = sender;
+      log("creating answer to $reciever");
+      RTCSessionDescription description =
+          await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
+
+      Map<String, dynamic> session = parse(description.sdp.toString());
+
+      _peerConnection.setLocalDescription(description);
+      _webSocketHelper.channel.sink.add(WSEvent(
+              'answer', sender, reciever, json.encode(session), DateTime.now())
+          .toJson());
     }
   }
 
   void makeVideoCall(String reciever, String sender) async {
     _caller = reciever;
-    RTCSessionDescription description =
-        await _peerConnection.createOffer({'offerToReceiveVideo': 1});
-    Map<String, dynamic> session = parse(description.sdp.toString());
-    _offer = true;
+    if (_isCreatedPC) {
+      logError("creating offer to $reciever and conection alredy there");
+      RTCSessionDescription description =
+          await _peerConnection.createOffer({'offerToReceiveVideo': 1});
+      Map<String, dynamic> session = parse(description.sdp.toString());
+      _offer = true;
 
-    _peerConnection.setLocalDescription(description);
-    _webSocketHelper.channel.sink.add(
-        WSEvent('offer', sender, reciever, json.encode(session), DateTime.now())
-            .toJson());
+      _peerConnection.setLocalDescription(description);
+      _webSocketHelper.channel.sink.add(WSEvent(
+              'offer', sender, reciever, json.encode(session), DateTime.now())
+          .toJson());
+    } else {
+      logSuccess("creating offer to $reciever and conection alredy there");
+      await createPeerConnecion();
+      RTCSessionDescription description =
+          await _peerConnection.createOffer({'offerToReceiveVideo': 1});
+      Map<String, dynamic> session = parse(description.sdp.toString());
+      _offer = true;
+
+      _peerConnection.setLocalDescription(description);
+      _webSocketHelper.channel.sink.add(WSEvent(
+              'offer', sender, reciever, json.encode(session), DateTime.now())
+          .toJson());
+    }
   }
 
   Future<void> createPeerConnecion() async {

@@ -57,7 +57,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
       (event, emit) async {
         log('on response');
         await _webrtcHelper.initVideoRenders();
-        await _webrtcHelper.createPeerConnecion();
+        // await _webrtcHelper.createPeerConnecion();
         await _webrtcHelper
             .setRemoteDescription(json.encode(event.wsEvent.message));
         caller = event.wsEvent.senderUsername;
