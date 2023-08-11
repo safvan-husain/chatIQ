@@ -49,8 +49,10 @@ class CandidateEvent extends VideoCallEvent {
 class EndCallEvent extends VideoCallEvent {
   final String myid;
   final String reciever;
+  final void Function() callEnded;
   const EndCallEvent(
     this.myid,
     this.reciever,
+    this.callEnded,
   );
 }

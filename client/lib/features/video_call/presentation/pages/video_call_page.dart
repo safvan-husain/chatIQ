@@ -38,7 +38,7 @@ class _VideoCallPageState extends State<VideoCallPage>
 
   Future<String> setUpConnection() async {
     await _webrtcHelper.initVideoRenders();
-    await _webrtcHelper.createPeerConnecion();
+    // await _webrtcHelper.createPeerConnecion();
     return 'setted';
   }
 
@@ -56,9 +56,9 @@ class _VideoCallPageState extends State<VideoCallPage>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       context.read<VideoCallBloc>().add(EndCallEvent(
-            context.read<AuthenticationCubit>().state.user!.username,
-            widget.recieverName,
-          ));
+          context.read<AuthenticationCubit>().state.user!.username,
+          widget.recieverName,
+          () {}));
       context.router.pushAndPopUntil(
         const DefaultRoute(),
         predicate: (_) => false,
@@ -108,19 +108,19 @@ class _VideoCallPageState extends State<VideoCallPage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           context.read<VideoCallBloc>().add(EndCallEvent(
-                                context
-                                    .read<AuthenticationCubit>()
-                                    .state
-                                    .user!
-                                    .username,
-                                widget.recieverName,
-                              ));
-                          context.router.pushAndPopUntil(
-                            const DefaultRoute(),
-                            predicate: (_) => false,
-                          );
+                                  context
+                                      .read<AuthenticationCubit>()
+                                      .state
+                                      .user!
+                                      .username,
+                                  widget.recieverName, () {
+                                context.router.pushAndPopUntil(
+                                  const DefaultRoute(),
+                                  predicate: (_) => false,
+                                );
+                              }));
                         },
                         child: const FaIcon(
                           FontAwesomeIcons.phoneAlt,
@@ -175,17 +175,17 @@ class _VideoCallPageState extends State<VideoCallPage>
                           InkWell(
                             onTap: () {
                               context.read<VideoCallBloc>().add(EndCallEvent(
-                                    context
-                                        .read<AuthenticationCubit>()
-                                        .state
-                                        .user!
-                                        .username,
-                                    widget.recieverName,
-                                  ));
-                              context.router.pushAndPopUntil(
-                                const DefaultRoute(),
-                                predicate: (_) => false,
-                              );
+                                      context
+                                          .read<AuthenticationCubit>()
+                                          .state
+                                          .user!
+                                          .username,
+                                      widget.recieverName, () {
+                                    context.router.pushAndPopUntil(
+                                      const DefaultRoute(),
+                                      predicate: (_) => false,
+                                    );
+                                  }));
                             },
                             child: const FaIcon(
                               FontAwesomeIcons.phoneAlt,

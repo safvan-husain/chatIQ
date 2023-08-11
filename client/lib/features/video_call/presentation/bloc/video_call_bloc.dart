@@ -46,6 +46,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
         log('make call');
         await _webrtcHelper.initVideoRenders();
         await _webrtcHelper.createPeerConnecion();
+        caller = event.recieverName;
         _webrtcHelper.makeVideoCall(event.recieverName, event.my_name);
         emit(MakeCallState(
           localVideoRenderer: _webrtcHelper.localVideoRenderer,
@@ -59,7 +60,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
         await _webrtcHelper.createPeerConnecion();
         await _webrtcHelper
             .setRemoteDescription(json.encode(event.wsEvent.message));
-        // caller = event.wsEvent.senderUsername;
+        caller = event.wsEvent.senderUsername;
         _webrtcHelper.createAnswer(
           event.wsEvent.senderUsername,
           event.wsEvent.recieverUsername,
@@ -106,6 +107,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
         } else {
           log('call ended in end call event');
         }
+        event.callEnded();
         // _webrtcHelper.localVideoRenderer.dispose();
         // _webrtcHelper.remoteVideoRenderer.dispose();
         _webrtcHelper.closeConnectionWithEvent(event.myid, event.reciever);

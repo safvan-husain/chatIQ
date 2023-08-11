@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:client/constance/color_log.dart';
 import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/ws_event.dart';
@@ -64,6 +65,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         context.read<VideoCallBloc>().add(CandidateEvent(event));
       },
       onEnd: (event) async {
+        logSuccess('on ennd home event');
         var currentCalls = await getCurrentCall();
         if (currentCalls != null) {
           for (var call in currentCalls) {
@@ -92,7 +94,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (calls is List) {
       if (calls.isNotEmpty) {
         // _currentUuid = calls[0]['id'];
-        return calls[0];
+        return calls;
       } else {
         // _currentUuid = "";
         return null;
@@ -104,13 +106,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     var currentCall = await getCurrentCall();
     if (currentCall != null) {
       //making an offer when he accecept the call
-      if (currentCall['accepted'] == true) {
-        log("${currentCall['nameCaller']} is now on call list");
+
+      if (currentCall[0]['accepted'] == true) {
+        log("${currentCall[0]['nameCaller']} is now on call list");
         context.router
-            .push(VideoCallRoute(recieverName: currentCall['nameCaller']));
+            .push(VideoCallRoute(recieverName: currentCall[0]['nameCaller']));
         context.read<VideoCallBloc>().add(
               MakeCallEvent(
-                  recieverName: currentCall['nameCaller'],
+                  recieverName: currentCall[0]['nameCaller'],
                   my_name:
                       context.read<AuthenticationCubit>().state.user!.username),
             );

@@ -5,6 +5,7 @@ import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../../../common/entity/message.dart';
+import '../../../constance/color_log.dart';
 import '../../../constance/constant_variebles.dart';
 
 class WebSocketHelper {
@@ -30,10 +31,10 @@ class WebSocketHelper {
             // log(message);
           } else {
             WSEvent event = WSEvent.fromJson(message);
+            logSuccess(event.eventName);
             if (event.eventName == 'message') {
               onMessage(event.toMessage(), event.senderUsername);
             } else if (event.eventName == "offer") {
-              log('on offer event');
               onCall(event);
             } else if (event.eventName == "answer") {
               onAnswer(event);

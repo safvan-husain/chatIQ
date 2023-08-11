@@ -63,6 +63,10 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
             var response = ws_event.toJson("candidate");
             // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
+          }else if(ws_event.eventName =="end"){
+            var response = ws_event.toJson("end");
+            // console.log(response);
+            webSockets[ws_event.recieverUsername].send(response);
           }
         } else {
           if (ws_event.eventName === "message") {
