@@ -14,6 +14,7 @@ class WebSocketHelper {
   factory WebSocketHelper() => _instance;
   late IOWebSocketChannel _channel;
   IOWebSocketChannel get channel => _channel;
+  late String myId;
   initSocket({
     required myid,
     required void Function(Message, String) onMessage,
@@ -22,6 +23,7 @@ class WebSocketHelper {
     required void Function(WSEvent) onCandidate,
     required void Function(WSEvent) onEnd,
   }) {
+    myId = myid;
     try {
       log('connecting websocket with $myid');
       _channel = IOWebSocketChannel.connect("ws://$ipAddress:3000/$myid");
@@ -57,5 +59,82 @@ class WebSocketHelper {
     } catch (e) {
       throw Error();
     }
+  }
+
+  void sendMessage({required String message, required String recieverId}) {
+    WSEvent data = WSEvent(
+      "message",
+      myId,
+      recieverId,
+      message,
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendOffer({required String offer, required String recieverId}) {
+    WSEvent data = WSEvent(
+      "offer",
+      myId,
+      recieverId,
+      offer,
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendAnswer({required String answer, required String recieverId}) {
+    WSEvent data = WSEvent(
+      "answer",
+      myId,
+      recieverId,
+      answer,
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendCandidate({required String candidate, required String recieverId}) {
+    WSEvent data = WSEvent(
+      "candidate",
+      myId,
+      recieverId,
+      candidate,
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendEnd({required String recieverId}) {
+    WSEvent data = WSEvent(
+      "end",
+      myId,
+      recieverId,
+      '',
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendRejection({required String recieverId}) {
+    WSEvent data = WSEvent(
+      "rejection",
+      myId,
+      recieverId,
+      '',
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendRequest({required String recieverId}) {
+    WSEvent data = WSEvent(
+      "request",
+      myId,
+      recieverId,
+      '',
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
   }
 }

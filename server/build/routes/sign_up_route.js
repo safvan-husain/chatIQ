@@ -21,7 +21,7 @@ const router = (0, express_1.Router)();
 exports.SignUpRouter = router;
 router.post("/auth/sign-up", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, username, password, apptoken } = req.body;
-    // console.log(email, username, password);
+    console.log(email, username, password);
     const hashedpassword = new password_hash_1.Password().hash(password);
     let user = new user_model_1.default({
         username: username,

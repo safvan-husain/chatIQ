@@ -30,24 +30,15 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
   VideoCallBloc(this._makeCall, this._answerCall, this._jejectCall)
       : super(const VideoCallInitial()) {
     on<RequestCallEvent>((event, emit) {
-      _webSocketHelper.channel.sink.add(
-        WSEvent(
-          "request",
-          event.my_name,
-          event.recieverName,
-          '',
-          DateTime.now(),
-        ).toJson(),
-      );
+      _webSocketHelper.sendRequest(recieverId: event.recieverName);
       emit(MakeCallState(localVideoRenderer: _webrtcHelper.localVideoRenderer));
     });
     on<MakeCallEvent>(
       (event, emit) async {
         log('make call');
         await _webrtcHelper.initVideoRenders();
-        await _webrtcHelper.createPeerConnecion();
         caller = event.recieverName;
-        _webrtcHelper.makeVideoCall(event.recieverName, event.my_name);
+        _webrtcHelper.makeVideoCall(event.recieverName);
         emit(MakeCallState(
           localVideoRenderer: _webrtcHelper.localVideoRenderer,
         ));
@@ -57,9 +48,10 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
       (event, emit) async {
         log('on response');
         await _webrtcHelper.initVideoRenders();
-        // await _webrtcHelper.createPeerConnecion();
-        await _webrtcHelper
-            .setRemoteDescription(json.encode(event.wsEvent.message));
+        await _webrtcHelper.setRemoteDescription(
+          jsonString: json.encode(event.wsEvent.message),
+          isOffer: true,
+        );
         caller = event.wsEvent.senderUsername;
         _webrtcHelper.createAnswer(
           event.wsEvent.senderUsername,
@@ -74,16 +66,17 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
     on<ResponseAnswerEvent>(
       (event, emit) async {
         log('on answer response');
-        await _webrtcHelper
-            .setRemoteDescription(json.encode(event.wsEvent.message));
-        emit(AnswerCallState(
+        await _webrtcHelper.setRemoteDescription(
+          jsonString: json.encode(event.wsEvent.message),
+          isOffer: false,
+        );
+        emit(
+          AnswerCallState(
             localVideoRenderer: _webrtcHelper.localVideoRenderer,
-            remoteVideoRenderer: _webrtcHelper.remoteVideoRenderer));
-        for (String data in _webrtcHelper.candidateList) {
-          _webSocketHelper.channel.sink.add(WSEvent('candidate',
-                  event.wsEvent.senderUsername, caller, data, DateTime.now())
-              .toJson());
-        }
+            remoteVideoRenderer: _webrtcHelper.remoteVideoRenderer,
+          ),
+        );
+        _webrtcHelper.sendAllCandidate();
       },
     );
     on<CandidateEvent>(
@@ -108,9 +101,10 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
           log('call ended in end call event');
         }
         event.callEnded();
-        // _webrtcHelper.localVideoRenderer.dispose();
-        // _webrtcHelper.remoteVideoRenderer.dispose();
-        _webrtcHelper.closeConnectionWithEvent(event.myid, event.reciever);
+        _webrtcHelper.closeConnection(
+          websocketEvent: () =>
+              _webSocketHelper.sendEnd(recieverId: event.reciever),
+        );
         emit(const VideoCallInitial());
       },
     );
