@@ -12,20 +12,19 @@ class InitCallEvent extends VideoCallEvent {}
 
 class RequestCallEvent extends VideoCallEvent {
   final String recieverName;
-  final String my_name;
+  final String myName;
+  final void Function() onCancel;
   const RequestCallEvent({
     required this.recieverName,
-    required this.my_name,
+    required this.myName,
+    required this.onCancel,
   });
 }
 
 class MakeCallEvent extends VideoCallEvent {
   final String recieverName;
-  final String my_name;
-  const MakeCallEvent({
-    required this.recieverName,
-    required this.my_name,
-  });
+  final String myName;
+  const MakeCallEvent({required this.recieverName, required this.myName});
 }
 
 class ResponseCallEvent extends VideoCallEvent {
@@ -44,6 +43,10 @@ class CandidateEvent extends VideoCallEvent {
   final WSEvent wsEvent;
 
   const CandidateEvent(this.wsEvent);
+}
+
+class BusyEvent extends VideoCallEvent {
+  const BusyEvent();
 }
 
 class EndCallEvent extends VideoCallEvent {

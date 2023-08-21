@@ -127,6 +127,15 @@ class MockDatabaseHelper extends _i1.Mock implements _i4.DatabaseHelper {
         returnValue: _i5.Future<int>.value(0),
       ) as _i5.Future<int>);
   @override
+  _i5.Future<_i3.Message?> fetchLastMessageFromAChat(int? chatId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchLastMessageFromAChat,
+          [chatId],
+        ),
+        returnValue: _i5.Future<_i3.Message?>.value(),
+      ) as _i5.Future<_i3.Message?>);
+  @override
   _i5.Future<List<dynamic>> fetchAllMessageFromAChat(int? chatId) =>
       (super.noSuchMethod(
         Invocation.method(

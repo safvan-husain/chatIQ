@@ -1,14 +1,19 @@
 import 'dart:developer';
 
+import 'package:client/common/entity/message.dart';
+import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/features/Authentication/data/models/user_model.dart';
 import 'package:client/features/Authentication/domain/entities/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/Injector/injector.dart';
 import '../../../../core/error/exception.dart';
+import '../../../../core/helper/database/data_base_helper.dart';
+import '../models/remote_message_model.dart';
 
 abstract class UserLocalDataSource {
   final SharedPreferences sharedPreferences;
-
+  DatabaseHelper dataBaseHelper = Injection.injector.get();
   UserLocalDataSource({required this.sharedPreferences});
 
   ///Who's there? It's the sneaky [User] hiding in the cache, waiting to be found!
@@ -20,6 +25,7 @@ abstract class UserLocalDataSource {
   ///
   ///but be careful, I will throw [CacheException] if couldn't do it.
   Future<void> cacheUser(User user);
+  Future<void> cacheAllNewMessages(List<RemoteMesseageModel> messeges);
 }
 
 class UserLocalDataSourceImpl extends UserLocalDataSource {
@@ -42,5 +48,28 @@ class UserLocalDataSourceImpl extends UserLocalDataSource {
         .onError((e, stack) {
       throw CacheException();
     });
+  }
+
+  @override
+  Future<void> cacheAllNewMessages(messeges) async {
+    for (var message in messeges) {
+      late int chatId;
+      if (!await dataBaseHelper.isUserCached(message.sender)) {
+        chatId = await dataBaseHelper.insertAuserToDB(message.sender);
+      } else {
+        var users =
+            await dataBaseHelper.fetchUsersFromDB(userName: message.sender);
+        chatId = users[0]['id'];
+      }
+      await dataBaseHelper.insertAMessageToDB(
+        Message(
+          chatId: chatId,
+          time: message.dateTime,
+          isme: false,
+          content: message.content,
+        ),
+        message.sender,
+      );
+    }
   }
 }

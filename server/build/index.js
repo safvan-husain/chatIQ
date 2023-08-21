@@ -39,6 +39,7 @@ const get_data_1 = require("./routes/get_data");
 const web_socket_1 = require("./utils/web_socket");
 const user_account_1 = require("./routes/user_account");
 const ai_generate_1 = require("./routes/ai_generate");
+const message_router_1 = require("./routes/message_router");
 dotenv.config();
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
@@ -47,6 +48,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(sign_in_route_1.SigninRouter);
 app.use(sign_up_route_1.SignUpRouter);
+app.use(message_router_1.messageRouter);
 app.use(get_data_1.DataRouter);
 app.use(user_account_1.ProfileRouter);
 app.use(ai_generate_1.aiRouter);
@@ -55,18 +57,13 @@ app.get("/", (req, res) => {
 });
 mongoose_1.default.set("strictQuery", true);
 mongoose_1.default.connect(process.env.MongoUrl, () => {
-    console.log(mongoose_1.default.connection.readyState == 1 ? "MongoDB connected!" : "MongoDB Not connected!");
+    console.log(mongoose_1.default.connection.readyState == 1
+        ? "MongoDB connected!"
+        : "MongoDB Not connected!");
 });
-const server = app.listen(process.env.PORT, function () {
+const server = app
+    .listen(process.env.PORT, function () {
     console.log("port lisenting on " + process.env.PORT);
-}).on("error", function (err) {
-    process.once("SIGUSR2", function () {
-        process.kill(process.pid, "SIGUSR2");
-    });
-    process.on("SIGINT", function () {
-        // this is only called on ctrl+c, not restart
-        process.kill(process.pid, "SIGINT");
-    });
 });
 const wss = new websocket.Server({ server });
 (0, web_socket_1.onWebSocket)(wss);

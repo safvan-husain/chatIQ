@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../common/entity/message.dart';
 
+// ignore: must_be_immutable
 class User extends Equatable {
   final String username;
   Message? lastMessage;

@@ -31,12 +31,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCall = exports.sendMessage = void 0;
-const user_model_1 = __importDefault(require("../model/user_model"));
+const user_model_1 = require("../model/user_model");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 var FCM = require('fcm-node');
@@ -47,7 +44,7 @@ function sendMessage({ title, body, username }) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('send message caled');
         try {
-            var user = yield user_model_1.default.findOne({ username: username });
+            var user = yield user_model_1.UserModel.findOne({ username: username });
             var event = {
                 to: user === null || user === void 0 ? void 0 : user.appToken,
                 notification: {
@@ -77,7 +74,7 @@ function makeCall(username, caller) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(' make caled');
         try {
-            var user = yield user_model_1.default.findOne({ username: username });
+            var user = yield user_model_1.UserModel.findOne({ username: username });
             var event = {
                 to: user === null || user === void 0 ? void 0 : user.appToken,
                 data: {

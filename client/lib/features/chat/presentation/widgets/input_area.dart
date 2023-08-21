@@ -7,6 +7,7 @@ import '../../../../common/entity/message.dart';
 import '../../../../constance/app_config.dart';
 import '../pages/chat_view.dart';
 
+// ignore: must_be_immutable
 class InputArea extends StatelessWidget {
   InputArea({
     super.key,

@@ -7,7 +7,6 @@ import 'package:client/features/home/domain/entities/user.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
 import 'package:client/features/home/domain/usecases/get_remote_chats.dart';
-import 'package:client/features/home/domain/usecases/log_out.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
@@ -18,12 +17,10 @@ part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final GetRemoteChats getRemoteChats;
-  final Logout logout;
   final GetLocalChats getLocalChats;
   final CacheMessage cacheMessage;
   HomeCubit({
     required this.getRemoteChats,
-    required this.logout,
     required this.getLocalChats,
     required this.cacheMessage,
   }) : super(HomeStateImpl());
@@ -64,16 +61,6 @@ class HomeCubit extends Cubit<HomeState> {
       },
       (r) {
         emit(ContactStateImpl(contacts: r, newMessages: state.newMessages));
-      },
-    );
-  }
-
-  Future<void> logOut() async {
-    Either<Failure, bool> result = await logout();
-    result.fold(
-      (l) {},
-      (r) {
-        emit(HomeLogOut());
       },
     );
   }

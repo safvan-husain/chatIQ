@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../common/entity/message.dart';
 
+// ignore: must_be_immutable
 class MessageTile extends StatelessWidget {
   final Message onemsg;
   MessageTile({

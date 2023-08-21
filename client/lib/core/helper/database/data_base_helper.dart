@@ -1,10 +1,15 @@
 import 'dart:io' as io;
+import 'package:dartz/dartz.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../common/entity/message.dart';
 import '../../../common/model/message_model.dart';
+import 'package:client/features/home/data/models/user_model.dart';
+
+import '../../../features/home/domain/entities/user.dart';
+import '../../../features/home/presentation/cubit/home_cubit.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
@@ -13,6 +18,9 @@ class DatabaseHelper {
   static late Database _db;
 
   DatabaseHelper.internal();
+  //table names
+  String recentChats = "recent_chats";
+  String messeages = 'messages';
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -22,6 +30,11 @@ class DatabaseHelper {
 
   Database get db {
     return _db;
+  }
+
+  Future<void> clearAllData() async {
+    await _db.delete(recentChats);
+    await _db.delete(messeages);
   }
 
   ///returns true if a user exist with this username
@@ -49,11 +62,41 @@ class DatabaseHelper {
     await _db.update("recent_chats", object, where: "id = ?", whereArgs: [id]);
   }
 
-  Future<int> insertAMessageToDB(Message message) async {
-    return await db.insert(
+  Future<NewMessages> insertAMessageToDB(Message message, String chatter) async {
+    int id = await db.insert(
       'messages',
       MessageModel.fromMessage(message).toMap(),
     );
+    var userMap = await fetchUsersFromDB(userName: chatter);
+    UserModel user = UserModel.fromMap(userMap[0], message);
+    message.setChatId(user.id);
+    user.setLastMessageId(id);
+    updateDBColumn(
+      tableName: 'recent_chats',
+      object: user.toMap(),
+      id: user.id,
+    );
+    int newMessagesCount = await _findNewMessageCount(user: user);
+    return NewMessages(user: user, messageCount: newMessagesCount);
+  }
+
+  Future<int> _findNewMessageCount({required User user}) async {
+    bool istrue = false;
+
+    var messages = await fetchAllMessageFromAChat(user.id);
+    if (user.lastSeenMessageId == null) {
+      return messages.length;
+    }
+    return messages
+            .where((e) {
+              if (e['id'] == user.lastSeenMessageId) {
+                istrue = true;
+              }
+              return istrue;
+            })
+            .toList()
+            .length -
+        1;
   }
 
 //create a row in [recent_chats] with this username

@@ -1,4 +1,3 @@
-import 'package:client/features/home/domain/entities/contact.dart';
 import 'package:client/features/home/domain/repositories/home_repositoy.dart';
 import 'package:client/features/home/domain/usecases/log_out.dart';
 import 'package:dartz/dartz.dart';

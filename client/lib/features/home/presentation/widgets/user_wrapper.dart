@@ -8,13 +8,9 @@ import '../../domain/entities/user.dart';
 class UserWrapper extends StatelessWidget {
   const UserWrapper({
     Key? key,
-    required this.index,
     required this.user,
-    required this.newMessageCount,
   }) : super(key: key);
 
-  final int index;
-  final int newMessageCount;
   final User user;
 
   @override
@@ -22,9 +18,10 @@ class UserWrapper extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           border: Border(
-              top: (index == 0)
-                  ? BorderSide(color: Theme.of(context).dividerColor)
-                  : BorderSide.none,
+              top: BorderSide(color: Theme.of(context).dividerColor),
+              // top: (index == 0)
+              //     ? BorderSide(color: Theme.of(context).dividerColor)
+              //     : BorderSide.none,
               bottom: BorderSide(color: Theme.of(context).dividerColor))),
       child: InkWell(
         onTap: () {
@@ -36,7 +33,6 @@ class UserWrapper extends StatelessWidget {
         },
         child: UserTile(
           user: user,
-          newMessageCount: newMessageCount,
         ),
       ),
     );

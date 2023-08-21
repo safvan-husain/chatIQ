@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,7 @@ class LoginFormPage extends StatelessWidget {
           listener: (context, state) {
             if (state.authState == AuthState.authenticated) {
               context.router.pushAndPopUntil(
-                const DefaultRoute(),
+                const HomeRoute(),
                 predicate: (route) => false,
               );
               log('uth');
@@ -83,6 +84,7 @@ class LoginFormPage extends StatelessWidget {
                 context.read<AuthenticationCubit>().getUser(
                       _emailController.text,
                       _passwordController.text,
+                      context.read<HomeCubit>().getChats,
                     );
               }
             },

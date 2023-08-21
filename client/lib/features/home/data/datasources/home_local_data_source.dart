@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:client/constance/color_log.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:client/common/entity/message.dart';
@@ -49,7 +50,7 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
       }
       return res;
     } catch (e) {
-      print(e);
+      logError(e.toString()); 
       throw CacheException();
     }
   }
@@ -67,20 +68,12 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   @override
   Future<NewMessages> cacheMessage(Message message, String from) async {
     try {
-      var userMap = await databaseHelper.fetchUsersFromDB(userName: from);
-      UserModel user = UserModel.fromMap(userMap[0], message);
-      message.setChatId(user.id);
-      var messageId = await databaseHelper.insertAMessageToDB(message);
+      
+      return await databaseHelper.insertAMessageToDB(message,from);
 
-      int newMessagesCount = await _findNewMessageCount(user: user);
-      user.setLastMessageId(messageId);
-      databaseHelper.updateDBColumn(
-        tableName: 'recent_chats',
-        object: user.toMap(),
-        id: user.id,
-      );
+     
 
-      return NewMessages(user: user, messageCount: newMessagesCount);
+      
     } catch (e) {
       print(e);
       throw CacheException();

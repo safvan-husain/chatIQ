@@ -25,25 +25,25 @@ dependencies:
   google_sign_in: ^6.0.1
   http: ^0.13.5
   intl: null
-  meta: 1.8.0
+  meta: ^1.9.1
   multiavatar: ^0.1.5
   path: ^1.8.2
   path_provider: ^2.0.0
   provider: ^6.0.5
   shared_preferences: null
-  stacked: ^3.1.0+2
   web_socket_channel: ^2.3.0
   sqflite:
   flutter_simple_dependency_injection:
   salomon_bottom_bar: ^3.3.2
-  socket_io_client: ^1.0.2
-  search_page: ^2.3.0
   font_awesome_flutter: ^9.0.0
   sizer: ^2.0.15
   flutter_webrtc:
   sdp_transform:
   flutter_callkit_incoming: ^2.0.0+1
   uuid:
+  get: ^4.6.5
+  get_storage:
+  custom_search_bar: ^0.0.3
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

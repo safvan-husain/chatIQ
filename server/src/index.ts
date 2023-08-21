@@ -13,6 +13,7 @@ import { connect } from "http2";
 import { onWebSocket } from "./utils/web_socket";
 import { ProfileRouter } from "./routes/user_account";
 import { aiRouter } from "./routes/ai_generate";
+import { messageRouter } from "./routes/message_router";
 
 dotenv.config();
 const app = express();
@@ -23,31 +24,28 @@ app.use(cors());
 app.use(express.json());
 app.use(SigninRouter);
 app.use(SignUpRouter);
+app.use(messageRouter);
 app.use(DataRouter);
-app.use(ProfileRouter); 
-app.use(aiRouter);
+app.use(ProfileRouter);
+app.use(aiRouter); 
 
 app.get("/", (req, res) => {
   res.send("privacy policy");
 });
-     
+
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.MongoUrl!, () => {
-  console.log(mongoose.connection.readyState==1? "MongoDB connected!" : "MongoDB Not connected!"); 
+  console.log(
+    mongoose.connection.readyState == 1
+      ? "MongoDB connected!"
+      : "MongoDB Not connected!"
+  );
 });
 
-const server = app.listen(process.env.PORT, function () {
-  console.log("port lisenting on " + process.env.PORT);
-}).on("error", function (err) {
-  process.once("SIGUSR2", function () {
-    process.kill(process.pid, "SIGUSR2");
-  });
-  process.on("SIGINT", function () {
-    // this is only called on ctrl+c, not restart
-    process.kill(process.pid, "SIGINT");
-  });
-});
+const server = app
+  .listen(process.env.PORT, function () {
+    console.log("port lisenting on " + process.env.PORT);
+  }) 
 
 const wss = new websocket.Server({ server });
 onWebSocket(wss);
- 

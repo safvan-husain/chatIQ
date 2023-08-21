@@ -1,6 +1,6 @@
 import { Response, Router } from "express";
 import { auth } from "../middlewares/authentication";
-import UserModel from "../model/user_model";
+import {UserModel} from "../model/user_model";
 import { Token } from "../utils/auth_token";
 import { Password } from "../utils/password_hash";
 
@@ -30,6 +30,8 @@ router.post("/auth/sign-in", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
 router.post("/auth/google-in", async (req, res) => {
   const { email, apptoken } = req.body;
   try {
@@ -38,8 +40,6 @@ router.post("/auth/google-in", async (req, res) => {
     if (user) {
       user.appToken = apptoken;
       user.save();
-      console.log( "is it same",user.appToken === apptoken);
-      
       token = new Token().generate(user._id);
       res.status(200).json({ user: user, token: token });
     } else {

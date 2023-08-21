@@ -8,9 +8,11 @@ abstract class ChatEvent extends Equatable {
   List<Object> get props => [];
 }
 
+// ignore: must_be_immutable
 class ShowChatEvent extends ChatEvent {
   final String chatId;
-  const ShowChatEvent({required this.chatId});
+  String Function()? setUsername;
+  ShowChatEvent({required this.chatId, this.setUsername});
 }
 
 class SendMessageEvent extends ChatEvent {

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +5,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'message_tile.dart';
 
-class ChatViewArea extends StatelessWidget {
-  ChatViewArea({
+class ChatViewArea extends StatefulWidget {
+  const ChatViewArea({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<ChatViewArea> createState() => _ChatViewAreaState();
+}
+
+class _ChatViewAreaState extends State<ChatViewArea> {
   final ScrollController _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Scroll to the beginning of the ListView (bottom of the original list)
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
     return BlocConsumer<ChatBloc, ChatState>(
@@ -35,7 +39,10 @@ class ChatViewArea extends StatelessWidget {
           ),
         );
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        setState(() {});
+      },
     );
   }
 }

@@ -4,7 +4,6 @@ exports.auth = void 0;
 const auth_token_1 = require("../utils/auth_token");
 const auth = (req, res, next) => {
     var userID = new auth_token_1.Token().getUserIdFromToken(req.headers["x-auth-token"]);
-    // var userID = jwt.decode(req.headers["x-auth-token"]);
     if (userID) {
         req.userID = userID;
         next();

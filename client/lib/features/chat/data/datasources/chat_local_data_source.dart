@@ -68,18 +68,7 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<Message> cacheMessage(Message message, String to) async {
     try {
-      var re = await databaseHelper.fetchUsersFromDB(userName: to);
-      UserModel user = UserModel.fromMap(re[0], message);
-      message.setChatId(user.id);
-      var messageId = await databaseHelper.insertAMessageToDB(message);
-      user.setLastMessageId(messageId);
-
-      user.setLastSeenMessage(messageId);
-      await databaseHelper.updateDBColumn(
-        tableName: "recent_chats",
-        object: user.toMap(),
-        id: user.id,
-      );
+      await databaseHelper.insertAMessageToDB(message, to);
 
       return message;
     } catch (e) {

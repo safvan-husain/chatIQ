@@ -259,6 +259,7 @@ class WebrtcHelper {
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
     _localVideoRenderer.srcObject = stream;
+    logSuccess('local video renderer loaded successfully');
     return stream;
   }
 }

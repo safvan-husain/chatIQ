@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
 import 'package:client/features/Authentication/domain/usecases/get_user.dart';
@@ -25,15 +23,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     required RegisterUser registerUser,
     required GetCachedUser getCachedUser,
     required LoginWithGoogle loginWithGoogle,
-  }) : super(AuthenticationInitial(authState: AuthState.initial)) {
+  }) : super(const AuthenticationInitial(authState: AuthState.initial)) {
     _getUser = getUser;
     _registerUser = registerUser;
     _getCachedUser = getCachedUser;
     _loginWithGoogle = loginWithGoogle;
   }
-  Future<void> loginWithGoogle(String email) async {
+  Future<void> loginWithGoogle(
+      String email, void Function() onNewMessageCachingComplete) async {
     var result =
-        await _loginWithGoogle.call(LoginWithGoogleParams(email: email));
+        await _loginWithGoogle.call(LoginWithGoogleParams(email: email,onNewMessageCachingComplete: onNewMessageCachingComplete,));
     result.fold(
       (failure) {
         emit(AuthenticationFailure(
@@ -51,10 +50,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> getUser(String email, String password) async {
+  Future<void> getUser(String email, String password,
+      void Function() onNewMessageCachingComplete) async {
     Either<Failure, User> result = await _getUser(GetUserParams(
       username: email,
       password: password,
+      onNewMessageCachingComplete: onNewMessageCachingComplete,
     ));
     result.fold(
       (failure) {
@@ -73,8 +74,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> getCachedUser() async {
-    Either<Failure, User> result = await _getCachedUser(NoParams());
+  Future<void> getCachedUser(
+      void Function() onNewMessageCachingComplete) async {
+    Either<Failure, User> result = await _getCachedUser(GetCachedUserParams(onNewMessageCachingComplete));
     result.fold(
       (failure) {
         emit(AuthenticationFailure(

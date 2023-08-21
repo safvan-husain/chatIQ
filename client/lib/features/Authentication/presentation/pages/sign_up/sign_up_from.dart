@@ -22,7 +22,7 @@ class SignupFormPage extends StatelessWidget {
           listener: (context, state) {
             if (state.authState == AuthState.authenticated) {
               context.router.pushAndPopUntil(
-                const DefaultRoute(),
+                const HomeRoute(),
                 predicate: (route) => false,
               );
               log('uth');

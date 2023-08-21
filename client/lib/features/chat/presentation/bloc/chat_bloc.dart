@@ -16,6 +16,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final SendMessage sendMessage;
   final ShowMessage showMessage;
   final UpdateLastVisit updateLastVisit;
+  String? username;
   // final CacheMessage cacheMessage;
   ChatBloc(
     this.sendMessage,
@@ -24,15 +25,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     // this.cacheMessage,
   ) : super(const ChatStateImpl(messages: [])) {
     on<ShowChatEvent>((event, emit) async {
-      var result = await showMessage.call(ShowMessageParams(event.chatId));
-      result.fold(
-        (l) {
-          emit(const ChatFailure());
-        },
-        (r) {
-          emit(ChatStateImpl(messages: r));
-        },
-      );
+      if (event.setUsername != null) {
+        username = event.setUsername!();
+      }
+      if (username == event.chatId) {
+        var result = await showMessage.call(ShowMessageParams(event.chatId));
+        result.fold(
+          (l) {
+            emit(const ChatFailure());
+          },
+          (r) {
+            emit(ChatStateImpl(messages: r));
+          },
+        );
+      }
     });
     on<SendMessageEvent>(
       (event, emit) async {

@@ -34,9 +34,6 @@ class AnswerCallState extends VideoCallState {
   });
 }
 
-class RejectCallState extends VideoCallState {
-  const RejectCallState({
-    super.localVideoRenderer = null,
-    super.remoteVideoRenderer = null,
-  });
+class BusyCallState extends VideoCallState {
+  const BusyCallState();
 }

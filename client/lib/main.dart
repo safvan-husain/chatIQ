@@ -1,3 +1,4 @@
+import 'package:client/constance/theme_services.dart';
 import 'package:client/features/Authentication/data/repositories/user_repository_impl.dart';
 import 'package:client/features/Authentication/domain/repositories/user_repository.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
@@ -16,9 +17,11 @@ import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/features/home/domain/usecases/cache_message.dart';
 import 'package:client/features/home/domain/usecases/get_local_chats.dart';
 import 'package:client/features/home/domain/usecases/get_remote_chats.dart';
-import 'package:client/features/video_call/domain/repositories/video_call_repository.dart';
-import 'package:client/features/video_call/domain/usecases/answer_call.dart';
-import 'package:client/features/video_call/domain/usecases/reject_call.dart';
+import 'package:client/features/settings/data/datasources/local_settings_data_source.dart';
+import 'package:client/features/settings/data/datasources/remote_settings_data_source.dart';
+import 'package:client/features/settings/domain/repositories/settings_repository.dart';
+import 'package:client/features/settings/domain/usecases/delete_local_chats.dart';
+import 'package:client/features/settings/domain/usecases/delete_remote_data.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -26,12 +29,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constance/theme.dart';
 import 'core/Injector/injector.dart';
-import 'core/Injector/ws_injector.dart';
 import 'core/helper/database/data_base_helper.dart';
 import 'core/helper/firebase/firebase_background_message_handler.dart';
 import 'features/Authentication/data/datasources/user_local_data_source.dart';
@@ -40,21 +43,23 @@ import 'features/home/data/datasources/home_local_data_source.dart';
 import 'features/home/data/datasources/home_remote_data_source.dart';
 import 'features/home/data/repositories/home_repository_impl.dart';
 import 'features/home/domain/repositories/home_repositoy.dart';
-import 'features/home/domain/usecases/log_out.dart';
+import 'features/settings/domain/usecases/log_out.dart';
 import 'features/home/presentation/cubit/home_cubit.dart';
-import 'features/video_call/data/datasources/video_call_local_data_source.dart';
-import 'features/video_call/data/datasources/video_call_remote_data_source.dart';
-import 'features/video_call/data/repositories/video_call_repository_impl.dart';
-import 'features/video_call/domain/usecases/make_call.dart';
+import 'features/settings/data/repositories/settings_repository_impl.dart';
+import 'features/settings/presentation/cubit/settings_cubit.dart';
 import 'features/video_call/presentation/bloc/video_call_bloc.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Injection.initInjection();
+  await GetStorage.init();
 
   await Firebase.initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessage.listen(firebaseMessagingBackgroundHandler);
+
   if (!kIsWeb) {
     await setupFlutterNotifications();
   }
@@ -74,10 +79,11 @@ void main() async {
     localDataSource: ChatLocalDataSource(databaseHelper: dataBaseHelper),
     remoteDataSource: ChatRemoteDataSource(),
   );
-  VideoCallRepository videoCallRepository = VideoCallRepositoryImpl(
-    VideoCallLocalDataSource(),
-    VideoCallRemoteDataSource(),
+  SettingsRepository settingsRepository = SettingsRepositoryImpl(
+    RemoteSettingDataSource(http.Client()),
+    LocalSettingDataSource(dataBaseHelper),
   );
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -94,16 +100,18 @@ void main() async {
           ),
         ),
         BlocProvider(
-          create: (_) => VideoCallBloc(
-            MakeCall(videoCallRepository),
-            AnswerCall(videoCallRepository),
-            RejectCall(videoCallRepository),
+          create: (_) => VideoCallBloc(),
+        ),
+        BlocProvider(
+          create: (_) => SettingsCubit(
+            Logout(settingsRepository),
+            DeleteLocalChats(settingsRepository),
+            DeleteRemoteData(settingsRepository),
           ),
         ),
         BlocProvider(
           create: (_) => HomeCubit(
               getRemoteChats: GetRemoteChats(homeRepository: homeRepository),
-              logout: Logout(homeRepository),
               getLocalChats: GetLocalChats(homeRepository),
               cacheMessage: CacheMessage(homeRepository)),
         ),
@@ -131,13 +139,14 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return GetMaterialApp.router(
       routerDelegate: _appRouter.delegate(),
       routeInformationParser: _appRouter.defaultRouteParser(),
       debugShowCheckedModeBanner: false,
       title: 'Flutter Chat App',
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: MyTheme.light,
+      darkTheme: MyTheme.dark,
+      themeMode: ThemeService().theme,
     );
   }
 }

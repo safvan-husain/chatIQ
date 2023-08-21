@@ -1,8 +1,9 @@
 import * as websocket from "ws";
-import { Message } from "../model/message_model";
-import UserModel from "../model/user_model";
+import { MessageModel } from "../model/message_model";
+import { UserModel } from "../model/user_model";
 import { sendMessage, makeCall } from "./push_notification";
 import { WSEvent } from "./ws_event";
+import { saveMessageDB } from "./data_base_methods";
 
 export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
   var webSockets: any = {};
@@ -19,7 +20,7 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
         webSockets[userID].send(
           JSON.stringify({
             cmd: "connected_devices",
-            connected_devices: conected_devices, 
+            connected_devices: conected_devices,
           })
         );
       }
@@ -39,34 +40,33 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
               title: ws_event.senderUsername,
               body: ws_event.message,
               username: ws_event.recieverUsername,
-            }); 
+            });
             var response: string = ws_event.toJson("message");
             reciever.send(response);
+           
           } else if (ws_event.eventName == "request") {
-            
-            makeCall(ws_event.recieverUsername, ws_event.senderUsername);
-
-          }  else if (ws_event.eventName == "offer") {
+            var response: string = ws_event.toJson("request");
+            reciever.send(response);
+          } else if (ws_event.eventName == "offer") {
             var response = ws_event.toJson("offer");
-            webSockets[ws_event.recieverUsername].send(response);  
+            webSockets[ws_event.recieverUsername].send(response);
           } else if (ws_event.eventName == "answer") {
             var response = ws_event.toJson("answer");
-            // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
-
-            // for (const userID in webSockets) {
-
-            //   //sending to every client in the network
-            //   webSockets[userID].send(response);
-            // }
           } else if (ws_event.eventName === "candidate") {
             var response = ws_event.toJson("candidate");
-            // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
-          }else if(ws_event.eventName =="end"){
+          } else if (ws_event.eventName == "end") {
             var response = ws_event.toJson("end");
-            // console.log(response);
             webSockets[ws_event.recieverUsername].send(response);
+          } else if (ws_event.eventName === "busy") {
+            var response: string = ws_event.toJson("busy");
+            reciever.send(response);
+          } else if (ws_event.eventName === "available") {
+            makeCall(ws_event.senderUsername, ws_event.recieverUsername);
+          } else if (ws_event.eventName == "rejection") {
+            var response: string = ws_event.toJson("rejection");
+            reciever.send(response);
           }
         } else {
           if (ws_event.eventName === "message") {
@@ -77,7 +77,13 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
               body: ws_event.message,
               username: ws_event.recieverUsername,
             });
-          }else if(ws_event.eventName === "request"){
+            saveMessageDB(
+              ws_event.senderUsername,
+              ws_event.recieverUsername,
+              ws_event.message,
+              true
+            );
+          } else if (ws_event.eventName === "request") {
             makeCall(ws_event.recieverUsername, ws_event.senderUsername);
           }
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:client/common/entity/message.dart';
 import 'package:client/features/home/domain/entities/user.dart';
 
+// ignore: must_be_immutable
 class UserModel extends User {
   UserModel({
     required super.username,

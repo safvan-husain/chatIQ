@@ -5,11 +5,12 @@ import 'package:client/constance/app_config.dart';
 import 'package:client/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../common/widgets/avatar.dart';
 import '../../../../core/Injector/ws_injector.dart';
+import '../../../../core/helper/webrtc/webrtc_helper.dart';
 import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
 import '../../../video_call/presentation/bloc/video_call_bloc.dart';
 import '../widgets/chat_view_area.dart';
@@ -28,25 +29,28 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   late bool isThisFirstCall;
-  DrawableRoot? svgRoot;
+  Future<Widget>? avatar;
   late AppConfig _config;
 
   @override
   void initState() {
     isThisFirstCall = true;
-    context.read<ChatBloc>().add(ShowChatEvent(chatId: widget.userame));
+    context.read<ChatBloc>().add(ShowChatEvent(
+          chatId: widget.userame,
+          setUsername: () => widget.userame,
+        ));
 
-    // _generateSvg(widget.user.avatar);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     _config = AppConfig(context);
+    avatar = showAvatar(40, username: widget.userame);
     return WillPopScope(
         onWillPop: () async {
           context.router
-              .pushAndPopUntil(const DefaultRoute(), predicate: (_) => false);
+              .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
           context
               .read<ChatBloc>()
               .add(UpdateLastVisitEvent(userName: widget.userame));
@@ -57,7 +61,7 @@ class _ChatPageState extends State<ChatPage> {
           appBar: _buildAppBar(),
           body: Stack(
             children: [
-              Positioned(
+              const Positioned(
                 top: 0,
                 bottom: 70,
                 left: 0,
@@ -94,7 +98,15 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             Padding(
               padding: EdgeInsets.only(right: _config.rWP(1)),
-              child: const CircleAvatar(),
+              child: FutureBuilder(
+                builder: (ctxt, snp) {
+                  if (snp.connectionState == ConnectionState.done) {
+                    return snp.data ?? const CircleAvatar();
+                  }
+                  return const CircleAvatar();
+                },
+                future: avatar,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -107,21 +119,35 @@ class _ChatPageState extends State<ChatPage> {
           ],
         ),
       ),
-      leading: const Icon(Icons.arrow_back_ios_outlined),
+      leading: InkWell(
+        onTap: () => Navigator.of(context).pop(),
+        child: const Icon(Icons.arrow_back_ios_outlined),
+      ),
       titleSpacing: 0,
       actions: [
         InkWell(
-          onTap: () {
-            context.router.push(VideoCallRoute(recieverName: widget.userame));
-            context.read<VideoCallBloc>().add(
-                  RequestCallEvent(
+          onTap: () async {
+            await WSInjection.injector.get<WebrtcHelper>().initVideoRenders();
+            await WSInjection.injector
+                .get<WebrtcHelper>()
+                .createPeerConnecion();
+            if (context.mounted) {
+              context.router.push(VideoCallRoute(recieverName: widget.userame));
+              context.read<VideoCallBloc>().add(
+                    RequestCallEvent(
                       recieverName: widget.userame,
-                      my_name: context
+                      myName: context
                           .read<AuthenticationCubit>()
                           .state
                           .user!
-                          .username),
-                );
+                          .username,
+                      onCancel: () {
+                        context.router.pushAndPopUntil(const HomeRoute(),
+                            predicate: (_) => false);
+                      },
+                    ),
+                  );
+            }
           },
           child: FaIcon(
             FontAwesomeIcons.video,

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.onWebSocket = void 0;
 const push_notification_1 = require("./push_notification");
 const ws_event_1 = require("./ws_event");
+const data_base_methods_1 = require("./data_base_methods");
 function onWebSocket(wss) {
     var webSockets = {};
     var conected_devices = [];
@@ -46,7 +47,8 @@ function onWebSocket(wss) {
                         reciever.send(response);
                     }
                     else if (ws_event.eventName == "request") {
-                        (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);
+                        var response = ws_event.toJson("request");
+                        reciever.send(response);
                     }
                     else if (ws_event.eventName == "offer") {
                         var response = ws_event.toJson("offer");
@@ -54,22 +56,26 @@ function onWebSocket(wss) {
                     }
                     else if (ws_event.eventName == "answer") {
                         var response = ws_event.toJson("answer");
-                        // console.log(response);
                         webSockets[ws_event.recieverUsername].send(response);
-                        // for (const userID in webSockets) {
-                        //   //sending to every client in the network
-                        //   webSockets[userID].send(response);
-                        // }
                     }
                     else if (ws_event.eventName === "candidate") {
                         var response = ws_event.toJson("candidate");
-                        // console.log(response);
                         webSockets[ws_event.recieverUsername].send(response);
                     }
                     else if (ws_event.eventName == "end") {
                         var response = ws_event.toJson("end");
-                        // console.log(response);
                         webSockets[ws_event.recieverUsername].send(response);
+                    }
+                    else if (ws_event.eventName === "busy") {
+                        var response = ws_event.toJson("busy");
+                        reciever.send(response);
+                    }
+                    else if (ws_event.eventName === "available") {
+                        (0, push_notification_1.makeCall)(ws_event.senderUsername, ws_event.recieverUsername);
+                    }
+                    else if (ws_event.eventName == "rejection") {
+                        var response = ws_event.toJson("rejection");
+                        reciever.send(response);
                     }
                 }
                 else {
@@ -80,6 +86,7 @@ function onWebSocket(wss) {
                             body: ws_event.message,
                             username: ws_event.recieverUsername,
                         });
+                        (0, data_base_methods_1.saveMessageDB)(ws_event.senderUsername, ws_event.recieverUsername, ws_event.message, true);
                     }
                     else if (ws_event.eventName === "request") {
                         (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);

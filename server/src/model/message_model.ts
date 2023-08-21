@@ -1,35 +1,37 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface Message extends Document {
-  senderId: string;
-  receiverId: string;
+  senderId: String,
+  receiverId: String,
   msgText: string;
   isRead: boolean;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-const messageSchema: Schema = new mongoose.Schema({
-  senderId: {
-    type: String,
-    required: true,
+const messageSchema: Schema = new mongoose.Schema(
+  {
+    senderId: {
+      type: String,
+      required: true,
+    },
+    receiverId: {
+      type: String,
+      required: true,
+    },
+    msgText: {
+      type: String,
+      required: true,
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
-  receiverId: {
-    type: String,
-    required: true,
-  },
-  msgText: {
-    type: String,
-    required: true
-  },
-  isRead: {
-    type: Boolean,
-    default: false
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
-const Message = mongoose.model<Message>('Message', messageSchema);
+const MessageModel = mongoose.model<Message>("Message", messageSchema);
 
-export { Message, messageSchema}
+export { MessageModel, messageSchema };

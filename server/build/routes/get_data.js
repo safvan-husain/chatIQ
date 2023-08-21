@@ -8,23 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataRouter = void 0;
 const express_1 = require("express");
 const authentication_1 = require("../middlewares/authentication");
-const user_model_1 = __importDefault(require("../model/user_model"));
+const user_model_1 = require("../model/user_model");
 const router = (0, express_1.Router)();
 exports.DataRouter = router;
 router.get("/get-data/all-user", authentication_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let users = yield user_model_1.default.find();
-        let user = yield user_model_1.default.findById(req.userID);
+        let users = yield user_model_1.UserModel.find();
+        let user = yield user_model_1.UserModel.findById(req.userID);
         users = users.filter((x) => x.username != user.username);
-        // console.log(users);
-        // console.log(req.userID);
         res.status(200).json(users);
     }
     catch (err) {

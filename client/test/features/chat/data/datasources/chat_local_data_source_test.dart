@@ -1,4 +1,3 @@
-import 'package:client/common/entity/message.dart';
 import 'package:client/common/model/message_model.dart';
 import 'package:client/features/chat/data/datasources/chat_local_data_source.dart';
 import 'package:flutter_test/flutter_test.dart';

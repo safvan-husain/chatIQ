@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:client/core/Injector/ws_injector.dart';
+import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -21,7 +23,8 @@ class WebSocketHelper {
     required void Function(WSEvent) onCall,
     required void Function(WSEvent) onAnswer,
     required void Function(WSEvent) onCandidate,
-    required void Function(WSEvent) onEnd,
+    required void Function() onEnd,
+    required void Function() onBusy,
   }) {
     myId = myid;
     try {
@@ -33,19 +36,38 @@ class WebSocketHelper {
             // log(message);
           } else {
             WSEvent event = WSEvent.fromJson(message);
-            logSuccess(event.eventName);
-            if (event.eventName == 'message') {
-              onMessage(event.toMessage(), event.senderUsername);
-            } else if (event.eventName == "offer") {
-              onCall(event);
-            } else if (event.eventName == "answer") {
-              onAnswer(event);
-            } else if (event.eventName == "candidate") {
-              onCandidate(event);
-            } else if (event.eventName == "end") {
-              onEnd(event);
+            switch (event.eventName) {
+              case 'message':
+                onMessage(event.toMessage(), event.senderUsername);
+                break;
+              case 'offer':
+                onCall(event);
+                break;
+              case 'answer':
+                onAnswer(event);
+                break;
+              case 'candidate':
+                onCandidate(event);
+                break;
+              case 'end':
+                onEnd();
+                break;
+              case 'busy':
+                onBusy();
+                break;
+              case 'rejection':
+                onBusy();
+                break;
+              case 'request':
+                if (WSInjection.injector.get<WebrtcHelper>().isCreatedPC) {
+                  sendBusy(recieverId: event.senderUsername);
+                } else {
+                  sendAvailable(recieverId: event.senderUsername);
+                }
+                break;
+              default:
             }
-            // log(event.toJson());
+            logSuccess(event.eventName);
           }
         },
         onDone: () {
@@ -130,6 +152,28 @@ class WebSocketHelper {
   void sendRequest({required String recieverId}) {
     WSEvent data = WSEvent(
       "request",
+      myId,
+      recieverId,
+      '',
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendBusy({required String recieverId}) {
+    WSEvent data = WSEvent(
+      "busy",
+      myId,
+      recieverId,
+      '',
+      DateTime.now(),
+    );
+    _channel.sink.add(data.toJson());
+  }
+
+  void sendAvailable({required String recieverId}) {
+    WSEvent data = WSEvent(
+      "available",
       myId,
       recieverId,
       '',

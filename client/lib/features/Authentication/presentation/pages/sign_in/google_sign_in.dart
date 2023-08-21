@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:auto_route/auto_route.dart';
 
+import '../../../../home/presentation/cubit/home_cubit.dart';
 import '../../../data/repositories/google_auth_services.dart';
 
 class GoogleSignInPage extends StatefulWidget {
@@ -21,12 +22,17 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     await GoogleSignInApi.logout();
     account = await GoogleSignInApi.login();
     if (account?.email != null && context.mounted) {
-      context.read<AuthenticationCubit>().loginWithGoogle(account!.email);
+      context.read<AuthenticationCubit>().loginWithGoogle(
+            account!.email,
+            context.read<HomeCubit>().getChats,
+          );
     }
   }
 
   void tokenValidation(BuildContext context) async {
-    context.read<AuthenticationCubit>().getCachedUser();
+    context
+        .read<AuthenticationCubit>()
+        .getCachedUser(context.read<HomeCubit>().getChats);
   }
 
   @override
@@ -41,7 +47,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
       listener: (context, state) {
         if (state.authState == AuthState.authenticated) {
           context.router.pushAndPopUntil(
-            const DefaultRoute(),
+            const HomeRoute(),
             predicate: (state) => false,
           );
         }

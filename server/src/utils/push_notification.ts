@@ -1,4 +1,4 @@
-import UserModel from "../model/user_model";
+import {UserModel} from "../model/user_model";
 import * as dotenv from "dotenv";
 
 dotenv.config();

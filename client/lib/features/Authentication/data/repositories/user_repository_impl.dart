@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:client/common/entity/message.dart';
 import 'package:client/core/error/exception.dart';
 import 'package:client/features/Authentication/data/datasources/user_local_data_source.dart';
 import 'package:client/platform/network_info.dart';
@@ -27,9 +26,13 @@ class UserRepositoryImpl extends UserRepository {
   Future<Either<Failure, User>> getUser(
     String emailorUsername,
     String password,
+    onNewMessageCachingComplete,
   ) async {
     try {
       User user = await remoteDataSource.getUser(emailorUsername, password);
+      localDataSource
+          .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
+          .then((value) => onNewMessageCachingComplete());
       localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException {
@@ -57,22 +60,41 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getCachedUser() async {
+  Future<Either<Failure, User>> getCachedUser(
+    onNewMessageCachingComplete,
+  ) async {
     try {
-      return Right(await localDataSource.getUser());
+      var user = await localDataSource.getUser();
+      localDataSource
+          .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
+          .then((value) => onNewMessageCachingComplete());
+      return Right(user);
     } on CacheException {
       return Left(CacheFailure());
     }
   }
 
   @override
-  Future<Either<Failure, User>> loginUsingGoogle(String email) async {
+  Future<Either<Failure, User>> loginUsingGoogle(
+    String email,
+    onNewMessageCachingComplete,
+  ) async {
     try {
       var user = await remoteDataSource.getUserWithGoogle(email);
+      localDataSource
+          .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
+          .then((value) => onNewMessageCachingComplete());
       localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException {
       return Left(ServerFailure());
     }
+  }
+
+  @override
+  Future<Either<Failure, Map<User, List<Message>>>> getUnredChats(
+      String authToken) {
+    // TODO: implement getUnredChats
+    throw UnimplementedError();
   }
 }

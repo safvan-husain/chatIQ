@@ -8,14 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SigninRouter = void 0;
 const express_1 = require("express");
 const authentication_1 = require("../middlewares/authentication");
-const user_model_1 = __importDefault(require("../model/user_model"));
+const user_model_1 = require("../model/user_model");
 const auth_token_1 = require("../utils/auth_token");
 const password_hash_1 = require("../utils/password_hash");
 const router = (0, express_1.Router)();
@@ -23,7 +20,7 @@ exports.SigninRouter = router;
 router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password, apptoken } = req.body;
     try {
-        let user = yield user_model_1.default.findOne({ username });
+        let user = yield user_model_1.UserModel.findOne({ username });
         let token;
         if (user) {
             user.appToken = apptoken;
@@ -49,12 +46,11 @@ router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, fun
 router.post("/auth/google-in", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, apptoken } = req.body;
     try {
-        let user = yield user_model_1.default.findOne({ email: email });
+        let user = yield user_model_1.UserModel.findOne({ email: email });
         let token;
         if (user) {
             user.appToken = apptoken;
             user.save();
-            console.log("is it same", user.appToken === apptoken);
             token = new auth_token_1.Token().generate(user._id);
             res.status(200).json({ user: user, token: token });
         }
@@ -70,7 +66,7 @@ router.post("/auth/google-in", (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 router.get("/auth/token", authentication_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        var user = yield user_model_1.default.findById(req.userID);
+        var user = yield user_model_1.UserModel.findById(req.userID);
         res.status(200).json(user);
     }
     catch (error) {

@@ -17,7 +17,8 @@ class WSInjection {
     required void Function(WSEvent) onCall,
     required void Function(WSEvent) onAnswer,
     required void Function(WSEvent) onCandidate,
-    required void Function(WSEvent) onEnd,
+    required void Function() onEnd,
+    required void Function() onBusy,
   }) async {
     await _websocketHelper.initSocket(
       myid: myid,
@@ -26,6 +27,7 @@ class WSInjection {
       onAnswer: onAnswer,
       onCandidate: onCandidate,
       onEnd: onEnd,
+      onBusy: onBusy,
     );
     injector = Injector();
     if (!injector.isMapped<WebSocketHelper>()) {

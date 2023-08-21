@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:client/constance/color_log.dart';
+import 'package:client/features/Authentication/data/models/remote_message_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../../../constance/constant_variebles.dart';
@@ -35,6 +37,7 @@ abstract class UserRemoteDataSource {
     String username,
     String password,
   );
+  Future<List<RemoteMesseageModel>> getUnredChats(String authtoken);
 }
 
 class UserRemoteDataSourceImpl extends UserRemoteDataSource {
@@ -118,6 +121,27 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
     if (response.statusCode == 200) {
       return UserModel.fromApiJson(response.body);
     } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<RemoteMesseageModel>> getUnredChats(authtoken) async {
+    final http.Response response = await httpClient.get(
+      Uri.parse('$uri/message'),
+      headers: <String, String>{
+        'content-type': 'application/json; charset=utf-8',
+        'x-auth-token': authtoken,
+      },
+    );
+    if (response.statusCode == 200) {
+      List<RemoteMesseageModel> remoteMesse = [];
+      for (var i in jsonDecode(response.body) as List) {
+        remoteMesse.add(RemoteMesseageModel.fromMap(i));
+      }
+      return remoteMesse;
+    } else {
+      log(response.statusCode.toString());
       throw ServerException();
     }
   }

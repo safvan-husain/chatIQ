@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 
 import 'package:client/core/error/failure.dart';
 import 'package:client/core/usecases/use_case.dart';
-import 'package:client/features/home/domain/entities/user.dart';
 
 import '../../../../common/entity/message.dart';
 import '../repositories/chat_repository.dart';
