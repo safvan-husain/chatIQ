@@ -27,19 +27,13 @@ class SendMessageEvent extends ChatEvent {
   });
 }
 
-class CacheMessageEvent extends ChatEvent {
-  final String message;
-  final User to;
 
-  const CacheMessageEvent({
-    required this.message,
-    required this.to,
-  });
-}
 
 class UpdateLastVisitEvent extends ChatEvent {
   final String userName;
+  final void Function() onUpdateLastVisitCompleted;
   const UpdateLastVisitEvent({
     required this.userName,
+    required this.onUpdateLastVisitCompleted,
   });
 }

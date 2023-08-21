@@ -6,7 +6,6 @@
 import 'dart:async' as _i5;
 
 import 'package:client/core/error/failure.dart' as _i6;
-import 'package:client/core/usecases/use_case.dart' as _i10;
 import 'package:client/features/Authentication/domain/entities/user.dart'
     as _i7;
 import 'package:client/features/Authentication/domain/repositories/user_repository.dart'
@@ -16,7 +15,7 @@ import 'package:client/features/Authentication/domain/usecases/get_cache_user.da
 import 'package:client/features/Authentication/domain/usecases/get_user.dart'
     as _i4;
 import 'package:client/features/Authentication/domain/usecases/login_with_google.dart'
-    as _i11;
+    as _i10;
 import 'package:client/features/Authentication/domain/usecases/register_user.dart'
     as _i8;
 import 'package:dartz/dartz.dart' as _i3;
@@ -141,7 +140,8 @@ class MockGetCachedUser extends _i1.Mock implements _i9.GetCachedUser {
         ),
       ) as _i2.UserRepository);
   @override
-  _i5.Future<_i3.Either<_i6.Failure, _i7.User>> call(_i10.NoParams? params) =>
+  _i5.Future<_i3.Either<_i6.Failure, _i7.User>> call(
+          _i9.GetCachedUserParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #call,
@@ -161,7 +161,7 @@ class MockGetCachedUser extends _i1.Mock implements _i9.GetCachedUser {
 /// A class which mocks [LoginWithGoogle].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLoginWithGoogle extends _i1.Mock implements _i11.LoginWithGoogle {
+class MockLoginWithGoogle extends _i1.Mock implements _i10.LoginWithGoogle {
   MockLoginWithGoogle() {
     _i1.throwOnMissingStub(this);
   }
@@ -176,7 +176,7 @@ class MockLoginWithGoogle extends _i1.Mock implements _i11.LoginWithGoogle {
       ) as _i2.UserRepository);
   @override
   _i5.Future<_i3.Either<_i6.Failure, _i7.User>> call(
-          _i11.LoginWithGoogleParams? params) =>
+          _i10.LoginWithGoogleParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #call,

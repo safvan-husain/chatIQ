@@ -6,7 +6,6 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/error/failure.dart';
-import '../../../../core/usecases/use_case.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/usecases/login_with_google.dart';
 
@@ -31,8 +30,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
   Future<void> loginWithGoogle(
       String email, void Function() onNewMessageCachingComplete) async {
-    var result =
-        await _loginWithGoogle.call(LoginWithGoogleParams(email: email,onNewMessageCachingComplete: onNewMessageCachingComplete,));
+    var result = await _loginWithGoogle.call(LoginWithGoogleParams(
+      email: email,
+      onNewMessageCachingComplete: onNewMessageCachingComplete,
+    ));
     result.fold(
       (failure) {
         emit(AuthenticationFailure(
@@ -76,7 +77,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future<void> getCachedUser(
       void Function() onNewMessageCachingComplete) async {
-    Either<Failure, User> result = await _getCachedUser(GetCachedUserParams(onNewMessageCachingComplete));
+    Either<Failure, User> result =
+        await _getCachedUser(GetCachedUserParams(onNewMessageCachingComplete));
     result.fold(
       (failure) {
         emit(AuthenticationFailure(

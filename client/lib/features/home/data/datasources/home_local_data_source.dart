@@ -35,9 +35,10 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   Future<List<NewMessages>> getChats() async {
     List<NewMessages> res = [];
     try {
-      List<dynamic> usersMap = await databaseHelper.fetchUsersFromDB();
+      List<dynamic> usersMap = await databaseHelper.getOrInsertUsersFromDB();
+      print(usersMap);
       if (usersMap.isNotEmpty) {
-        //adding all users with corresponding last message
+        //   //adding all users with corresponding last message
         for (var i in usersMap) {
           print(i);
           int lastMessageId = i['last_message'];
@@ -50,7 +51,7 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
       }
       return res;
     } catch (e) {
-      logError(e.toString()); 
+      logError(e.toString() + "here");
       throw CacheException();
     }
   }
@@ -68,12 +69,7 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   @override
   Future<NewMessages> cacheMessage(Message message, String from) async {
     try {
-      
-      return await databaseHelper.insertAMessageToDB(message,from);
-
-     
-
-      
+      return await databaseHelper.insertAMessageToDB(message, from);
     } catch (e) {
       print(e);
       throw CacheException();
@@ -83,9 +79,7 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   @override
   Future<void> cacheFriend(String username) async {
     try {
-      if (!await databaseHelper.isUserCached(username)) {
-        await databaseHelper.insertAuserToDB(username);
-      }
+      await databaseHelper.getOrInsertUsersFromDB(userName: username);
     } catch (e) {
       print(e);
       throw CacheException();
@@ -127,8 +121,6 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
 //   await databaseHelper.db
 //       .update("recent_chats", object, where: "id = ?", whereArgs: [id]);
 // }
-
-
 
 // Future<List<dynamic>> _fetchAllMessageFromAChat(int chatId) async {
 //   return await databaseHelper.db

@@ -119,9 +119,11 @@ class AppRouter extends _i12.RootStackRouter {
       );
     },
     SettingsRoute.name: (routeData) {
+      final args = routeData.argsAs<SettingsRouteArgs>(
+          orElse: () => const SettingsRouteArgs());
       return _i12.AdaptivePage<dynamic>(
         routeData: routeData,
-        child: _i11.SettingsPage(),
+        child: _i11.SettingsPage(key: args.key),
       );
     },
   };
@@ -388,12 +390,24 @@ class HomeRoute extends _i12.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i11.SettingsPage]
-class SettingsRoute extends _i12.PageRouteInfo<void> {
-  const SettingsRoute()
+class SettingsRoute extends _i12.PageRouteInfo<SettingsRouteArgs> {
+  SettingsRoute({_i13.Key? key})
       : super(
           SettingsRoute.name,
           path: '/settings-page',
+          args: SettingsRouteArgs(key: key),
         );
 
   static const String name = 'SettingsRoute';
+}
+
+class SettingsRouteArgs {
+  const SettingsRouteArgs({this.key});
+
+  final _i13.Key? key;
+
+  @override
+  String toString() {
+    return 'SettingsRouteArgs{key: $key}';
+  }
 }

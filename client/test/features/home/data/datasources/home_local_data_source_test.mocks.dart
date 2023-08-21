@@ -3,12 +3,13 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:client/common/entity/message.dart' as _i3;
-import 'package:client/core/helper/database/data_base_helper.dart' as _i4;
+import 'package:client/core/helper/database/data_base_helper.dart' as _i5;
+import 'package:client/features/home/presentation/cubit/home_cubit.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:shared_preferences/shared_preferences.dart' as _i6;
+import 'package:shared_preferences/shared_preferences.dart' as _i7;
 import 'package:sqflite/sqflite.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -42,8 +43,18 @@ class _FakeMessage_1 extends _i1.SmartFake implements _i3.Message {
         );
 }
 
-class _FakeDateTime_2 extends _i1.SmartFake implements DateTime {
-  _FakeDateTime_2(
+class _FakeNewMessages_2 extends _i1.SmartFake implements _i4.NewMessages {
+  _FakeNewMessages_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeDateTime_3 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -55,7 +66,7 @@ class _FakeDateTime_2 extends _i1.SmartFake implements DateTime {
 /// A class which mocks [DatabaseHelper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDatabaseHelper extends _i1.Mock implements _i4.DatabaseHelper {
+class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
   MockDatabaseHelper() {
     _i1.throwOnMissingStub(this);
   }
@@ -69,29 +80,30 @@ class MockDatabaseHelper extends _i1.Mock implements _i4.DatabaseHelper {
         ),
       ) as _i2.Database);
   @override
-  _i5.Future<bool> isUserCached(String? username) => (super.noSuchMethod(
+  _i6.Future<void> clearAllData() => (super.noSuchMethod(
         Invocation.method(
-          #isUserCached,
-          [username],
+          #clearAllData,
+          [],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<_i3.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
+  _i6.Future<_i3.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
         Invocation.method(
           #fetchLocalMessage,
           [id],
         ),
-        returnValue: _i5.Future<_i3.Message>.value(_FakeMessage_1(
+        returnValue: _i6.Future<_i3.Message>.value(_FakeMessage_1(
           this,
           Invocation.method(
             #fetchLocalMessage,
             [id],
           ),
         )),
-      ) as _i5.Future<_i3.Message>);
+      ) as _i6.Future<_i3.Message>);
   @override
-  _i5.Future<void> updateDBColumn({
+  _i6.Future<void> updateDBColumn({
     required String? tableName,
     required Map<String, dynamic>? object,
     required int? id,
@@ -106,67 +118,74 @@ class MockDatabaseHelper extends _i1.Mock implements _i4.DatabaseHelper {
             #id: id,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<int> insertAMessageToDB(_i3.Message? message) =>
+  _i6.Future<_i4.NewMessages> insertAMessageToDB(
+    _i3.Message? message,
+    String? chatter,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
           #insertAMessageToDB,
-          [message],
+          [
+            message,
+            chatter,
+          ],
         ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
+        returnValue: _i6.Future<_i4.NewMessages>.value(_FakeNewMessages_2(
+          this,
+          Invocation.method(
+            #insertAMessageToDB,
+            [
+              message,
+              chatter,
+            ],
+          ),
+        )),
+      ) as _i6.Future<_i4.NewMessages>);
   @override
-  _i5.Future<int> insertAuserToDB(String? username) => (super.noSuchMethod(
-        Invocation.method(
-          #insertAuserToDB,
-          [username],
-        ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
-  @override
-  _i5.Future<_i3.Message?> fetchLastMessageFromAChat(int? chatId) =>
+  _i6.Future<_i3.Message?> fetchLastMessageFromAChat(int? chatId) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchLastMessageFromAChat,
           [chatId],
         ),
-        returnValue: _i5.Future<_i3.Message?>.value(),
-      ) as _i5.Future<_i3.Message?>);
+        returnValue: _i6.Future<_i3.Message?>.value(),
+      ) as _i6.Future<_i3.Message?>);
   @override
-  _i5.Future<List<dynamic>> fetchAllMessageFromAChat(int? chatId) =>
+  _i6.Future<List<dynamic>> fetchAllMessageFromAChat(int? chatId) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchAllMessageFromAChat,
           [chatId],
         ),
-        returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i5.Future<List<dynamic>>);
+        returnValue: _i6.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i6.Future<List<dynamic>>);
   @override
-  _i5.Future<List<Map<String, dynamic>>> fetchUsersFromDB({
+  _i6.Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
     String? userName,
     int? id,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #fetchUsersFromDB,
+          #getOrInsertUsersFromDB,
           [],
           {
             #userName: userName,
             #id: id,
           },
         ),
-        returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i6.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i5.Future<List<Map<String, dynamic>>>);
+      ) as _i6.Future<List<Map<String, dynamic>>>);
 }
 
 /// A class which mocks [SharedPreferences].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
+class MockSharedPreferences extends _i1.Mock implements _i7.SharedPreferences {
   MockSharedPreferences() {
     _i1.throwOnMissingStub(this);
   }
@@ -219,7 +238,7 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
         [key],
       )) as List<String>?);
   @override
-  _i5.Future<bool> setBool(
+  _i6.Future<bool> setBool(
     String? key,
     bool? value,
   ) =>
@@ -231,10 +250,10 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
             value,
           ],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> setInt(
+  _i6.Future<bool> setInt(
     String? key,
     int? value,
   ) =>
@@ -246,10 +265,10 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
             value,
           ],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> setDouble(
+  _i6.Future<bool> setDouble(
     String? key,
     double? value,
   ) =>
@@ -261,10 +280,10 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
             value,
           ],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> setString(
+  _i6.Future<bool> setString(
     String? key,
     String? value,
   ) =>
@@ -276,10 +295,10 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
             value,
           ],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> setStringList(
+  _i6.Future<bool> setStringList(
     String? key,
     List<String>? value,
   ) =>
@@ -291,41 +310,41 @@ class MockSharedPreferences extends _i1.Mock implements _i6.SharedPreferences {
             value,
           ],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> remove(String? key) => (super.noSuchMethod(
+  _i6.Future<bool> remove(String? key) => (super.noSuchMethod(
         Invocation.method(
           #remove,
           [key],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> commit() => (super.noSuchMethod(
+  _i6.Future<bool> commit() => (super.noSuchMethod(
         Invocation.method(
           #commit,
           [],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<bool> clear() => (super.noSuchMethod(
+  _i6.Future<bool> clear() => (super.noSuchMethod(
         Invocation.method(
           #clear,
           [],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
   @override
-  _i5.Future<void> reload() => (super.noSuchMethod(
+  _i6.Future<void> reload() => (super.noSuchMethod(
         Invocation.method(
           #reload,
           [],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [Message].
@@ -373,7 +392,7 @@ class MockMessage extends _i1.Mock implements _i3.Message {
   @override
   DateTime get time => (super.noSuchMethod(
         Invocation.getter(#time),
-        returnValue: _FakeDateTime_2(
+        returnValue: _FakeDateTime_3(
           this,
           Invocation.getter(#time),
         ),

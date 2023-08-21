@@ -49,11 +49,13 @@ class _ChatPageState extends State<ChatPage> {
     avatar = showAvatar(40, username: widget.userame);
     return WillPopScope(
         onWillPop: () async {
-          context.router
-              .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
-          context
-              .read<ChatBloc>()
-              .add(UpdateLastVisitEvent(userName: widget.userame));
+          context.read<ChatBloc>().add(UpdateLastVisitEvent(
+                userName: widget.userame,
+                onUpdateLastVisitCompleted: () => context.router
+                    .pushAndPopUntil(const HomeRoute(),
+                        predicate: (_) => false),
+              ));
+
           return true;
         },
         child: Scaffold(
@@ -120,7 +122,14 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
       leading: InkWell(
-        onTap: () => Navigator.of(context).pop(),
+        onTap: () {
+        context.read<ChatBloc>().add(UpdateLastVisitEvent(
+                userName: widget.userame,
+                onUpdateLastVisitCompleted: () => context.router
+                    .pushAndPopUntil(const HomeRoute(),
+                        predicate: (_) => false),
+              ));
+        },
         child: const Icon(Icons.arrow_back_ios_outlined),
       ),
       titleSpacing: 0,

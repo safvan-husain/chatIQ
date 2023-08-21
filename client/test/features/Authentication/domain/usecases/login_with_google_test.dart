@@ -26,12 +26,12 @@ void main() {
   test(
     'should return a user for success',
     () async {
-      when(mockUserRepository.loginUsingGoogle('safvan@gmail.com'))
+      when(mockUserRepository.loginUsingGoogle('safvan@gmail.com',(){}))
           .thenAnswer((realInvocation) async => Right(user));
       Either<Failure, User> result = await loginWithGoogle
-          .call(LoginWithGoogleParams(email: 'safvan@gmail.com'));
+          .call(LoginWithGoogleParams(email: 'safvan@gmail.com',onNewMessageCachingComplete: (){}));
       expect(result, Right(user));
-      verify(mockUserRepository.loginUsingGoogle('safvan@gmail.com'));
+      verify(mockUserRepository.loginUsingGoogle('safvan@gmail.com',(){}));
       verifyNoMoreInteractions(mockUserRepository);
     },
   );

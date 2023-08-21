@@ -1,5 +1,4 @@
 import 'package:client/core/error/failure.dart';
-import 'package:client/core/usecases/use_case.dart';
 import 'package:client/features/Authentication/domain/entities/user.dart';
 import 'package:client/features/Authentication/domain/repositories/user_repository.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
@@ -29,11 +28,11 @@ void main() {
         email: 'safvan@gmail.com',
         token: '',
       );
-      when(mockUserRepository.getCachedUser())
+      when(mockUserRepository.getCachedUser((){}))
           .thenAnswer((realInvocation) async => Right(cachedUser));
-      final result = await getCachedUser(NoParams());
+      final result = await getCachedUser(GetCachedUserParams((){}));
       expect(result, Right(cachedUser));
-      verify(mockUserRepository.getCachedUser());
+      verify(mockUserRepository.getCachedUser((){}));
       verifyNoMoreInteractions(mockUserRepository);
     },
   );
@@ -41,11 +40,11 @@ void main() {
     'should get CacheFailure if user is null or empty in the cache',
     () async {
       Failure failure = CacheFailure();
-      when(mockUserRepository.getCachedUser())
+      when(mockUserRepository.getCachedUser((){}))
           .thenAnswer((realInvocation) async => Left(failure));
-      final result = await getCachedUser(NoParams());
+      final result = await getCachedUser(GetCachedUserParams((){}));
       expect(result, Left(failure));
-      verify(mockUserRepository.getCachedUser());
+      verify(mockUserRepository.getCachedUser((){}));
       verifyNoMoreInteractions(mockUserRepository);
     },
   );

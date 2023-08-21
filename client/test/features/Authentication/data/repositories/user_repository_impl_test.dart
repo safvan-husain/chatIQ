@@ -32,7 +32,7 @@ void main() {
     () async {
       when(mockUserRemoteDataSource.getUser('', ''))
           .thenAnswer((realInvocation) async => user);
-      var result = await userRepositoryImpl.getUser('', '');
+      var result = await userRepositoryImpl.getUser('', '',(){});
       expect(result, Right(user));
       verify(mockUserRemoteDataSource.getUser('', ''));
       verify(mockUserLocalDataSource.cacheUser(user));
@@ -59,7 +59,7 @@ void main() {
     () async {
       when(mockUserLocalDataSource.getUser())
           .thenAnswer((realInvocation) async => user);
-      var result = await userRepositoryImpl.getCachedUser();
+      var result = await userRepositoryImpl.getCachedUser((){});
       expect(result, Right(user));
       verify(mockUserLocalDataSource.getUser());
       verifyNoMoreInteractions(mockUserLocalDataSource);
@@ -70,7 +70,7 @@ void main() {
     () async {
       when(mockUserRemoteDataSource.getUserWithGoogle(''))
           .thenAnswer((realInvocation) async => user);
-      var result = await userRepositoryImpl.loginUsingGoogle('');
+      var result = await userRepositoryImpl.loginUsingGoogle('',(){});
       expect(result, Right(user));
       verify(mockUserRemoteDataSource.getUserWithGoogle(''));
       verify(mockUserLocalDataSource.cacheUser(user));

@@ -3,18 +3,21 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i7;
+import 'dart:async' as _i8;
 
+import 'package:client/core/helper/database/data_base_helper.dart' as _i3;
 import 'package:client/features/Authentication/data/datasources/user_local_data_source.dart'
-    as _i6;
+    as _i7;
 import 'package:client/features/Authentication/data/datasources/user_remote_data_source.dart'
-    as _i8;
+    as _i10;
+import 'package:client/features/Authentication/data/models/remote_message_model.dart'
+    as _i9;
 import 'package:client/features/Authentication/data/models/user_model.dart'
-    as _i5;
+    as _i6;
 import 'package:client/features/Authentication/domain/entities/user.dart'
-    as _i3;
-import 'package:client/platform/network_info.dart' as _i9;
-import 'package:http/http.dart' as _i4;
+    as _i4;
+import 'package:client/platform/network_info.dart' as _i11;
+import 'package:http/http.dart' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:shared_preferences/shared_preferences.dart' as _i2;
 
@@ -40,8 +43,9 @@ class _FakeSharedPreferences_0 extends _i1.SmartFake
         );
 }
 
-class _FakeUser_1 extends _i1.SmartFake implements _i3.User {
-  _FakeUser_1(
+class _FakeDatabaseHelper_1 extends _i1.SmartFake
+    implements _i3.DatabaseHelper {
+  _FakeDatabaseHelper_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -50,8 +54,8 @@ class _FakeUser_1 extends _i1.SmartFake implements _i3.User {
         );
 }
 
-class _FakeClient_2 extends _i1.SmartFake implements _i4.Client {
-  _FakeClient_2(
+class _FakeUser_2 extends _i1.SmartFake implements _i4.User {
+  _FakeUser_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -60,8 +64,18 @@ class _FakeClient_2 extends _i1.SmartFake implements _i4.Client {
         );
 }
 
-class _FakeUserModel_3 extends _i1.SmartFake implements _i5.UserModel {
-  _FakeUserModel_3(
+class _FakeClient_3 extends _i1.SmartFake implements _i5.Client {
+  _FakeClient_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeUserModel_4 extends _i1.SmartFake implements _i6.UserModel {
+  _FakeUserModel_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -74,7 +88,7 @@ class _FakeUserModel_3 extends _i1.SmartFake implements _i5.UserModel {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserLocalDataSource extends _i1.Mock
-    implements _i6.UserLocalDataSource {
+    implements _i7.UserLocalDataSource {
   MockUserLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -88,49 +102,76 @@ class MockUserLocalDataSource extends _i1.Mock
         ),
       ) as _i2.SharedPreferences);
   @override
-  _i7.Future<_i3.User> getUser() => (super.noSuchMethod(
+  _i3.DatabaseHelper get dataBaseHelper => (super.noSuchMethod(
+        Invocation.getter(#dataBaseHelper),
+        returnValue: _FakeDatabaseHelper_1(
+          this,
+          Invocation.getter(#dataBaseHelper),
+        ),
+      ) as _i3.DatabaseHelper);
+  @override
+  set dataBaseHelper(_i3.DatabaseHelper? _dataBaseHelper) => super.noSuchMethod(
+        Invocation.setter(
+          #dataBaseHelper,
+          _dataBaseHelper,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  _i8.Future<_i4.User> getUser() => (super.noSuchMethod(
         Invocation.method(
           #getUser,
           [],
         ),
-        returnValue: _i7.Future<_i3.User>.value(_FakeUser_1(
+        returnValue: _i8.Future<_i4.User>.value(_FakeUser_2(
           this,
           Invocation.method(
             #getUser,
             [],
           ),
         )),
-      ) as _i7.Future<_i3.User>);
+      ) as _i8.Future<_i4.User>);
   @override
-  _i7.Future<void> cacheUser(_i3.User? user) => (super.noSuchMethod(
+  _i8.Future<void> cacheUser(_i4.User? user) => (super.noSuchMethod(
         Invocation.method(
           #cacheUser,
           [user],
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
+  @override
+  _i8.Future<void> cacheAllNewMessages(
+          List<_i9.RemoteMesseageModel>? messeges) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #cacheAllNewMessages,
+          [messeges],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 }
 
 /// A class which mocks [UserRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserRemoteDataSource extends _i1.Mock
-    implements _i8.UserRemoteDataSource {
+    implements _i10.UserRemoteDataSource {
   MockUserRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Client get httpClient => (super.noSuchMethod(
+  _i5.Client get httpClient => (super.noSuchMethod(
         Invocation.getter(#httpClient),
-        returnValue: _FakeClient_2(
+        returnValue: _FakeClient_3(
           this,
           Invocation.getter(#httpClient),
         ),
-      ) as _i4.Client);
+      ) as _i5.Client);
   @override
-  set httpClient(_i4.Client? _httpClient) => super.noSuchMethod(
+  set httpClient(_i5.Client? _httpClient) => super.noSuchMethod(
         Invocation.setter(
           #httpClient,
           _httpClient,
@@ -138,7 +179,7 @@ class MockUserRemoteDataSource extends _i1.Mock
         returnValueForMissingStub: null,
       );
   @override
-  _i7.Future<_i5.UserModel> getUser(
+  _i8.Future<_i6.UserModel> getUser(
     String? emailorUsername,
     String? password,
   ) =>
@@ -150,7 +191,7 @@ class MockUserRemoteDataSource extends _i1.Mock
             password,
           ],
         ),
-        returnValue: _i7.Future<_i5.UserModel>.value(_FakeUserModel_3(
+        returnValue: _i8.Future<_i6.UserModel>.value(_FakeUserModel_4(
           this,
           Invocation.method(
             #getUser,
@@ -160,24 +201,24 @@ class MockUserRemoteDataSource extends _i1.Mock
             ],
           ),
         )),
-      ) as _i7.Future<_i5.UserModel>);
+      ) as _i8.Future<_i6.UserModel>);
   @override
-  _i7.Future<_i5.UserModel> getUserWithGoogle(String? email) =>
+  _i8.Future<_i6.UserModel> getUserWithGoogle(String? email) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserWithGoogle,
           [email],
         ),
-        returnValue: _i7.Future<_i5.UserModel>.value(_FakeUserModel_3(
+        returnValue: _i8.Future<_i6.UserModel>.value(_FakeUserModel_4(
           this,
           Invocation.method(
             #getUserWithGoogle,
             [email],
           ),
         )),
-      ) as _i7.Future<_i5.UserModel>);
+      ) as _i8.Future<_i6.UserModel>);
   @override
-  _i7.Future<_i5.UserModel> registerUser(
+  _i8.Future<_i6.UserModel> registerUser(
     String? email,
     String? username,
     String? password,
@@ -191,7 +232,7 @@ class MockUserRemoteDataSource extends _i1.Mock
             password,
           ],
         ),
-        returnValue: _i7.Future<_i5.UserModel>.value(_FakeUserModel_3(
+        returnValue: _i8.Future<_i6.UserModel>.value(_FakeUserModel_4(
           this,
           Invocation.method(
             #registerUser,
@@ -202,20 +243,30 @@ class MockUserRemoteDataSource extends _i1.Mock
             ],
           ),
         )),
-      ) as _i7.Future<_i5.UserModel>);
+      ) as _i8.Future<_i6.UserModel>);
+  @override
+  _i8.Future<List<_i9.RemoteMesseageModel>> getUnredChats(String? authtoken) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUnredChats,
+          [authtoken],
+        ),
+        returnValue: _i8.Future<List<_i9.RemoteMesseageModel>>.value(
+            <_i9.RemoteMesseageModel>[]),
+      ) as _i8.Future<List<_i9.RemoteMesseageModel>>);
 }
 
 /// A class which mocks [NetworkInfo].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNetworkInfo extends _i1.Mock implements _i9.NetworkInfo {
+class MockNetworkInfo extends _i1.Mock implements _i11.NetworkInfo {
   MockNetworkInfo() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Future<bool> get isConnected => (super.noSuchMethod(
+  _i8.Future<bool> get isConnected => (super.noSuchMethod(
         Invocation.getter(#isConnected),
-        returnValue: _i7.Future<bool>.value(false),
-      ) as _i7.Future<bool>);
+        returnValue: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
 }

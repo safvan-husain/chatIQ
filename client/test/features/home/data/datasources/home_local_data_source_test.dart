@@ -1,7 +1,6 @@
 import 'package:client/common/entity/message.dart';
 import 'package:client/core/helper/database/data_base_helper.dart';
 import 'package:client/features/home/data/datasources/home_local_data_source.dart';
-import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -23,11 +22,11 @@ void main() {
   test(
     'should call fetchUsersFromDB when getChats called and should retun a list',
     () async {
-      when(mockDatabaseHelper.fetchUsersFromDB())
+      when(mockDatabaseHelper.getOrInsertUsersFromDB())
           .thenAnswer((realInvocation) async => []);
       var result = await homeLocalDataSource.getChats();
       expect(result, []);
-      verify(mockDatabaseHelper.fetchUsersFromDB()).called(1);
+      verify(mockDatabaseHelper.getOrInsertUsersFromDB()).called(1);
       verifyNoMoreInteractions(mockDatabaseHelper);
     },
   );
@@ -35,27 +34,27 @@ void main() {
     test(
       'should call fetchUsersFromDB to store last message id',
       () async {
-        when(mockDatabaseHelper.fetchUsersFromDB())
+        when(mockDatabaseHelper.getOrInsertUsersFromDB())
             .thenAnswer((realInvocation) async => []);
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.fetchUsersFromDB()).called(1);
+        verify(mockDatabaseHelper.getOrInsertUsersFromDB()).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call insertAMessageToDB',
       () async {
-        when(mockDatabaseHelper.fetchUsersFromDB())
+        when(mockDatabaseHelper.getOrInsertUsersFromDB())
             .thenAnswer((realInvocation) async => []);
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.insertAMessageToDB(message)).called(1);
+        verify(mockDatabaseHelper.insertAMessageToDB(message,''),).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call updateDBColumn',
       () async {
-        when(mockDatabaseHelper.fetchUsersFromDB())
+        when(mockDatabaseHelper.getOrInsertUsersFromDB())
             .thenAnswer((realInvocation) async => []);
         await homeLocalDataSource.cacheMessage(message, '');
         verify(mockDatabaseHelper.updateDBColumn(
@@ -67,32 +66,22 @@ void main() {
       },
     );
   });
-  test(
-    'should call isUserCached, insertAuserToDB when cacheFriend called',
-    () async {
-      when(mockDatabaseHelper.isUserCached(any))
-          .thenAnswer((realInvocation) async => true);
-      await homeLocalDataSource.cacheFriend('');
-      verify(mockDatabaseHelper.isUserCached(any)).called(1);
-      verify(mockDatabaseHelper.insertAuserToDB(any)).called(1);
-      verifyNoMoreInteractions(mockDatabaseHelper);
-    },
-  );
+
   group('when cacheFriend called', () {
     test(
       'should call insertAMessageToDB',
       () async {
-        when(mockDatabaseHelper.fetchUsersFromDB())
+        when(mockDatabaseHelper.getOrInsertUsersFromDB())
             .thenAnswer((realInvocation) async => []);
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.insertAMessageToDB(message)).called(1);
+        verify(mockDatabaseHelper.insertAMessageToDB(message,'')).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call updateDBColumn',
       () async {
-        when(mockDatabaseHelper.fetchUsersFromDB())
+        when(mockDatabaseHelper.getOrInsertUsersFromDB())
             .thenAnswer((realInvocation) async => []);
         await homeLocalDataSource.cacheMessage(message, '');
         verify(mockDatabaseHelper.updateDBColumn(

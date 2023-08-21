@@ -3,17 +3,19 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i7;
+import 'dart:async' as _i9;
 
 import 'package:client/common/entity/message.dart' as _i4;
-import 'package:client/core/error/failure.dart' as _i8;
-import 'package:client/core/helper/database/data_base_helper.dart' as _i5;
+import 'package:client/core/error/failure.dart' as _i10;
+import 'package:client/core/helper/database/data_base_helper.dart' as _i6;
 import 'package:client/features/chat/data/datasources/chat_local_data_source.dart'
-    as _i9;
+    as _i11;
 import 'package:client/features/chat/data/datasources/chat_remote_data_source.dart'
-    as _i10;
+    as _i12;
 import 'package:client/features/chat/domain/repositories/chat_repository.dart'
-    as _i6;
+    as _i8;
+import 'package:client/features/home/domain/entities/user.dart' as _i7;
+import 'package:client/features/home/presentation/cubit/home_cubit.dart' as _i5;
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:sqflite/sqflite.dart' as _i3;
@@ -59,8 +61,8 @@ class _FakeMessage_2 extends _i1.SmartFake implements _i4.Message {
         );
 }
 
-class _FakeDateTime_3 extends _i1.SmartFake implements DateTime {
-  _FakeDateTime_3(
+class _FakeNewMessages_3 extends _i1.SmartFake implements _i5.NewMessages {
+  _FakeNewMessages_3(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -69,9 +71,29 @@ class _FakeDateTime_3 extends _i1.SmartFake implements DateTime {
         );
 }
 
-class _FakeDatabaseHelper_4 extends _i1.SmartFake
-    implements _i5.DatabaseHelper {
-  _FakeDatabaseHelper_4(
+class _FakeDateTime_4 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeDatabaseHelper_5 extends _i1.SmartFake
+    implements _i6.DatabaseHelper {
+  _FakeDatabaseHelper_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeUser_6 extends _i1.SmartFake implements _i7.User {
+  _FakeUser_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -83,13 +105,13 @@ class _FakeDatabaseHelper_4 extends _i1.SmartFake
 /// A class which mocks [ChatRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockChatRepository extends _i1.Mock implements _i6.ChatRepository {
+class MockChatRepository extends _i1.Mock implements _i8.ChatRepository {
   MockChatRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Future<_i2.Either<_i8.Failure, List<_i4.Message>>> showMessages(
+  _i9.Future<_i2.Either<_i10.Failure, List<_i4.Message>>> showMessages(
           String? chatId) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -97,33 +119,33 @@ class MockChatRepository extends _i1.Mock implements _i6.ChatRepository {
           [chatId],
         ),
         returnValue:
-            _i7.Future<_i2.Either<_i8.Failure, List<_i4.Message>>>.value(
-                _FakeEither_0<_i8.Failure, List<_i4.Message>>(
+            _i9.Future<_i2.Either<_i10.Failure, List<_i4.Message>>>.value(
+                _FakeEither_0<_i10.Failure, List<_i4.Message>>(
           this,
           Invocation.method(
             #showMessages,
             [chatId],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, List<_i4.Message>>>);
+      ) as _i9.Future<_i2.Either<_i10.Failure, List<_i4.Message>>>);
   @override
-  _i7.Future<_i2.Either<_i8.Failure, void>> updateLasVisit(String? userName) =>
+  _i9.Future<_i2.Either<_i10.Failure, void>> updateLasVisit(String? userName) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateLasVisit,
           [userName],
         ),
-        returnValue: _i7.Future<_i2.Either<_i8.Failure, void>>.value(
-            _FakeEither_0<_i8.Failure, void>(
+        returnValue: _i9.Future<_i2.Either<_i10.Failure, void>>.value(
+            _FakeEither_0<_i10.Failure, void>(
           this,
           Invocation.method(
             #updateLasVisit,
             [userName],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
+      ) as _i9.Future<_i2.Either<_i10.Failure, void>>);
   @override
-  _i7.Future<_i2.Either<_i8.Failure, _i4.Message>> sendMessage(
+  _i9.Future<_i2.Either<_i10.Failure, _i4.Message>> sendMessage(
     _i4.Message? message,
     String? myid,
     String? to,
@@ -137,8 +159,8 @@ class MockChatRepository extends _i1.Mock implements _i6.ChatRepository {
             to,
           ],
         ),
-        returnValue: _i7.Future<_i2.Either<_i8.Failure, _i4.Message>>.value(
-            _FakeEither_0<_i8.Failure, _i4.Message>(
+        returnValue: _i9.Future<_i2.Either<_i10.Failure, _i4.Message>>.value(
+            _FakeEither_0<_i10.Failure, _i4.Message>(
           this,
           Invocation.method(
             #sendMessage,
@@ -149,13 +171,13 @@ class MockChatRepository extends _i1.Mock implements _i6.ChatRepository {
             ],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, _i4.Message>>);
+      ) as _i9.Future<_i2.Either<_i10.Failure, _i4.Message>>);
 }
 
 /// A class which mocks [DatabaseHelper].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
+class MockDatabaseHelper extends _i1.Mock implements _i6.DatabaseHelper {
   MockDatabaseHelper() {
     _i1.throwOnMissingStub(this);
   }
@@ -169,29 +191,30 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
         ),
       ) as _i3.Database);
   @override
-  _i7.Future<bool> isUserCached(String? username) => (super.noSuchMethod(
+  _i9.Future<void> clearAllData() => (super.noSuchMethod(
         Invocation.method(
-          #isUserCached,
-          [username],
+          #clearAllData,
+          [],
         ),
-        returnValue: _i7.Future<bool>.value(false),
-      ) as _i7.Future<bool>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i7.Future<_i4.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
+  _i9.Future<_i4.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
         Invocation.method(
           #fetchLocalMessage,
           [id],
         ),
-        returnValue: _i7.Future<_i4.Message>.value(_FakeMessage_2(
+        returnValue: _i9.Future<_i4.Message>.value(_FakeMessage_2(
           this,
           Invocation.method(
             #fetchLocalMessage,
             [id],
           ),
         )),
-      ) as _i7.Future<_i4.Message>);
+      ) as _i9.Future<_i4.Message>);
   @override
-  _i7.Future<void> updateDBColumn({
+  _i9.Future<void> updateDBColumn({
     required String? tableName,
     required Map<String, dynamic>? object,
     required int? id,
@@ -206,61 +229,68 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
             #id: id,
           },
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i7.Future<int> insertAMessageToDB(_i4.Message? message) =>
+  _i9.Future<_i5.NewMessages> insertAMessageToDB(
+    _i4.Message? message,
+    String? chatter,
+  ) =>
       (super.noSuchMethod(
         Invocation.method(
           #insertAMessageToDB,
-          [message],
+          [
+            message,
+            chatter,
+          ],
         ),
-        returnValue: _i7.Future<int>.value(0),
-      ) as _i7.Future<int>);
+        returnValue: _i9.Future<_i5.NewMessages>.value(_FakeNewMessages_3(
+          this,
+          Invocation.method(
+            #insertAMessageToDB,
+            [
+              message,
+              chatter,
+            ],
+          ),
+        )),
+      ) as _i9.Future<_i5.NewMessages>);
   @override
-  _i7.Future<int> insertAuserToDB(String? username) => (super.noSuchMethod(
-        Invocation.method(
-          #insertAuserToDB,
-          [username],
-        ),
-        returnValue: _i7.Future<int>.value(0),
-      ) as _i7.Future<int>);
-  @override
-  _i7.Future<_i4.Message?> fetchLastMessageFromAChat(int? chatId) =>
+  _i9.Future<_i4.Message?> fetchLastMessageFromAChat(int? chatId) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchLastMessageFromAChat,
           [chatId],
         ),
-        returnValue: _i7.Future<_i4.Message?>.value(),
-      ) as _i7.Future<_i4.Message?>);
+        returnValue: _i9.Future<_i4.Message?>.value(),
+      ) as _i9.Future<_i4.Message?>);
   @override
-  _i7.Future<List<dynamic>> fetchAllMessageFromAChat(int? chatId) =>
+  _i9.Future<List<dynamic>> fetchAllMessageFromAChat(int? chatId) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchAllMessageFromAChat,
           [chatId],
         ),
-        returnValue: _i7.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i7.Future<List<dynamic>>);
+        returnValue: _i9.Future<List<dynamic>>.value(<dynamic>[]),
+      ) as _i9.Future<List<dynamic>>);
   @override
-  _i7.Future<List<Map<String, dynamic>>> fetchUsersFromDB({
+  _i9.Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
     String? userName,
     int? id,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #fetchUsersFromDB,
+          #getOrInsertUsersFromDB,
           [],
           {
             #userName: userName,
             #id: id,
           },
         ),
-        returnValue: _i7.Future<List<Map<String, dynamic>>>.value(
+        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
-      ) as _i7.Future<List<Map<String, dynamic>>>);
+      ) as _i9.Future<List<Map<String, dynamic>>>);
 }
 
 /// A class which mocks [Message].
@@ -308,7 +338,7 @@ class MockMessage extends _i1.Mock implements _i4.Message {
   @override
   DateTime get time => (super.noSuchMethod(
         Invocation.getter(#time),
-        returnValue: _FakeDateTime_3(
+        returnValue: _FakeDateTime_4(
           this,
           Invocation.getter(#time),
         ),
@@ -332,53 +362,53 @@ class MockMessage extends _i1.Mock implements _i4.Message {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockChatLocalDataSource extends _i1.Mock
-    implements _i9.ChatLocalDataSource {
+    implements _i11.ChatLocalDataSource {
   MockChatLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.DatabaseHelper get databaseHelper => (super.noSuchMethod(
+  _i6.DatabaseHelper get databaseHelper => (super.noSuchMethod(
         Invocation.getter(#databaseHelper),
-        returnValue: _FakeDatabaseHelper_4(
+        returnValue: _FakeDatabaseHelper_5(
           this,
           Invocation.getter(#databaseHelper),
         ),
-      ) as _i5.DatabaseHelper);
+      ) as _i6.DatabaseHelper);
   @override
-  _i7.Future<void> cacheFriend(String? username) => (super.noSuchMethod(
+  _i9.Future<void> cacheFriend(String? username) => (super.noSuchMethod(
         Invocation.method(
           #cacheFriend,
           [username],
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i7.Future<void> updateLastVisit(String? userName) => (super.noSuchMethod(
+  _i9.Future<void> updateLastVisit(String? userName) => (super.noSuchMethod(
         Invocation.method(
           #updateLastVisit,
           [userName],
         ),
-        returnValue: _i7.Future<void>.value(),
-        returnValueForMissingStub: _i7.Future<void>.value(),
-      ) as _i7.Future<void>);
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
   @override
-  _i7.Future<_i4.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
+  _i9.Future<_i4.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
         Invocation.method(
           #fetchLocalMessage,
           [id],
         ),
-        returnValue: _i7.Future<_i4.Message>.value(_FakeMessage_2(
+        returnValue: _i9.Future<_i4.Message>.value(_FakeMessage_2(
           this,
           Invocation.method(
             #fetchLocalMessage,
             [id],
           ),
         )),
-      ) as _i7.Future<_i4.Message>);
+      ) as _i9.Future<_i4.Message>);
   @override
-  _i7.Future<_i4.Message> cacheMessage(
+  _i9.Future<_i4.Message> cacheMessage(
     _i4.Message? message,
     String? to,
   ) =>
@@ -390,7 +420,7 @@ class MockChatLocalDataSource extends _i1.Mock
             to,
           ],
         ),
-        returnValue: _i7.Future<_i4.Message>.value(_FakeMessage_2(
+        returnValue: _i9.Future<_i4.Message>.value(_FakeMessage_2(
           this,
           Invocation.method(
             #cacheMessage,
@@ -400,29 +430,29 @@ class MockChatLocalDataSource extends _i1.Mock
             ],
           ),
         )),
-      ) as _i7.Future<_i4.Message>);
+      ) as _i9.Future<_i4.Message>);
   @override
-  _i7.Future<List<_i4.Message>> showCachedMessages(String? to) =>
+  _i9.Future<List<_i4.Message>> showCachedMessages(String? to) =>
       (super.noSuchMethod(
         Invocation.method(
           #showCachedMessages,
           [to],
         ),
-        returnValue: _i7.Future<List<_i4.Message>>.value(<_i4.Message>[]),
-      ) as _i7.Future<List<_i4.Message>>);
+        returnValue: _i9.Future<List<_i4.Message>>.value(<_i4.Message>[]),
+      ) as _i9.Future<List<_i4.Message>>);
 }
 
 /// A class which mocks [ChatRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockChatRemoteDataSource extends _i1.Mock
-    implements _i10.ChatRemoteDataSource {
+    implements _i12.ChatRemoteDataSource {
   MockChatRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i7.Future<bool> sendMessage(
+  _i9.Future<bool> sendMessage(
     _i4.Message? message,
     String? myid,
     String? to,
@@ -436,6 +466,45 @@ class MockChatRemoteDataSource extends _i1.Mock
             to,
           ],
         ),
-        returnValue: _i7.Future<bool>.value(false),
-      ) as _i7.Future<bool>);
+        returnValue: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+}
+
+/// A class which mocks [NewMessages].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockNewMessages extends _i1.Mock implements _i5.NewMessages {
+  MockNewMessages() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i7.User get user => (super.noSuchMethod(
+        Invocation.getter(#user),
+        returnValue: _FakeUser_6(
+          this,
+          Invocation.getter(#user),
+        ),
+      ) as _i7.User);
+  @override
+  set user(_i7.User? _user) => super.noSuchMethod(
+        Invocation.setter(
+          #user,
+          _user,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  int get messageCount => (super.noSuchMethod(
+        Invocation.getter(#messageCount),
+        returnValue: 0,
+      ) as int);
+  @override
+  set messageCount(int? _messageCount) => super.noSuchMethod(
+        Invocation.setter(
+          #messageCount,
+          _messageCount,
+        ),
+        returnValueForMissingStub: null,
+      );
 }

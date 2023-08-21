@@ -23,9 +23,7 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<void> cacheFriend(String username) async {
     try {
-      if (!await databaseHelper.isUserCached(username)) {
-        await databaseHelper.insertAuserToDB(username);
-      }
+        await databaseHelper.getOrInsertUsersFromDB(userName:username);
     } catch (e) {
       print(e);
       throw CacheException();
@@ -36,8 +34,7 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<void> updateLastVisit(String userName) async {
     try {
-      var re = await databaseHelper.fetchUsersFromDB(userName: userName);
-      if (re.isNotEmpty) {
+      var re = await databaseHelper.getOrInsertUsersFromDB(userName: userName);
         var messages =
             await databaseHelper.fetchAllMessageFromAChat(re[0]['id']);
         Message lastMessage =
@@ -50,7 +47,6 @@ class ChatLocalDataSource extends ChatLocalData {
           object: UserModel.fromUser(usere).toMap(),
           id: re[0]['id'],
         );
-      }
     } catch (e) {
       print(e);
       throw CacheException();
@@ -80,7 +76,7 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<List<Message>> showCachedMessages(String to) async {
     try {
-      var userMapList = await databaseHelper.fetchUsersFromDB(userName: to);
+      var userMapList = await databaseHelper.getOrInsertUsersFromDB(userName: to);
       if (userMapList.isNotEmpty) {
         var messages = await databaseHelper
             .fetchAllMessageFromAChat(userMapList[0]['id'] as int);

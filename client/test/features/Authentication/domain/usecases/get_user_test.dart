@@ -24,14 +24,14 @@ void main() {
         email: 'safvan@gmail.com',
         token: '',
       );
-      when(mockUserRepository.getUser(user.username, user.email))
+      when(mockUserRepository.getUser(user.username, user.email,(){}))
           .thenAnswer((realInvocation) async => Right(user));
       var result = await getUser(GetUserParams(
         username: user.username,
-        password: user.email,
+        password: user.email,onNewMessageCachingComplete:(){},
       ));
       expect(result, Right(user));
-      verify(mockUserRepository.getUser(user.username, user.email));
+      verify(mockUserRepository.getUser(user.username, user.email,(){}));
       verifyNoMoreInteractions(mockUserRepository);
     },
   );

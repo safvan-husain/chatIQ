@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:client/common/entity/message.dart';
-import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/features/Authentication/data/models/user_model.dart';
 import 'package:client/features/Authentication/domain/entities/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,13 +53,10 @@ class UserLocalDataSourceImpl extends UserLocalDataSource {
   Future<void> cacheAllNewMessages(messeges) async {
     for (var message in messeges) {
       late int chatId;
-      if (!await dataBaseHelper.isUserCached(message.sender)) {
-        chatId = await dataBaseHelper.insertAuserToDB(message.sender);
-      } else {
-        var users =
-            await dataBaseHelper.fetchUsersFromDB(userName: message.sender);
-        chatId = users[0]['id'];
-      }
+
+      var users =
+          await dataBaseHelper.getOrInsertUsersFromDB(userName: message.sender);
+      chatId = users[0]['id'];
       await dataBaseHelper.insertAMessageToDB(
         Message(
           chatId: chatId,

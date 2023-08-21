@@ -191,7 +191,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: InkWell(
-              onTap: () => context.router.push(const SettingsRoute()),
+              onTap: () => context.router.push(SettingsRoute()),
               child: const Icon(Icons.settings_outlined),
             ),
           )

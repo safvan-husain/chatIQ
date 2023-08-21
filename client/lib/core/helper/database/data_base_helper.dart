@@ -1,5 +1,4 @@
 import 'dart:io' as io;
-import 'package:dartz/dartz.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -19,8 +18,8 @@ class DatabaseHelper {
 
   DatabaseHelper.internal();
   //table names
-  String recentChats = "recent_chats";
-  String messeages = 'messages';
+  static const String recentChats = "recent_chats";
+  static const String messeages = 'messages';
 
   initDb() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -37,17 +36,6 @@ class DatabaseHelper {
     await _db.delete(messeages);
   }
 
-  ///returns true if a user exist with this username
-  ///
-  Future<bool> isUserCached(String username) async {
-    var re = await fetchUsersFromDB(userName: username);
-    if (re.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   ///get message by its id from local DB [messages] table
   ///
   Future<Message> fetchLocalMessage(int id) async {
@@ -59,52 +47,23 @@ class DatabaseHelper {
       {required String tableName,
       required Map<String, dynamic> object,
       required int id}) async {
-    await _db.update("recent_chats", object, where: "id = ?", whereArgs: [id]);
+    await _db.update(tableName, object, where: "id = ?", whereArgs: [id]);
   }
 
-  Future<NewMessages> insertAMessageToDB(Message message, String chatter) async {
-    int id = await db.insert(
-      'messages',
-      MessageModel.fromMessage(message).toMap(),
-    );
-    var userMap = await fetchUsersFromDB(userName: chatter);
+  Future<NewMessages> insertAMessageToDB(
+      Message message, String chatter) async {
+    var userMap = await getOrInsertUsersFromDB(userName: chatter);
     UserModel user = UserModel.fromMap(userMap[0], message);
     message.setChatId(user.id);
+    int id = await _insertMessage(message);
     user.setLastMessageId(id);
     updateDBColumn(
-      tableName: 'recent_chats',
+      tableName: recentChats,
       object: user.toMap(),
       id: user.id,
     );
     int newMessagesCount = await _findNewMessageCount(user: user);
     return NewMessages(user: user, messageCount: newMessagesCount);
-  }
-
-  Future<int> _findNewMessageCount({required User user}) async {
-    bool istrue = false;
-
-    var messages = await fetchAllMessageFromAChat(user.id);
-    if (user.lastSeenMessageId == null) {
-      return messages.length;
-    }
-    return messages
-            .where((e) {
-              if (e['id'] == user.lastSeenMessageId) {
-                istrue = true;
-              }
-              return istrue;
-            })
-            .toList()
-            .length -
-        1;
-  }
-
-//create a row in [recent_chats] with this username
-  Future<int> insertAuserToDB(String username) async {
-    return await db.insert(
-      'recent_chats',
-      {'user_name': username},
-    );
   }
 
   Future<Message?> fetchLastMessageFromAChat(int chatId) async {
@@ -127,16 +86,72 @@ class DatabaseHelper {
   ///
   ///if no argument is passed, it will query all user
   ///
-  Future<List<Map<String, dynamic>>> fetchUsersFromDB(
-      {String? userName, int? id}) async {
+  ///if no row exsist with the username, it will create a new.
+  Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
+    String? userName,
+    int? id,
+  }) async {
     if (userName != null) {
-      return await _db
-          .rawQuery("SELECT * FROM recent_chats WHERE user_name = '$userName'");
+      var re = await _getFriendWithUserName(userName);
+      if (re.isEmpty) {
+        int iD = await _insertFriendToDB(userName);
+        return await _getFriendWithId(iD);
+      }
+      return re;
     }
     if (id != null) {
-      return await _db.rawQuery("SELECT * FROM recent_chats WHERE id = '$id'");
+      return await _getFriendWithId(id);
     }
+    return await _getAllFriends();
+  }
+
+  Future<int> _insertMessage(Message message) async {
+    int id = await db.insert(
+      'messages',
+      MessageModel.fromMessage(message).toMap(),
+    );
+    return id;
+  }
+
+  Future<int> _findNewMessageCount({required User user}) async {
+    bool istrue = false;
+
+    var messages = await fetchAllMessageFromAChat(user.id);
+    if (user.lastSeenMessageId == null) {
+      return messages.length;
+    }
+    return messages
+            .where((e) {
+              if (e['id'] == user.lastSeenMessageId) {
+                istrue = true;
+              }
+              return istrue;
+            })
+            .toList()
+            .length -
+        1;
+  }
+
+  Future<int> _insertFriendToDB(String username) async {
+    return await db.insert(
+      'recent_chats',
+      {'user_name': username},
+    );
+  }
+
+  Future<List<Map<String, Object?>>> _getAllFriends() async {
     return await _db.rawQuery("SELECT * FROM recent_chats");
+  }
+
+  Future<List<Map<String, Object?>>> _getFriendWithId(int iD) async {
+    return await _db.rawQuery("SELECT * FROM recent_chats WHERE id = '$iD'");
+  }
+
+  Future<List<Map<String, Object?>>> _getFriendWithUserName(
+      String userName) async {
+    var re = await _db
+        .rawQuery("SELECT * FROM recent_chats WHERE user_name = '$userName'");
+    return re;
   }
 
   void _onCreate(Database db, int version) async {
