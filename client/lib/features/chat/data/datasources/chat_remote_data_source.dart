@@ -4,6 +4,7 @@
 import 'package:client/common/entity/message.dart';
 import 'package:client/core/helper/websocket/websocket_helper.dart';
 
+import '../../../../core/Injector/injector.dart';
 import '../../../../core/Injector/ws_injector.dart';
 import '../../../../core/helper/websocket/ws_event.dart';
 
@@ -14,7 +15,7 @@ class ChatRemoteDataSource {
     String myid,
     String to,
   ) async {
-    WebSocketHelper webSocketHelper = WSInjection.injector.get();
+    WebSocketHelper webSocketHelper = Injection.injector.get();
     webSocketHelper.channel.sink.add(WSEvent(
       'message',
       myid,

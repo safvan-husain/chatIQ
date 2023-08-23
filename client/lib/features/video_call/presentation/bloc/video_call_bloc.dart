@@ -8,6 +8,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
+import '../../../../core/Injector/injector.dart';
 import '../../../../core/Injector/ws_injector.dart';
 import '../../../../core/helper/websocket/websocket_helper.dart';
 
@@ -17,8 +18,8 @@ part 'video_call_state.dart';
 class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
   late String caller;
   final WebSocketHelper _webSocketHelper =
-      WSInjection.injector.get<WebSocketHelper>();
-  final WebrtcHelper _webrtcHelper = WSInjection.injector.get<WebrtcHelper>();
+      Injection.injector.get<WebSocketHelper>();
+  final WebrtcHelper _webrtcHelper = Injection.injector.get<WebrtcHelper>();
 
   VideoCallBloc() : super(const VideoCallInitial()) {
     on<RequestCallEvent>((event, emit) {

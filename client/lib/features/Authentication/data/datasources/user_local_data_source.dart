@@ -20,7 +20,7 @@ abstract class UserLocalDataSource {
   ///But watch out! If the cache is empty, be ready to catch the thrown [CacheException]!
   Future<User> getUser();
 
-  ///wanna cache the [User]? use me
+  ///wanna cache the [User]? 
   ///
   ///but be careful, I will throw [CacheException] if couldn't do it.
   Future<void> cacheUser(User user);

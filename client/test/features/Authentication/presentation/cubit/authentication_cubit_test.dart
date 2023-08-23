@@ -1,5 +1,4 @@
 import 'package:client/core/error/failure.dart';
-import 'package:client/core/usecases/use_case.dart';
 import 'package:client/features/Authentication/domain/entities/user.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
 import 'package:client/features/Authentication/domain/usecases/get_user.dart';

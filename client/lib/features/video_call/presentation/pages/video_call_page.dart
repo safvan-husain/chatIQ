@@ -9,6 +9,7 @@ import 'package:client/features/video_call/presentation/widgets/busy_video_scree
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/Injector/injector.dart';
 import '../../../../routes/router.gr.dart';
 import '../bloc/video_call_bloc.dart';
 import '../widgets/connected_video_screen.dart';
@@ -27,7 +28,7 @@ class VideoCallPage extends StatefulWidget {
 
 class _VideoCallPageState extends State<VideoCallPage>
     with WidgetsBindingObserver {
-  final WebrtcHelper _webrtcHelper = WSInjection.injector.get<WebrtcHelper>();
+  final WebrtcHelper _webrtcHelper = Injection.injector.get<WebrtcHelper>();
   @override
   void initState() {
     super.initState();

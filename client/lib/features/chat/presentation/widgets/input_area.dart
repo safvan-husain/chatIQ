@@ -23,8 +23,7 @@ class InputArea extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(10),
       height: _config.rH(7),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(color: Theme.of(context).primaryColorLight,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(

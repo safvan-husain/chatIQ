@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:client/common/widgets/snack_bar.dart';
 import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/websocket_helper.dart';
@@ -15,6 +16,8 @@ import 'package:custom_search_bar/custom_search_bar.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../../../../../core/Injector/injector.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,8 +37,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     checkAndNavigationCallingPage();
-    context.read<HomeCubit>().getChats();
-    WSInjection.initWebSocket(
+    context.read<HomeCubit>().getChats(()=> showSnackBar(context, "Failed to get recent chats!!"));
+    Injection.initWebSocket(
       myid: context.read<AuthenticationCubit>().state.user!.username,
       onMessage: (message, from) async {
         await context.read<HomeCubit>().cachedMessage(message, from);
@@ -62,13 +65,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           context.router
               .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
         }
-        WSInjection.injector.get<WebrtcHelper>().closeConnection();
+        Injection.injector.get<WebrtcHelper>().closeConnection();
       },
       onBusy: () {
         context.read<VideoCallBloc>().add(const BusyEvent());
       },
     ).then((_) {
-      WSInjection.initWebRTCPeerConnection();
+      Injection.initWebRTCPeerConnection();
     });
 
     super.initState();
@@ -103,7 +106,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               );
         }
       } else if (currentCall[0]['accepted'] == false) {
-        WSInjection.injector
+        Injection.injector
             .get<WebSocketHelper>()
             .sendRejection(recieverId: currentCall[0]['nameCaller']);
       }

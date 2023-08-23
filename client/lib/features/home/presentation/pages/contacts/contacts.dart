@@ -1,3 +1,4 @@
+import 'package:client/common/widgets/snack_bar.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/home/domain/entities/contact.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
@@ -13,7 +14,9 @@ class ContactsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var token = context.read<AuthenticationCubit>().state.user!.token;
-    context.read<HomeCubit>().getContacts(token);
+    context.read<HomeCubit>().getContacts(
+        token, () => showSnackBar(context, 'Failed to get contacts!!'));
+        
     return BlocBuilder<HomeCubit, HomeState>(
       buildWhen: (previous, current) => current is ContactStateImpl,
       builder: (context, state) {

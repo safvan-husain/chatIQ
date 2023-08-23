@@ -1,3 +1,4 @@
+import 'package:client/constance/color_log.dart';
 import 'package:client/constance/theme_services.dart';
 import 'package:client/features/Authentication/data/repositories/user_repository_impl.dart';
 import 'package:client/features/Authentication/domain/repositories/user_repository.dart';
@@ -58,12 +59,14 @@ void main() async {
   await Firebase.initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen(firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessage.listen((_){
+    logSuccess('new notification');
+  });
 
   if (!kIsWeb) {
     await setupFlutterNotifications();
   }
-  DatabaseHelper dataBaseHelper = Injection.injector.get();
+  DatabaseHelper dataBaseHelper = Injection.injector.get<DatabaseHelper>();
   UserRepository userRepository = UserRepositoryImpl(
     localDataSource: UserLocalDataSourceImpl(
         sharedPreferences: await SharedPreferences.getInstance()),

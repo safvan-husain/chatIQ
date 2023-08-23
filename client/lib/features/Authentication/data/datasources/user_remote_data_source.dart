@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:client/constance/color_log.dart';
 import 'package:client/features/Authentication/data/models/remote_message_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -61,7 +60,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
         'x-auth-token': '',
       },
       body: jsonEncode({
-        'emailorUsername': emailorUsername,
+        'usernameOrEmail': emailorUsername,
         'password': password,
         'apptoken': token
       }),
@@ -141,7 +140,6 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
       }
       return remoteMesse;
     } else {
-      log(response.statusCode.toString());
       throw ServerException();
     }
   }

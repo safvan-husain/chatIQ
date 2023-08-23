@@ -9,6 +9,8 @@ const router = Router();
 
 router.post("/auth/sign-up",async (req, res) => {
   const { email, username, password, apptoken } = req.body;
+  console.log(`${email} tried to sign up`); 
+  
   
 try {
     new Password().hash(password).then(async (hashed)=> {

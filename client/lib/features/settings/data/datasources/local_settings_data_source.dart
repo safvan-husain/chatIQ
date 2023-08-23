@@ -1,6 +1,6 @@
 import 'package:client/core/error/exception.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../common/entity/message.dart';
 import '../../../../core/helper/database/data_base_helper.dart';
 
 class LocalSettingDataSource {
@@ -16,19 +16,10 @@ class LocalSettingDataSource {
     }
   }
 
-  // Future<void> cacheChats(List<Message> messages) async {
-  //   try {
-  //     for (Message message in messages) {
-  //       await _databaseHelper.insertAMessageToDB(message);
-  //     }
-  //   } catch (e) {
-  //     throw CacheException();
-  //   }
-  // }
-
   Future<bool> logOut() async {
-    try {
-      return true;
+   try {
+      var sharedPreferences = await SharedPreferences.getInstance();
+      return await sharedPreferences.setString('user', '');
     } catch (e) {
       throw CacheException();
     }

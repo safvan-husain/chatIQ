@@ -21,7 +21,7 @@ class UserModel extends User {
     };
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map, Message lastMessage) {
+  factory UserModel.fromMap(Map<String, dynamic> map, Message? lastMessage) {
     return UserModel(
       username: map['user_name'] as String,
       lastMessage: lastMessage,

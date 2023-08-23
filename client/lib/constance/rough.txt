@@ -1,7 +1,0 @@
-CircleAvatar(
-                      radius: 60,
-                      backgroundImage: NetworkImage(
-                        user.avatar != null ? user.avatar! : '',
-                      ),
-                    ),
-                  ),showAvatar(svgRoot!, false)

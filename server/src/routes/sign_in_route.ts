@@ -7,9 +7,12 @@ import { Password } from "../utils/password_hash";
 const router = Router();
 
 router.post("/auth/sign-in", async (req, res) => {
-  const { username, password, apptoken } = req.body;
+  const { username: usernameOrEmail, password, apptoken } = req.body;
   try {
-    let user = await UserModel.findOne({ username });
+    let user = await UserModel.findOne({ username: usernameOrEmail });
+    if(user==null){
+      user = await UserModel.findOne({ email:usernameOrEmail });
+    }
     let token;
     if (user) {
       user.appToken = apptoken;
@@ -40,7 +43,7 @@ router.post("/auth/google-in", async (req, res) => {
     if (user) {
       user.appToken = apptoken;
       user.save();
-      token = new Token().generate(user._id);
+      token = new Token().generate(user._id); 
       res.status(200).json({ user: user, token: token });
     } else {
       res.status(401).json({ message: "User not found" });

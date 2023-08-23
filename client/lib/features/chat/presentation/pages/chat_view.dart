@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../common/widgets/avatar.dart';
+import '../../../../core/Injector/injector.dart';
 import '../../../../core/Injector/ws_injector.dart';
 import '../../../../core/helper/webrtc/webrtc_helper.dart';
 import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
@@ -136,8 +137,8 @@ class _ChatPageState extends State<ChatPage> {
       actions: [
         InkWell(
           onTap: () async {
-            await WSInjection.injector.get<WebrtcHelper>().initVideoRenders();
-            await WSInjection.injector
+            await Injection.injector.get<WebrtcHelper>().initVideoRenders();
+            await Injection.injector
                 .get<WebrtcHelper>()
                 .createPeerConnecion();
             if (context.mounted) {
@@ -171,7 +172,7 @@ class _ChatPageState extends State<ChatPage> {
           .map(
             (i) => Container(
               alignment: Alignment.centerLeft,
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               child: i,
             ),
           )

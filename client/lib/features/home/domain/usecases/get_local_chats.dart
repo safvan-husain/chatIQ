@@ -8,6 +8,7 @@ import '../repositories/home_repositoy.dart';
 class GetLocalChats extends UseCase<List<NewMessages>, NoParams> {
   final HomeRepository _homeRepository;
   GetLocalChats(this._homeRepository);
+  @override
   Future<Either<Failure, List<NewMessages>>> call(NoParams) async {
     return await _homeRepository.getLocalChats();
   }

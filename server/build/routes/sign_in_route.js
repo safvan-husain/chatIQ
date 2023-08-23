@@ -18,9 +18,12 @@ const password_hash_1 = require("../utils/password_hash");
 const router = (0, express_1.Router)();
 exports.SigninRouter = router;
 router.post("/auth/sign-in", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password, apptoken } = req.body;
+    const { username: usernameOrEmail, password, apptoken } = req.body;
     try {
-        let user = yield user_model_1.UserModel.findOne({ username });
+        let user = yield user_model_1.UserModel.findOne({ username: usernameOrEmail });
+        if (user == null) {
+            user = yield user_model_1.UserModel.findOne({ email: usernameOrEmail });
+        }
         let token;
         if (user) {
             user.appToken = apptoken;

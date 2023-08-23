@@ -34,6 +34,7 @@ abstract class UserRepository {
   ///Fear not, for victory brings forth a glorious [User], but beware any [Failure]
   Future<Either<Failure, User>> loginUsingGoogle(
     String email,
+    
     void Function() onNewMessageCachingComplete,
   );
 

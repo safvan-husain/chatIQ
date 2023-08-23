@@ -25,7 +25,7 @@ class _UserTileState extends State<UserTile> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {if(widget.user.lastMessage == null){}
     Future<Widget>? avatar = showAvatar(40, username: widget.user.username);
     _config = AppConfig(context);
     return BlocBuilder<HomeCubit, HomeState>(
@@ -34,7 +34,7 @@ class _UserTileState extends State<UserTile> {
         var s = state.newMessages
             .where((x) => x.user.id == widget.user.id)
             .toList();
-        if (s.isEmpty) {
+        if (s.isEmpty|| widget.user.lastMessage == null) {
           return ListTile(
             leading: FutureBuilder(
               builder: (context, snapshot) {
@@ -49,9 +49,12 @@ class _UserTileState extends State<UserTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.user.username,
-                  style: const TextStyle(fontSize: 2),
-                ),
+                widget.user.username,
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500, fontSize: _config.bigTextSize),
+                maxLines: 1,
+              ) ,
               ],
             ),
           );
@@ -93,7 +96,7 @@ class _UserTileState extends State<UserTile> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      DateFormat.jm().format(s[0].user.lastMessage!.time),
+                      formatDateTime(s[0].user.lastMessage!.time) ,
                       style: TextStyle(fontSize: _config.smallTextSize),
                     ),
                     s[0].messageCount > 0
@@ -111,5 +114,26 @@ class _UserTileState extends State<UserTile> {
         );
       },
     );
+  }
+}
+
+String formatDateTime(DateTime dateTime) {
+  DateTime now = DateTime.now();
+  DateTime today = DateTime(now.year, now.month, now.day);
+  DateTime yesterday = today.subtract(const Duration(days: 1));
+  DateTime twoDaysAgo = today.subtract(const Duration(days: 2));
+
+  if (dateTime.isAfter(today)) {
+    // Today's time
+    return DateFormat.jm().format(dateTime);
+  } else if (dateTime.isAfter(yesterday)) {
+    // Yesterday
+    return 'Yesterday';
+  } else if (dateTime.isAfter(twoDaysAgo)) {
+    // Display date only
+    return "${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year.toString()}";
+  } else {
+    // Display full date
+    return "${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year.toString()} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'AM' : 'PM'}";
   }
 }

@@ -17,24 +17,36 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(this.logout, this._deleteLocalChats, this._deleteRemoteData)
       : super(SettingsInitial());
 
-  Future<void> logOut() async {
+  Future<void> logOut(void Function() onCacheCleared) async {
     Either<Failure, bool> result = await logout(NoParams());
     result.fold(
       (l) {},
-      (r) {},
+      (r) {
+        if (r) {
+          onCacheCleared();
+        }
+      },
     );
   }
 
-  Future<void> deleteLocalChats() async {
+  Future<void> deleteLocalChats({
+    required void Function() onCacheDeleted,
+    required void Function() onCacheDeleteFailed,
+  }) async {
     Either<Failure, void> result = await _deleteLocalChats.call(NoParams());
     result.fold(
-      (l) {},
-      (r) {},
+      (l) {
+        onCacheDeleteFailed();
+      },
+      (r) {
+        onCacheDeleted();
+      },
     );
   }
 
   Future<void> deleteRemoteData(String authToken) async {
-    Either<Failure, void> result = await _deleteRemoteData(DeleteRemoteDataParams(authToken));
+    Either<Failure, void> result =
+        await _deleteRemoteData(DeleteRemoteDataParams(authToken));
     result.fold(
       (l) {},
       (r) {},

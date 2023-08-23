@@ -82,7 +82,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     result.fold(
       (failure) {
         emit(AuthenticationFailure(
-          authState: AuthState.unauthenticated,
+          authState: AuthState.initial,
           failure: failure,
           time: DateTime.now(),
         ));

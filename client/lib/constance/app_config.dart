@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppConfig {
-  BuildContext _context;
+  final BuildContext _context;
   late double _height;
   late double _width;
   late double _heightPadding;

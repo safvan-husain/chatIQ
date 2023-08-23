@@ -36,22 +36,28 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
     List<NewMessages> res = [];
     try {
       List<dynamic> usersMap = await databaseHelper.getOrInsertUsersFromDB();
-      print(usersMap);
       if (usersMap.isNotEmpty) {
-        //   //adding all users with corresponding last message
+        //for showing chats in the home screen, 
         for (var i in usersMap) {
-          print(i);
-          int lastMessageId = i['last_message'];
-          Message lastMessage =
-              await databaseHelper.fetchLocalMessage(lastMessageId);
-          User us = UserModel.fromMap(i, lastMessage);
-          int messageCount = await _findNewMessageCount(user: us);
-          res.add(NewMessages(user: us, messageCount: messageCount));
+          int? lastMessageId = i['last_message'];
+          Message? lastMessage;
+          if (lastMessageId != null) {
+            //if there is no last message assigned to the user object in the database.
+            lastMessage = await databaseHelper.fetchLocalMessage(lastMessageId);
+            User user = UserModel.fromMap(i, lastMessage);
+            res.add(NewMessages(user: user, messageCount: 0));
+          } else {
+            //if there is a last message we want to show that in the home screen.
+            User user = UserModel.fromMap(i, lastMessage);
+            //finding new messages to show the label.
+            int messageCount = await _findNewMessageCount(user: user);
+            res.add(NewMessages(user: user, messageCount: messageCount));
+          }
         }
       }
       return res;
     } catch (e) {
-      logError(e.toString() + "here");
+      logError("${e}here");
       throw CacheException();
     }
   }

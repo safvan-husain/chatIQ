@@ -9,6 +9,7 @@ import 'package:web_socket_channel/io.dart';
 import '../../../common/entity/message.dart';
 import '../../../constance/color_log.dart';
 import '../../../constance/constant_variebles.dart';
+import '../../Injector/injector.dart';
 
 class WebSocketHelper {
   static final WebSocketHelper _instance = WebSocketHelper.internal();
@@ -59,7 +60,7 @@ class WebSocketHelper {
                 onBusy();
                 break;
               case 'request':
-                if (WSInjection.injector.get<WebrtcHelper>().isCreatedPC) {
+                if (Injection.injector.get<WebrtcHelper>().isCreatedPC) {
                   sendBusy(recieverId: event.senderUsername);
                 } else {
                   sendAvailable(recieverId: event.senderUsername);
@@ -81,6 +82,10 @@ class WebSocketHelper {
     } catch (e) {
       throw Error();
     }
+  }
+
+  void close() {
+    _channel.sink.close();
   }
 
   void sendMessage({required String message, required String recieverId}) {
