@@ -27,6 +27,13 @@ class MakeCallState extends VideoCallState {
   });
 }
 
+class ConnectingCallState extends VideoCallState {
+  const ConnectingCallState({
+    required super.localVideoRenderer,
+    super.remoteVideoRenderer,
+  });
+}
+
 class AnswerCallState extends VideoCallState {
   const AnswerCallState({
     required super.localVideoRenderer,
@@ -35,5 +42,7 @@ class AnswerCallState extends VideoCallState {
 }
 
 class BusyCallState extends VideoCallState {
-  const BusyCallState();
+  const BusyCallState({
+    required super.localVideoRenderer,
+  });
 }

@@ -22,11 +22,11 @@ void main() {
   test(
     'should call fetchUsersFromDB when getChats called and should retun a list',
     () async {
-      when(mockDatabaseHelper.getOrInsertUsersFromDB())
-          .thenAnswer((realInvocation) async => []);
+      when(mockDatabaseHelper.getOrInsertUserFromDB())
+          .thenAnswer((realInvocation) async => {});
       var result = await homeLocalDataSource.getChats();
       expect(result, []);
-      verify(mockDatabaseHelper.getOrInsertUsersFromDB()).called(1);
+      verify(mockDatabaseHelper.getOrInsertUserFromDB()).called(1);
       verifyNoMoreInteractions(mockDatabaseHelper);
     },
   );
@@ -34,28 +34,30 @@ void main() {
     test(
       'should call fetchUsersFromDB to store last message id',
       () async {
-        when(mockDatabaseHelper.getOrInsertUsersFromDB())
-            .thenAnswer((realInvocation) async => []);
+        when(mockDatabaseHelper.getOrInsertUserFromDB())
+            .thenAnswer((realInvocation) async => {});
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.getOrInsertUsersFromDB()).called(1);
+        verify(mockDatabaseHelper.getOrInsertUserFromDB()).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call insertAMessageToDB',
       () async {
-        when(mockDatabaseHelper.getOrInsertUsersFromDB())
-            .thenAnswer((realInvocation) async => []);
+        when(mockDatabaseHelper.getOrInsertUserFromDB())
+            .thenAnswer((realInvocation) async => {});
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.insertAMessageToDB(message,''),).called(1);
+        verify(
+          mockDatabaseHelper.insertAMessageToDB(message, ''),
+        ).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call updateDBColumn',
       () async {
-        when(mockDatabaseHelper.getOrInsertUsersFromDB())
-            .thenAnswer((realInvocation) async => []);
+        when(mockDatabaseHelper.getOrInsertUserFromDB())
+            .thenAnswer((realInvocation) async => {});
         await homeLocalDataSource.cacheMessage(message, '');
         verify(mockDatabaseHelper.updateDBColumn(
           tableName: any,
@@ -71,18 +73,18 @@ void main() {
     test(
       'should call insertAMessageToDB',
       () async {
-        when(mockDatabaseHelper.getOrInsertUsersFromDB())
-            .thenAnswer((realInvocation) async => []);
+        when(mockDatabaseHelper.getOrInsertUserFromDB())
+            .thenAnswer((realInvocation) async => {});
         await homeLocalDataSource.cacheMessage(message, '');
-        verify(mockDatabaseHelper.insertAMessageToDB(message,'')).called(1);
+        verify(mockDatabaseHelper.insertAMessageToDB(message, '')).called(1);
         // verifyNoMoreInteractions(mockDatabaseHelper);
       },
     );
     test(
       'should call updateDBColumn',
       () async {
-        when(mockDatabaseHelper.getOrInsertUsersFromDB())
-            .thenAnswer((realInvocation) async => []);
+        when(mockDatabaseHelper.getOrInsertUserFromDB())
+            .thenAnswer((realInvocation) async => {});
         await homeLocalDataSource.cacheMessage(message, '');
         verify(mockDatabaseHelper.updateDBColumn(
           tableName: any,

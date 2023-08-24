@@ -7,14 +7,14 @@ class WSEvent {
   final String eventName;
   final String senderUsername;
   final String recieverUsername;
-  final String message;
+  final String? data;
   final DateTime time;
 
   const WSEvent(
     this.eventName,
     this.senderUsername,
     this.recieverUsername,
-    this.message,
+    this.data,
     this.time,
   );
 
@@ -23,7 +23,7 @@ class WSEvent {
       'eventName': eventName,
       'senderUsername': senderUsername,
       'recieverUsername': recieverUsername,
-      'message': message,
+      'data': data,
       'time': time.millisecondsSinceEpoch,
     };
   }
@@ -31,7 +31,7 @@ class WSEvent {
   Message toMessage() {
     return Message(
       chatId: null,
-      content: message,
+      content: data!,
       isme: false,
       time: time,
     );
@@ -42,7 +42,7 @@ class WSEvent {
       map['eventName'] as String,
       map['senderUsername'] as String,
       map['recieverUsername'] as String,
-      map['message'] as String,
+      map['data'] as String?,
       DateTime.fromMillisecondsSinceEpoch(map['time']),
     );
   }

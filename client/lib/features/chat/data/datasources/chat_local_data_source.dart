@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:client/core/error/exception.dart';
 import 'package:client/features/home/domain/entities/user.dart';
 
@@ -10,7 +9,11 @@ import '../../../home/data/models/user_model.dart';
 abstract class ChatLocalData {
   ///cache the [User] if not alredy cached
   Future<void> cacheFriend(String username);
+
+  ///updating last seen message, last message id to the cahed user.
   Future<void> updateLastVisit(String userName);
+
+  ///will update last message id to the cached user.
   Future<Message> cacheMessage(Message message, String to);
   Future<List<Message>> showCachedMessages(String to);
 }
@@ -23,30 +26,29 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<void> cacheFriend(String username) async {
     try {
-        await databaseHelper.getOrInsertUsersFromDB(userName:username);
+      await databaseHelper.getOrInsertUserFromDB(userName: username);
     } catch (e) {
       print(e);
       throw CacheException();
     }
   }
 
-//onlyidnedd for argument refactor note f
   @override
   Future<void> updateLastVisit(String userName) async {
     try {
-      var re = await databaseHelper.getOrInsertUsersFromDB(userName: userName);
-        var messages =
-            await databaseHelper.fetchAllMessageFromAChat(re[0]['id']);
-        Message lastMessage =
-            MessageModel.fromMap(messages.elementAt(messages.length - 1));
-
-        var usere = UserModel.fromMap(re[0], lastMessage);
+      var userMap =
+          await databaseHelper.getOrInsertUserFromDB(userName: userName);
+      Message? lastMessage =
+          await databaseHelper.fetchLastMessageFromAChat(userMap['id']);
+      if (lastMessage != null) {
+        var usere = UserModel.fromMap(userMap, lastMessage);
         usere.setLastSeenMessage(lastMessage.id as int);
         await databaseHelper.updateDBColumn(
           tableName: "recent_chats",
           object: UserModel.fromUser(usere).toMap(),
-          id: re[0]['id'],
+          id: userMap['id'],
         );
+      }
     } catch (e) {
       print(e);
       throw CacheException();
@@ -55,7 +57,7 @@ class ChatLocalDataSource extends ChatLocalData {
 
   Future<Message> fetchLocalMessage(int id) async {
     try {
-      return await databaseHelper.fetchLocalMessage(id);
+      return await databaseHelper.getMessageWithId(id);
     } catch (e) {
       throw CacheException();
     }
@@ -65,7 +67,6 @@ class ChatLocalDataSource extends ChatLocalData {
   Future<Message> cacheMessage(Message message, String to) async {
     try {
       await databaseHelper.insertAMessageToDB(message, to);
-
       return message;
     } catch (e) {
       print(e);
@@ -76,13 +77,10 @@ class ChatLocalDataSource extends ChatLocalData {
   @override
   Future<List<Message>> showCachedMessages(String to) async {
     try {
-      var userMapList = await databaseHelper.getOrInsertUsersFromDB(userName: to);
-      if (userMapList.isNotEmpty) {
-        var messages = await databaseHelper
-            .fetchAllMessageFromAChat(userMapList[0]['id'] as int);
-        return messages.map((i) => MessageModel.fromMap(i)).toList();
-      }
-      return [];
+      var userMap = await databaseHelper.getOrInsertUserFromDB(userName: to);
+      var messages =
+          await databaseHelper.fetchAllMessageFromAChat(userMap['id'] as int);
+      return messages.map((i) => MessageModel.fromMap(i)).toList();
     } catch (e) {
       print(e);
       throw CacheException();

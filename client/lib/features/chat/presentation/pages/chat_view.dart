@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../common/widgets/avatar.dart';
 import '../../../../core/Injector/injector.dart';
-import '../../../../core/Injector/ws_injector.dart';
 import '../../../../core/helper/webrtc/webrtc_helper.dart';
 import '../../../Authentication/presentation/cubit/authentication_cubit.dart';
 import '../../../video_call/presentation/bloc/video_call_bloc.dart';
@@ -29,13 +28,11 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  late bool isThisFirstCall;
   Future<Widget>? avatar;
   late AppConfig _config;
 
   @override
   void initState() {
-    isThisFirstCall = true;
     context.read<ChatBloc>().add(ShowChatEvent(
           chatId: widget.userame,
           setUsername: () => widget.userame,
@@ -50,6 +47,8 @@ class _ChatPageState extends State<ChatPage> {
     avatar = showAvatar(40, username: widget.userame);
     return WillPopScope(
         onWillPop: () async {
+          //used to update last seen message
+          //so we can find unread messages.
           context.read<ChatBloc>().add(UpdateLastVisitEvent(
                 userName: widget.userame,
                 onUpdateLastVisitCompleted: () => context.router
@@ -124,7 +123,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
       leading: InkWell(
         onTap: () {
-        context.read<ChatBloc>().add(UpdateLastVisitEvent(
+          context.read<ChatBloc>().add(UpdateLastVisitEvent(
                 userName: widget.userame,
                 onUpdateLastVisitCompleted: () => context.router
                     .pushAndPopUntil(const HomeRoute(),
@@ -138,9 +137,7 @@ class _ChatPageState extends State<ChatPage> {
         InkWell(
           onTap: () async {
             await Injection.injector.get<WebrtcHelper>().initVideoRenders();
-            await Injection.injector
-                .get<WebrtcHelper>()
-                .createPeerConnecion();
+            await Injection.injector.get<WebrtcHelper>().createPeerConnecion();
             if (context.mounted) {
               context.router.push(VideoCallRoute(recieverName: widget.userame));
               context.read<VideoCallBloc>().add(

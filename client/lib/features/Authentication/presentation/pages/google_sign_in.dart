@@ -1,5 +1,5 @@
 import 'package:client/common/widgets/custom_text_form_field.dart';
-import 'package:client/constance/full_width_button.dart';
+import 'package:client/common/widgets/full_width_button.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter/material.dart';

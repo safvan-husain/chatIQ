@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 part of 'home_cubit.dart';
 
-//refactornot try to use object key-value insted of this classs
+///Both [User] and unread [messageCount]
 class NewMessages {
   User user;
   late int messageCount;

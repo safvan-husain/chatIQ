@@ -11,35 +11,35 @@ void main() {
       MessageModel(chatId: 1, time: DateTime.now(), isme: false, content: '');
   ChatLocalDataSource chatLocalDataSource =
       ChatLocalDataSource(databaseHelper: mockDataBaseHelper);
-  
+
   group(
     'when updateLastVisit called',
     () {
       test(
         'should call fetchUsersFromDB',
         () async {
-          when(mockDataBaseHelper.getOrInsertUsersFromDB(
+          when(mockDataBaseHelper.getOrInsertUserFromDB(
                   userName: captureAnyNamed('userName')))
-              .thenAnswer((realInvocation) async => []);
+              .thenAnswer((realInvocation) async =>
+                  {"id": 1, "user_name": "user", "last_seen_message": 1});
           await chatLocalDataSource.updateLastVisit('');
-          verify(mockDataBaseHelper.getOrInsertUsersFromDB(
+          verify(mockDataBaseHelper.getOrInsertUserFromDB(
               userName: captureAnyNamed('userName')));
         },
       );
       test(
         'should call  fetchAllMessageFromAChat if the user is not empty',
         () async {
-          when(mockDataBaseHelper.getOrInsertUsersFromDB(
+          when(mockDataBaseHelper.getOrInsertUserFromDB(
                   userName: captureAnyNamed('userName')))
-              .thenAnswer((realInvocation) async => [
-                    {"id": 1, "user_name": "user", "last_seen_message": 1}
-                  ]);
+              .thenAnswer((realInvocation) async =>
+                  {"id": 1, "user_name": "user", "last_seen_message": 1});
           when(mockDataBaseHelper.fetchAllMessageFromAChat(any))
               .thenAnswer((realInvocation) async => [
                     {"id": 1, ...mockMessage.toMap()}
                   ]);
           await chatLocalDataSource.updateLastVisit('');
-          verify(mockDataBaseHelper.getOrInsertUsersFromDB(
+          verify(mockDataBaseHelper.getOrInsertUserFromDB(
               userName: captureAnyNamed('userName')));
         },
       );
@@ -51,41 +51,38 @@ void main() {
       test(
         'should call fetchUsersFromDB',
         () async {
-          when(mockDataBaseHelper.getOrInsertUsersFromDB(
+          when(mockDataBaseHelper.getOrInsertUserFromDB(
                   userName: captureAnyNamed('userName')))
-              .thenAnswer((realInvocation) async => [
-                    {"id": 1, "user_name": "user", "last_seen_message": 1}
-                  ]);
-          when(mockDataBaseHelper.insertAMessageToDB(any,any))
+              .thenAnswer((realInvocation) async =>
+                  {"id": 1, "user_name": "user", "last_seen_message": 1});
+          when(mockDataBaseHelper.insertAMessageToDB(any, any))
               .thenAnswer((realInvocation) async => MockNewMessages());
           await chatLocalDataSource.cacheMessage(mockMessage, '');
-          verify(mockDataBaseHelper.getOrInsertUsersFromDB(
+          verify(mockDataBaseHelper.getOrInsertUserFromDB(
               userName: captureAnyNamed('userName')));
         },
       );
       test(
         'should call  insertAMessageToDB',
         () async {
-          when(mockDataBaseHelper.getOrInsertUsersFromDB(
+          when(mockDataBaseHelper.getOrInsertUserFromDB(
                   userName: captureAnyNamed('userName')))
-              .thenAnswer((realInvocation) async => [
-                    {"id": 1, "user_name": "user", "last_seen_message": 1}
-                  ]);
-          when(mockDataBaseHelper.insertAMessageToDB(any,any))
+              .thenAnswer((realInvocation) async =>
+                  {"id": 1, "user_name": "user", "last_seen_message": 1});
+          when(mockDataBaseHelper.insertAMessageToDB(any, any))
               .thenAnswer((realInvocation) async => MockNewMessages());
           await chatLocalDataSource.cacheMessage(mockMessage, '');
-          verify(mockDataBaseHelper.insertAMessageToDB(any,any));
+          verify(mockDataBaseHelper.insertAMessageToDB(any, any));
         },
       );
       test(
         'should call  updateDBColumn',
         () async {
-          when(mockDataBaseHelper.getOrInsertUsersFromDB(
+          when(mockDataBaseHelper.getOrInsertUserFromDB(
                   userName: captureAnyNamed('userName')))
-              .thenAnswer((realInvocation) async => [
-                    {"user_name": "user", "last_seen_message": 2, "id": 1}
-                  ]);
-          when(mockDataBaseHelper.insertAMessageToDB(any,any))
+              .thenAnswer((realInvocation) async =>
+                  {"id": 1, "user_name": "user", "last_seen_message": 1});
+          when(mockDataBaseHelper.insertAMessageToDB(any, any))
               .thenAnswer((realInvocation) async => MockNewMessages());
           await chatLocalDataSource.cacheMessage(mockMessage, '');
           verify(mockDataBaseHelper.updateDBColumn(
@@ -100,17 +97,16 @@ void main() {
   test(
     'shuld call fetchUsersFromDB when showCachedMessages called',
     () async {
-      when(mockDataBaseHelper.getOrInsertUsersFromDB(
+      when(mockDataBaseHelper.getOrInsertUserFromDB(
               userName: captureAnyNamed('userName')))
-          .thenAnswer((realInvocation) async => [
-                {"user_name": "user", "last_seen_message": 2, "id": 1}
-              ]);
+          .thenAnswer((realInvocation) async =>
+              {"id": 1, "user_name": "user", "last_seen_message": 1});
       when(mockDataBaseHelper.fetchAllMessageFromAChat(any))
           .thenAnswer((realInvocation) async => [
                 {"id": 1, ...mockMessage.toMap()}
               ]);
       await chatLocalDataSource.showCachedMessages('');
-      verify(mockDataBaseHelper.getOrInsertUsersFromDB(
+      verify(mockDataBaseHelper.getOrInsertUserFromDB(
               userName: captureAnyNamed('userName')))
           .called(1);
       verify(mockDataBaseHelper.fetchAllMessageFromAChat(1)).called(1);

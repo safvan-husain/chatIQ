@@ -6,11 +6,12 @@ import '../../../../common/entity/message.dart';
 abstract class ChatRepository {
   ///gets the list of [Message] from cache
   ///
-  ///returns a [List][Message] for success [Failure] for any error code
+  ///returns a [Message] for success [Failure] for any error code
   Future<Either<Failure, List<Message>>> showMessages(String chatId);
 
+  ///update last seen message id to the cached user.
   ///
-  ///returns a [List][Message] for success [Failure] for any error code
+  /// [Failure] for any error code
   Future<Either<Failure, void>> updateLasVisit(String userName);
 
   ///post a [Message] to the http://server.com/sendMessage

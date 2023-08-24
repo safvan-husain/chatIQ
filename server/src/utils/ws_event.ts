@@ -2,20 +2,20 @@ export class WSEvent {
   eventName: string;
   recieverUsername: string;
   senderUsername: string;
-  message: string;
+  data: string | undefined;
   time: Number;
 
   constructor(
     eventName: string,
     recieverUsername: string,
     senderUsername: string,
-    message: string,
+    data: string | undefined,
     time: Number
   ) {
     this.eventName = eventName;
     this.recieverUsername = recieverUsername;
     this.senderUsername = senderUsername;
-    this.message = message;
+    this.data = data;
     this.time = time;
   }
   static fromJson(jsonObject: string): WSEvent {
@@ -24,18 +24,18 @@ export class WSEvent {
       map["eventName"],
       map["recieverUsername"],
       map["senderUsername"],
-      map["message"],
+      map["data"],
       map["time"]
     );
-  } 
+  }
   ///used
-  toJson(eventName: string): string {
+  toJson(): string {
     return JSON.stringify({
-      eventName: eventName,
+      eventName: this.eventName,
       recieverUsername: this.recieverUsername,
       senderUsername: this.senderUsername,
-      message: this.message,
+      data: this.data,
       time: this.time,
     });
   }
- }
+}

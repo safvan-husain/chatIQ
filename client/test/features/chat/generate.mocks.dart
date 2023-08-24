@@ -191,24 +191,24 @@ class MockDatabaseHelper extends _i1.Mock implements _i6.DatabaseHelper {
         ),
       ) as _i3.Database);
   @override
-  _i9.Future<void> clearAllData() => (super.noSuchMethod(
+  _i9.Future<void> deleteAllData() => (super.noSuchMethod(
         Invocation.method(
-          #clearAllData,
+          #deleteAllData,
           [],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
   @override
-  _i9.Future<_i4.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
+  _i9.Future<_i4.Message> getMessageWithId(int? id) => (super.noSuchMethod(
         Invocation.method(
-          #fetchLocalMessage,
+          #getMessageWithId,
           [id],
         ),
         returnValue: _i9.Future<_i4.Message>.value(_FakeMessage_2(
           this,
           Invocation.method(
-            #fetchLocalMessage,
+            #getMessageWithId,
             [id],
           ),
         )),
@@ -235,14 +235,14 @@ class MockDatabaseHelper extends _i1.Mock implements _i6.DatabaseHelper {
   @override
   _i9.Future<_i5.NewMessages> insertAMessageToDB(
     _i4.Message? message,
-    String? chatter,
+    String? chatterId,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #insertAMessageToDB,
           [
             message,
-            chatter,
+            chatterId,
           ],
         ),
         returnValue: _i9.Future<_i5.NewMessages>.value(_FakeNewMessages_3(
@@ -251,7 +251,7 @@ class MockDatabaseHelper extends _i1.Mock implements _i6.DatabaseHelper {
             #insertAMessageToDB,
             [
               message,
-              chatter,
+              chatterId,
             ],
           ),
         )),
@@ -275,22 +275,31 @@ class MockDatabaseHelper extends _i1.Mock implements _i6.DatabaseHelper {
         returnValue: _i9.Future<List<dynamic>>.value(<dynamic>[]),
       ) as _i9.Future<List<dynamic>>);
   @override
-  _i9.Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
+  _i9.Future<Map<String, dynamic>> getOrInsertUserFromDB({
     String? userName,
     int? id,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getOrInsertUsersFromDB,
+          #getOrInsertUserFromDB,
           [],
           {
             #userName: userName,
             #id: id,
           },
         ),
-        returnValue: _i9.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i9.Future<List<Map<String, dynamic>>>);
+        returnValue:
+            _i9.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i9.Future<Map<String, dynamic>>);
+  @override
+  _i9.Future<List<Map<String, Object?>>> getAllFriends() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllFriends,
+          [],
+        ),
+        returnValue: _i9.Future<List<Map<String, Object?>>>.value(
+            <Map<String, Object?>>[]),
+      ) as _i9.Future<List<Map<String, Object?>>>);
 }
 
 /// A class which mocks [Message].

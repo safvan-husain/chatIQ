@@ -9,6 +9,7 @@ import '../features/home/presentation/pages/default/home_view.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/video_call/presentation/pages/video_call_page.dart';
+import '../features/video_call/presentation/pages/incoming_call_screen.dart';
 
 @AdaptiveAutoRouter(
   replaceInRouteName: 'Page,Route',
@@ -22,6 +23,7 @@ import '../features/video_call/presentation/pages/video_call_page.dart';
     AutoRoute(page: VideoCallPage),
     AutoRoute(page: HomePage),
     AutoRoute(page: SettingsPage),
+    AutoRoute(page: IncomingCallPage),
   ],
 )
 class $AppRouter {}

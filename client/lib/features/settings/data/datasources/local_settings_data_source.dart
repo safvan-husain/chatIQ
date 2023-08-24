@@ -7,17 +7,17 @@ class LocalSettingDataSource {
   final DatabaseHelper _databaseHelper;
 
   LocalSettingDataSource(this._databaseHelper);
-  
+
   Future<void> deleteChats() async {
     try {
-      await _databaseHelper.clearAllData();
+      await _databaseHelper.deleteAllData();
     } catch (e) {
       throw CacheException();
     }
   }
 
   Future<bool> logOut() async {
-   try {
+    try {
       var sharedPreferences = await SharedPreferences.getInstance();
       return await sharedPreferences.setString('user', '');
     } catch (e) {

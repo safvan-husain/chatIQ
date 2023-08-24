@@ -31,62 +31,67 @@ function onWebSocket(wss) {
             }
         }
         ws.on("message", (message) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c;
             if (message.toString()[0] === "{") {
                 var ws_event = ws_event_1.WSEvent.fromJson(message.toString());
                 // console.log(ws_event.message);
                 var reciever = webSockets[ws_event.recieverUsername];
                 if (reciever != null) {
                     console.log(`${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`);
-                    if (ws_event.eventName == "message") {
-                        (0, push_notification_1.sendMessage)({
-                            title: ws_event.senderUsername,
-                            body: ws_event.message,
-                            username: ws_event.recieverUsername,
-                        });
-                        var response = ws_event.toJson("message");
-                        reciever.send(response);
+                    switch (ws_event.eventName) {
+                        case "message":
+                            (0, push_notification_1.sendMessage)({
+                                title: ws_event.senderUsername,
+                                body: (_a = ws_event.data) !== null && _a !== void 0 ? _a : "",
+                                username: ws_event.recieverUsername,
+                            });
+                            var response = ws_event.toJson();
+                            reciever.send(response);
+                            break;
+                        default:
+                            reciever.send(ws_event.toJson());
+                            break;
                     }
-                    else if (ws_event.eventName == "request") {
-                        var response = ws_event.toJson("request");
-                        reciever.send(response);
-                    }
-                    else if (ws_event.eventName == "offer") {
-                        var response = ws_event.toJson("offer");
-                        webSockets[ws_event.recieverUsername].send(response);
-                    }
-                    else if (ws_event.eventName == "answer") {
-                        var response = ws_event.toJson("answer");
-                        webSockets[ws_event.recieverUsername].send(response);
-                    }
-                    else if (ws_event.eventName === "candidate") {
-                        var response = ws_event.toJson("candidate");
-                        webSockets[ws_event.recieverUsername].send(response);
-                    }
-                    else if (ws_event.eventName == "end") {
-                        var response = ws_event.toJson("end");
-                        webSockets[ws_event.recieverUsername].send(response);
-                    }
-                    else if (ws_event.eventName === "busy") {
-                        var response = ws_event.toJson("busy");
-                        reciever.send(response);
-                    }
-                    else if (ws_event.eventName === "available") {
-                        (0, push_notification_1.makeCall)(ws_event.senderUsername, ws_event.recieverUsername);
-                    }
-                    else if (ws_event.eventName == "rejection") {
-                        var response = ws_event.toJson("rejection");
-                        reciever.send(response);
-                    }
+                    // if (ws_event.eventName == "message") {
+                    //   sendMessage({
+                    //     title: ws_event.senderUsername,
+                    //     body: ws_event.data ?? "",
+                    //     username: ws_event.recieverUsername,
+                    //   });
+                    //   var response: string = ws_event.toJson();
+                    //   reciever.send(response);
+                    // } else if (ws_event.eventName == "request") {
+                    //   var response: string = ws_event.toJson();
+                    //   reciever.send(response);
+                    // } else if (ws_event.eventName == "offer") {
+                    //   var response = ws_event.toJson();
+                    //   webSockets[ws_event.recieverUsername].send(response);
+                    // } else if (ws_event.eventName == "answer") {
+                    //   var response = ws_event.toJson();
+                    //   webSockets[ws_event.recieverUsername].send(response);
+                    // } else if (ws_event.eventName === "candidate") {
+                    //   var response = ws_event.toJson();
+                    //   webSockets[ws_event.recieverUsername].send(response);
+                    // } else if (ws_event.eventName == "end") {
+                    //   var response = ws_event.toJson();
+                    //   webSockets[ws_event.recieverUsername].send(response);
+                    // } else if (ws_event.eventName === "busy") {
+                    //   var response: string = ws_event.toJson();
+                    //   reciever.send(response);
+                    // } else if (ws_event.eventName == "rejection") {
+                    //   var response: string = ws_event.toJson();
+                    //   reciever.send(response);
+                    // }
                 }
                 else {
                     if (ws_event.eventName === "message") {
-                        console.log(ws_event.message);
+                        console.log(ws_event.data);
                         (0, push_notification_1.sendMessage)({
                             title: ws_event.senderUsername,
-                            body: ws_event.message,
+                            body: (_b = ws_event.data) !== null && _b !== void 0 ? _b : "",
                             username: ws_event.recieverUsername,
                         });
-                        (0, data_base_methods_1.saveMessageDB)(ws_event.senderUsername, ws_event.recieverUsername, ws_event.message, true);
+                        (0, data_base_methods_1.saveMessageDB)(ws_event.senderUsername, ws_event.recieverUsername, (_c = ws_event.data) !== null && _c !== void 0 ? _c : "", true);
                     }
                     else if (ws_event.eventName === "request") {
                         (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);

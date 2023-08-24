@@ -35,19 +35,19 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   Future<List<NewMessages>> getChats() async {
     List<NewMessages> res = [];
     try {
-      List<dynamic> usersMap = await databaseHelper.getOrInsertUsersFromDB();
+      List<dynamic> usersMap = await databaseHelper.getAllFriends();
       if (usersMap.isNotEmpty) {
-        //for showing chats in the home screen, 
+        //for showing user tiles in the home screen,
         for (var i in usersMap) {
           int? lastMessageId = i['last_message'];
           Message? lastMessage;
           if (lastMessageId != null) {
             //if there is no last message assigned to the user object in the database.
-            lastMessage = await databaseHelper.fetchLocalMessage(lastMessageId);
+            lastMessage = await databaseHelper.getMessageWithId(lastMessageId);
             User user = UserModel.fromMap(i, lastMessage);
             res.add(NewMessages(user: user, messageCount: 0));
           } else {
-            //if there is a last message we want to show that in the home screen.
+            //if there is a last message we want to show that in the home screen user tile.
             User user = UserModel.fromMap(i, lastMessage);
             //finding new messages to show the label.
             int messageCount = await _findNewMessageCount(user: user);
@@ -77,7 +77,6 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
     try {
       return await databaseHelper.insertAMessageToDB(message, from);
     } catch (e) {
-      print(e);
       throw CacheException();
     }
   }
@@ -85,9 +84,8 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   @override
   Future<void> cacheFriend(String username) async {
     try {
-      await databaseHelper.getOrInsertUsersFromDB(userName: username);
+      await databaseHelper.getOrInsertUserFromDB(userName: username);
     } catch (e) {
-      print(e);
       throw CacheException();
     }
   }
@@ -111,48 +109,3 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
         1;
   }
 }
-
-// ///get message by its id from local DB [messages] table
-// ///
-// Future<Message> fetchLocalMessage(int id) async {
-//   var re = await databaseHelper.db
-//       .rawQuery("SELECT * FROM messages WHERE id = ?", [id]);
-//   return MessageModel.fromMap(re[0]);
-// }
-
-// Future<void> updateDBColumn(
-//     {required String tableName,
-//     required Map<String, dynamic> object,
-//     required int id}) async {
-//   await databaseHelper.db
-//       .update("recent_chats", object, where: "id = ?", whereArgs: [id]);
-// }
-
-// Future<List<dynamic>> _fetchAllMessageFromAChat(int chatId) async {
-//   return await databaseHelper.db
-//       .rawQuery("SELECT * FROM messages WHERE chat_id = ?", [chatId]);
-// }
-
-///query list of users from table [recent_chats] using id or username
-///
-///if no argument is passed, it will query all user
-///
-// Future<List<Map<String, dynamic>>> _fetchUsersFromDB(
-//     {String? userName, int? id}) async {
-//   if (userName != null) {
-//     return await databaseHelper.db
-//         .rawQuery("SELECT * FROM recent_chats WHERE user_name = '$userName'");
-//   }
-//   if (id != null) {
-//     return await databaseHelper.db
-//         .rawQuery("SELECT * FROM recent_chats WHERE id = '$id'");
-//   }
-//   return await databaseHelper.db.rawQuery("SELECT * FROM recent_chats");
-// }
-
-// Future<int> _insertAMessageToDB(Message message) async {
-//   return await databaseHelper.db.insert(
-//     'messages',
-//     MessageModel.fromMessage(message).toMap(),
-//   );
-// }

@@ -34,53 +34,64 @@ export function onWebSocket(wss: websocket.Server<websocket.WebSocket>) {
           console.log(
             `${ws_event.eventName} from ${ws_event.senderUsername} to ${ws_event.recieverUsername}`
           );
-
-          if (ws_event.eventName == "message") {
-            sendMessage({
-              title: ws_event.senderUsername,
-              body: ws_event.message,
-              username: ws_event.recieverUsername,
-            });
-            var response: string = ws_event.toJson("message");
-            reciever.send(response);
-           
-          } else if (ws_event.eventName == "request") {
-            var response: string = ws_event.toJson("request");
-            reciever.send(response);
-          } else if (ws_event.eventName == "offer") {
-            var response = ws_event.toJson("offer");
-            webSockets[ws_event.recieverUsername].send(response);
-          } else if (ws_event.eventName == "answer") {
-            var response = ws_event.toJson("answer");
-            webSockets[ws_event.recieverUsername].send(response);
-          } else if (ws_event.eventName === "candidate") {
-            var response = ws_event.toJson("candidate");
-            webSockets[ws_event.recieverUsername].send(response);
-          } else if (ws_event.eventName == "end") {
-            var response = ws_event.toJson("end");
-            webSockets[ws_event.recieverUsername].send(response);
-          } else if (ws_event.eventName === "busy") {
-            var response: string = ws_event.toJson("busy");
-            reciever.send(response);
-          } else if (ws_event.eventName === "available") {
-            makeCall(ws_event.senderUsername, ws_event.recieverUsername);
-          } else if (ws_event.eventName == "rejection") {
-            var response: string = ws_event.toJson("rejection");
-            reciever.send(response);
+          switch (ws_event.eventName) {
+            case "message":
+              sendMessage({
+                title: ws_event.senderUsername,
+                body: ws_event.data ?? "",
+                username: ws_event.recieverUsername,
+              });
+              var response: string = ws_event.toJson();
+              reciever.send(response);
+              break;
+            default:
+              reciever.send(ws_event.toJson());
+              break;
           }
+
+          // if (ws_event.eventName == "message") {
+          //   sendMessage({
+          //     title: ws_event.senderUsername,
+          //     body: ws_event.data ?? "",
+          //     username: ws_event.recieverUsername,
+          //   });
+          //   var response: string = ws_event.toJson();
+          //   reciever.send(response);
+          // } else if (ws_event.eventName == "request") {
+          //   var response: string = ws_event.toJson();
+          //   reciever.send(response);
+          // } else if (ws_event.eventName == "offer") {
+          //   var response = ws_event.toJson();
+          //   webSockets[ws_event.recieverUsername].send(response);
+          // } else if (ws_event.eventName == "answer") {
+          //   var response = ws_event.toJson();
+          //   webSockets[ws_event.recieverUsername].send(response);
+          // } else if (ws_event.eventName === "candidate") {
+          //   var response = ws_event.toJson();
+          //   webSockets[ws_event.recieverUsername].send(response);
+          // } else if (ws_event.eventName == "end") {
+          //   var response = ws_event.toJson();
+          //   webSockets[ws_event.recieverUsername].send(response);
+          // } else if (ws_event.eventName === "busy") {
+          //   var response: string = ws_event.toJson();
+          //   reciever.send(response);
+          // } else if (ws_event.eventName == "rejection") {
+          //   var response: string = ws_event.toJson();
+          //   reciever.send(response);
+          // }
         } else {
           if (ws_event.eventName === "message") {
-            console.log(ws_event.message);
+            console.log(ws_event.data);
 
             sendMessage({
               title: ws_event.senderUsername,
-              body: ws_event.message,
+              body: ws_event.data ?? "",
               username: ws_event.recieverUsername,
             });
             saveMessageDB(
               ws_event.senderUsername,
               ws_event.recieverUsername,
-              ws_event.message,
+              ws_event.data ?? "",
               true
             );
           } else if (ws_event.eventName === "request") {

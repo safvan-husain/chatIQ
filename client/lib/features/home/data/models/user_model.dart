@@ -21,6 +21,7 @@ class UserModel extends User {
     };
   }
 
+  ///for creating [UserModel] from local database.
   factory UserModel.fromMap(Map<String, dynamic> map, Message? lastMessage) {
     return UserModel(
       username: map['user_name'] as String,
@@ -29,8 +30,9 @@ class UserModel extends User {
       id: map['id'] as int,
     );
   }
+
+  ///for creating [UserModel] from remote data.
   factory UserModel.fromApiMap(Map<String, dynamic> map) {
-    // Map<String, dynamic> map = json.decode(jsonObject);
     return UserModel(
       username: map['username'] as String,
       lastMessage: null,

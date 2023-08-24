@@ -1,72 +1,44 @@
+import 'dart:async';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uuid/uuid.dart';
 
-late AndroidNotificationChannel channel;
-late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-bool isFlutterLocalNotificationsInitialized = false;
-Future<void> setupFlutterNotifications() async {
-  if (isFlutterLocalNotificationsInitialized) {
-    return;
-  }
-  channel = const AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    description:
-        'This channel is used for important notifications.', // description
-    importance: Importance.high,
-  );
-
-  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  /// Create an Android Notification Channel.
-  ///
-  /// We use this channel in the `AndroidManifest.xml` file to override the
-  /// default FCM channel to enable heads up notifications.
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  /// Update the iOS foreground notification presentation options to allow
-  /// heads up notifications.
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  isFlutterLocalNotificationsInitialized = true;
-}
-
-void _showFlutterNotification(RemoteMessage message) {
-  RemoteNotification? notification = message.notification;
-  AndroidNotification? android = message.notification?.android;
-  if (notification != null && android != null && !kIsWeb) {
-    flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channelDescription: channel.description,
-          icon: 'launch_background',
-        ),
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (message.notification != null) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: -1,
+        channelKey: 'alerts',
+        title: message.notification!.title,
+        body: message.notification!.body,
       ),
     );
-  }
-}
-
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (message.data.isNotEmpty) {
-    await _showCallkitIncoming(const Uuid().v4(), message.data['caller']);
-  } else if (message.notification != null) {
-    await setupFlutterNotifications();
-    _showFlutterNotification(message);
+  } else {
+    // AwesomeNotifications().createNotification(
+    //     content: NotificationContent(
+    //       id: 1,
+    //       channelKey: 'incoming_call',
+    //       title: message.data['caller'],
+    //       criticalAlert: true,
+    //       category: NotificationCategory.Call,
+    //       locked: true,
+    //       autoDismissible: false,
+    //     ),
+    //     actionButtons: [
+    //       NotificationActionButton(key: 'Accept', label: 'Accept'),
+    //       NotificationActionButton(
+    //         key: 'Reject',
+    //         label: 'Reject',
+    //         isDangerousOption: true,
+    //       ),
+    //     ]);
+    // Timer.periodic(const Duration(seconds: 5), (timer) {
+    //   AwesomeNotifications().cancel(1);
+    // });
+    _showCallkitIncoming(const Uuid().v4(), message.data['caller']);
   }
 }
 

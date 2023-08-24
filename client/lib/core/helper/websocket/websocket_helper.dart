@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:web_socket_channel/io.dart';
@@ -17,6 +16,8 @@ class WebSocketHelper {
   factory WebSocketHelper() => _instance;
   late IOWebSocketChannel _channel;
   IOWebSocketChannel get channel => _channel;
+
+  ///used for create websocket connection.
   late String myId;
   initSocket({
     required myid,
@@ -26,6 +27,7 @@ class WebSocketHelper {
     required void Function(WSEvent) onCandidate,
     required void Function() onEnd,
     required void Function() onBusy,
+    required void Function(String caller) onRequest,
   }) {
     myId = myid;
     try {
@@ -63,7 +65,7 @@ class WebSocketHelper {
                 if (Injection.injector.get<WebrtcHelper>().isCreatedPC) {
                   sendBusy(recieverId: event.senderUsername);
                 } else {
-                  sendAvailable(recieverId: event.senderUsername);
+                  onRequest(event.senderUsername);
                 }
                 break;
               default:
@@ -151,7 +153,11 @@ class WebSocketHelper {
       '',
       DateTime.now(),
     );
-    _channel.sink.add(data.toJson());
+    if (_channel.closeCode == null) {
+      _channel.sink.add(data.toJson());
+    } else {
+      throw ('you see');
+    }
   }
 
   void sendRequest({required String recieverId}) {

@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:client/common/widgets/snack_bar.dart';
-import 'package:client/constance/theme_services.dart';
+import 'package:client/core/theme/theme_services.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/features/settings/presentation/cubit/settings_cubit.dart';
@@ -55,7 +55,8 @@ class SettingsPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          SingleChildScrollView(scrollDirection: Axis.horizontal ,
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
                             child: Text(
                               username,
                               style: TextStyle(

@@ -17,7 +17,7 @@ abstract class UserRemoteDataSource {
 
   ///Attention! Prepare to make contact with http://server.com/auth/sign-in !
   ///
-  ///But be warned! The sly [serverException] could be thrown!
+  ///But be warned!  [ServerException] could be thrown!
   Future<UserModel> getUser(
     String emailorUsername,
     String password,
@@ -25,12 +25,12 @@ abstract class UserRemoteDataSource {
 
   ///Attention! Prepare to make contact with http://server.com/auth/google-in !
   ///
-  ///But be warned! The sly [serverException] could be thrown!
+  ///But be warned!  [serverException] could be thrown!
   Future<UserModel> getUserWithGoogle(String email);
 
   ///Attention! Prepare to make contact with http://server.com/auth/sign-up !
   ///
-  ///But be warned! The sly [serverException] could be thrown!
+  ///But be warned!  [ServerException] could be thrown!
   Future<UserModel> registerUser(
     String email,
     String username,

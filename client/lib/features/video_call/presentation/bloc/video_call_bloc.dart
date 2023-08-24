@@ -9,7 +9,6 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../../core/Injector/injector.dart';
-import '../../../../core/Injector/ws_injector.dart';
 import '../../../../core/helper/websocket/websocket_helper.dart';
 
 part 'video_call_event.dart';
@@ -37,22 +36,20 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
       (event, emit) async {
         await _webrtcHelper.initVideoRenders();
         caller = event.recieverName;
-        _webrtcHelper.makeVideoCall(event.recieverName);
-        emit(MakeCallState(
+        _webrtcHelper.createOffer(event.recieverName);
+        emit(ConnectingCallState(
           localVideoRenderer: _webrtcHelper.localVideoRenderer,
         ));
       },
     );
     on<BusyEvent>((event, emit) {
-      emit(const BusyCallState());
+      emit(BusyCallState(localVideoRenderer: state.localVideoRenderer));
     });
     on<ResponseCallEvent>(
       (event, emit) async {
         await _webrtcHelper.initVideoRenders();
-        await _webrtcHelper.setRemoteDescription(
-          jsonString: json.encode(event.wsEvent.message),
-          isOffer: true,
-        );
+        await _webrtcHelper
+            .setRemoteDescription(json.encode(event.wsEvent.data));
         caller = event.wsEvent.senderUsername;
         _webrtcHelper.createAnswer(
           event.wsEvent.senderUsername,
@@ -66,10 +63,8 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
     );
     on<ResponseAnswerEvent>(
       (event, emit) async {
-        await _webrtcHelper.setRemoteDescription(
-          jsonString: json.encode(event.wsEvent.message),
-          isOffer: false,
-        );
+        await _webrtcHelper
+            .setRemoteDescription(json.encode(event.wsEvent.data));
         emit(
           AnswerCallState(
             localVideoRenderer: _webrtcHelper.localVideoRenderer,
@@ -81,7 +76,7 @@ class VideoCallBloc extends Bloc<VideoCallEvent, VideoCallState> {
     );
     on<CandidateEvent>(
       (event, emit) {
-        _webrtcHelper.addCandidate(event.wsEvent.message);
+        _webrtcHelper.addCandidate(event.wsEvent.data);
       },
     );
     on<EndCallEvent>(

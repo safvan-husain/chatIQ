@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:client/common/widgets/snack_bar.dart';
-import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/core/helper/websocket/websocket_helper.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
@@ -16,6 +15,7 @@ import 'package:custom_search_bar/custom_search_bar.dart';
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 import '../../../../../core/Injector/injector.dart';
 
@@ -35,9 +35,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    // Injection.injector.get<NotificationController>().setContext(context);
     WidgetsBinding.instance.addObserver(this);
     checkAndNavigationCallingPage();
-    context.read<HomeCubit>().getChats(()=> showSnackBar(context, "Failed to get recent chats!!"));
+    context
+        .read<HomeCubit>()
+        .getChats(() => showSnackBar(context, "Failed to get recent chats!!"));
     Injection.initWebSocket(
       myid: context.read<AuthenticationCubit>().state.user!.username,
       onMessage: (message, from) async {
@@ -51,7 +54,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         context.read<VideoCallBloc>().add(ResponseCallEvent(event));
       },
       onAnswer: (event) {
-        context.read<VideoCallBloc>().add(ResponseAnswerEvent(event));
+        Future.delayed(Duration.zero, () {
+          context.read<VideoCallBloc>().add(ResponseAnswerEvent(event));
+        });
       },
       onCandidate: (event) {
         context.read<VideoCallBloc>().add(CandidateEvent(event));
@@ -69,6 +74,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       },
       onBusy: () {
         context.read<VideoCallBloc>().add(const BusyEvent());
+      },
+      onRequest: (caller) {
+        context.router.push(IncomingCallRoute(caller: caller));
       },
     ).then((_) {
       Injection.initWebRTCPeerConnection();
@@ -116,7 +124,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      checkAndNavigationCallingPage();
+      // checkAndNavigationCallingPage();
+      context.router
+          .pushAndPopUntil(const HomeRoute(), predicate: (_) => false);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      Injection.injector.get<WebSocketHelper>().close();
     }
   }
 

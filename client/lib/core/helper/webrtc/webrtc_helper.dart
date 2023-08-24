@@ -27,7 +27,11 @@ class WebrtcHelper {
   bool _isRenderSetted = false;
   bool _isRemoteSetted = false;
 
+  ///Wether peer connection created or not
   bool get isCreatedPC => _isCreatedPC;
+
+  ///true when both [RTCVideoRenderer] initilized
+  ///for remote and local.
   bool get isRenderSetted => _isRenderSetted;
 
   RTCVideoRenderer get localVideoRenderer => _localVideoRenderer;
@@ -41,12 +45,7 @@ class WebrtcHelper {
     _isRenderSetted = true;
   }
 
-  ///if the json string is an answer give false for isOffer
-  ///
-  Future<void> setRemoteDescription({
-    required String jsonString,
-    required bool isOffer,
-  }) async {
+  Future<void> setRemoteDescription(String jsonString) async {
     await createPeerConnecion();
     await _setRemoteDescription(jsonString);
   }
@@ -60,6 +59,7 @@ class WebrtcHelper {
     _isRenderSetted = false;
   }
 
+  ///pass [webSockektEvent] if want sent after closing connection
   void closeConnection({void Function()? websocketEvent}) async {
     await _closePeerConnection();
     if (websocketEvent != null) {
@@ -74,18 +74,19 @@ class WebrtcHelper {
       dynamic candidate = RTCIceCandidate(
           session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
       _peerConnection.addCandidate(candidate).catchError((e) {
-        logError('error candidate $e');
+        throw ('error candidate $e');
       });
     } else {
-      logError('cannot add candidate because remote is not setted');
+      throw ('cannot add candidate because remote is not setted');
     }
   }
 
+  ///Will send answer Object after being created
+  ///to [reciever] through webSocket.
   Future<void> createAnswer(String reciever, String sender) async {
     if (_isRemoteSetted) {
       await createPeerConnecion();
       _caller = sender;
-      logError("creating answer to $reciever");
       Map<String, dynamic> session = await _createAnswer();
 
       _webSocketHelper.sendAnswer(
@@ -93,14 +94,15 @@ class WebrtcHelper {
         recieverId: reciever,
       );
     } else {
-      logError("con't create answer becuase remote not settd");
+      throw ("can't create answer becuase remote not settd");
     }
   }
 
-  void makeVideoCall(String reciever) async {
+  ///Will send offerObject after being created
+  ///to [reciever] through webSocket.
+  void createOffer(String reciever) async {
     _caller = reciever;
 
-    logSuccess("creating offer to $reciever");
     await createPeerConnecion();
     Map<String, dynamic> session = await _createOffer();
     _webSocketHelper.sendOffer(
@@ -109,20 +111,19 @@ class WebrtcHelper {
     );
   }
 
+  ///create a peer connection if not alrady exist.
   Future<void> createPeerConnecion() async {
-    if (!_isCreatedPC) {
-      log('creating connection, webrtcHelper');
-
-      await _createPeerConnection();
-      logSuccess('success connection, webrtcHelper');
-    } else {
-      log("could not create peer connection, it seems already exists");
-    }
+    if (!_isCreatedPC) await _createPeerConnection();
   }
 
+  ///use this to send all stored candidates to the peer.
+  ///
+  ///if recieve the call / offer created, will send through websocket.
   void sendAllCandidate() {
-    //if offer is created, we save all IceCandidates
-    // and send it after rescieving answer
+    //candidate will create before setting remote description.
+    //cannot set candidate before setting remote description, would throw error by webrtc.
+    //if created offer we choose to send candidate after setting remoteDescription
+    //so in the peer's websocket, won't try to set candidate before setting remote description.
 
     for (var candidate in candidateList) {
       _webSocketHelper.sendCandidate(candidate: candidate, recieverId: _caller);
@@ -138,7 +139,6 @@ class WebrtcHelper {
     try {
       await _peerConnection.setRemoteDescription(description);
       _isRemoteSetted = true;
-      logSuccess('success remote description, webrtcHelper');
     } catch (e) {
       logError(e.toString());
     }
@@ -157,12 +157,9 @@ class WebrtcHelper {
 
   Future<void> _closePeerConnection() async {
     if (_isCreatedPC) {
-      log('closing connection, webrtcHelper');
       await _peerConnection.close();
       _isCreatedPC = false;
       _offer = false;
-    } else {
-      log("peer connection is alredy closed, webrtc helper");
     }
   }
 
@@ -190,7 +187,6 @@ class WebrtcHelper {
     Map<String, dynamic> configuration = {
       "iceServers": [
         {
-          // "url": "stun:stun.l.google.com:19302",
           "urls": [
             'stun:stun1.l.google.com:19302',
             'stun:stun2.l.google.com:19302',
@@ -225,8 +221,15 @@ class WebrtcHelper {
           'sdpMlineIndex': e.sdpMLineIndex,
         });
         if (_offer) {
+          //candidate will create before setting remote description.
+          //cannot set candidate before setting remote description.
+          //if created offer we choose to send candidate after setting remoteDescription
+          //so in the peer's websocket, won't try to set candidate before setting remote description.
           candidateList.add(data);
         } else {
+          //if offer not created it mean we recieved offer,
+          //and already sended answer to the peer,
+          //peer would already setted remote description.
           _webSocketHelper.sendCandidate(candidate: data, recieverId: _caller);
         }
       }
@@ -247,6 +250,7 @@ class WebrtcHelper {
     _isCreatedPC = true;
   }
 
+  ///get local camera running.
   Future<MediaStream> _getUserMedia() async {
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,

@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:developer';
 
@@ -19,28 +18,30 @@ abstract class HomeRemoteDataSource {
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
-  // final http.Client client;
-
   HomeRemoteDataSourceImpl({required super.client});
   @override
   Future<List<Contact>> getAllPeople({required String token}) async {
-    http.Response response = await client.get(
-      Uri.parse('$uri/get-data/all-user'),
-      headers: <String, String>{
-        'content-type': 'application/json; charset=utf-8',
-        'x-auth-token': token,
-      },
-    );
-    if (response.statusCode == 200) {
-      List<Contact> contacts = [];
-      List<dynamic> decodedUsers = jsonDecode(response.body);
-      for (int i = 0; i < decodedUsers.length; i++) {
-        contacts.add(ContactModel.fromMap(decodedUsers[i]));
-      }
+    try {
+      http.Response response = await client.get(
+        Uri.parse('$uri/get-data/all-user'),
+        headers: <String, String>{
+          'content-type': 'application/json; charset=utf-8',
+          'x-auth-token': token,
+        },
+      );
+      if (response.statusCode == 200) {
+        List<Contact> contacts = [];
+        List<dynamic> decodedUsers = jsonDecode(response.body);
+        for (int i = 0; i < decodedUsers.length; i++) {
+          contacts.add(ContactModel.fromMap(decodedUsers[i]));
+        }
 
-      return contacts;
-    } else {
-      log("${response.statusCode} from home remote ");
+        return contacts;
+      } else {
+        log("${response.statusCode} from home remote ");
+        throw ServerException();
+      }
+    } catch (e) {
       throw ServerException();
     }
   }

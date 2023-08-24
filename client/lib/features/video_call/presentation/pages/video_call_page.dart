@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:client/core/Injector/ws_injector.dart';
 import 'package:client/core/helper/webrtc/webrtc_helper.dart';
 import 'package:client/features/Authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:client/features/video_call/presentation/widgets/busy_video_screen.dart';
@@ -13,6 +11,7 @@ import '../../../../core/Injector/injector.dart';
 import '../../../../routes/router.gr.dart';
 import '../bloc/video_call_bloc.dart';
 import '../widgets/connected_video_screen.dart';
+import '../widgets/connecting_video_screen.dart';
 import '../widgets/init_video_screen.dart';
 
 class VideoCallPage extends StatefulWidget {
@@ -74,7 +73,9 @@ class _VideoCallPageState extends State<VideoCallPage>
         } else if (state is AnswerCallState) {
           return ConnectedVideoScreen(state, widget.recieverName);
         } else if (state is BusyCallState) {
-          return BusyVideoScreen(widget.recieverName, state);
+          return BusyVideoScreen(widget.recieverName);
+        } else if (state is ConnectingCallState) {
+          return ConnectingVideoScreen(widget.recieverName);
         } else {
           return const Center(
             child: CircularProgressIndicator(),

@@ -80,24 +80,24 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
         ),
       ) as _i2.Database);
   @override
-  _i6.Future<void> clearAllData() => (super.noSuchMethod(
+  _i6.Future<void> deleteAllData() => (super.noSuchMethod(
         Invocation.method(
-          #clearAllData,
+          #deleteAllData,
           [],
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<_i3.Message> fetchLocalMessage(int? id) => (super.noSuchMethod(
+  _i6.Future<_i3.Message> getMessageWithId(int? id) => (super.noSuchMethod(
         Invocation.method(
-          #fetchLocalMessage,
+          #getMessageWithId,
           [id],
         ),
         returnValue: _i6.Future<_i3.Message>.value(_FakeMessage_1(
           this,
           Invocation.method(
-            #fetchLocalMessage,
+            #getMessageWithId,
             [id],
           ),
         )),
@@ -124,14 +124,14 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
   @override
   _i6.Future<_i4.NewMessages> insertAMessageToDB(
     _i3.Message? message,
-    String? chatter,
+    String? chatterId,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #insertAMessageToDB,
           [
             message,
-            chatter,
+            chatterId,
           ],
         ),
         returnValue: _i6.Future<_i4.NewMessages>.value(_FakeNewMessages_2(
@@ -140,7 +140,7 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
             #insertAMessageToDB,
             [
               message,
-              chatter,
+              chatterId,
             ],
           ),
         )),
@@ -164,22 +164,31 @@ class MockDatabaseHelper extends _i1.Mock implements _i5.DatabaseHelper {
         returnValue: _i6.Future<List<dynamic>>.value(<dynamic>[]),
       ) as _i6.Future<List<dynamic>>);
   @override
-  _i6.Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
+  _i6.Future<Map<String, dynamic>> getOrInsertUserFromDB({
     String? userName,
     int? id,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getOrInsertUsersFromDB,
+          #getOrInsertUserFromDB,
           [],
           {
             #userName: userName,
             #id: id,
           },
         ),
-        returnValue: _i6.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i6.Future<List<Map<String, dynamic>>>);
+        returnValue:
+            _i6.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i6.Future<Map<String, dynamic>>);
+  @override
+  _i6.Future<List<Map<String, Object?>>> getAllFriends() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllFriends,
+          [],
+        ),
+        returnValue: _i6.Future<List<Map<String, Object?>>>.value(
+            <Map<String, Object?>>[]),
+      ) as _i6.Future<List<Map<String, Object?>>>);
 }
 
 /// A class which mocks [SharedPreferences].

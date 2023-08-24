@@ -1,5 +1,6 @@
-import 'package:client/constance/color_log.dart';
-import 'package:client/constance/theme_services.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:client/core/theme/theme_services.dart';
+import 'package:client/core/helper/notification/notification_controller.dart';
 import 'package:client/features/Authentication/data/repositories/user_repository_impl.dart';
 import 'package:client/features/Authentication/domain/repositories/user_repository.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
@@ -25,7 +26,6 @@ import 'package:client/features/settings/domain/usecases/delete_local_chats.dart
 import 'package:client/features/settings/domain/usecases/delete_remote_data.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:client/routes/router.gr.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,11 +33,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
-import 'constance/theme.dart';
+import 'core/theme/theme.dart';
 import 'core/Injector/injector.dart';
 import 'core/helper/database/data_base_helper.dart';
-import 'core/helper/firebase/firebase_background_message_handler.dart';
 import 'features/Authentication/data/datasources/user_local_data_source.dart';
 import 'features/Authentication/data/datasources/user_remote_data_source.dart';
 import 'features/home/data/datasources/home_local_data_source.dart';
@@ -53,20 +54,23 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Injection.initInjection();
+  await Firebase.initializeApp();
+  await Injection.initilaizeLocalDB();
   await GetStorage.init();
 
-  await Firebase.initializeApp();
-
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen((_){
-    logSuccess('new notification');
-  });
-
   if (!kIsWeb) {
-    await setupFlutterNotifications();
+    NotificationController.initilize();
+    NotificationController.initChannels();
+    //Ending any call (cache data) if the network connection lost.
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        FlutterCallkitIncoming.endAllCalls();
+      }
+    });
   }
+
   DatabaseHelper dataBaseHelper = Injection.injector.get<DatabaseHelper>();
+
   UserRepository userRepository = UserRepositoryImpl(
     localDataSource: UserLocalDataSourceImpl(
         sharedPreferences: await SharedPreferences.getInstance()),
@@ -132,17 +136,45 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final _appRouter = AppRouter();
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    //Ending any call (cache data) if the network connection lost.
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        FlutterCallkitIncoming.endAllCalls();
+        Navigator.of(Get.context!).pop();
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      FlutterCallkitIncoming.endAllCalls();
+    }
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
+      key: MyApp.navigatorKey,
       routerDelegate: _appRouter.delegate(),
       routeInformationParser: _appRouter.defaultRouteParser(),
       debugShowCheckedModeBanner: false,

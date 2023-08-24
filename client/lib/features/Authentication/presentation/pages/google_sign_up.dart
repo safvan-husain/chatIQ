@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../common/widgets/custom_text_form_field.dart';
-import '../../../../constance/full_width_button.dart';
+import '../../../../common/widgets/full_width_button.dart';
 import '../../../../routes/router.gr.dart';
 import '../../data/repositories/google_auth_services.dart';
 import '../cubit/authentication_cubit.dart';

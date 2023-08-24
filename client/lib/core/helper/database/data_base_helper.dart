@@ -31,18 +31,17 @@ class DatabaseHelper {
     return _db;
   }
 
-  Future<void> clearAllData() async {
+  Future<void> deleteAllData() async {
     await _db.delete(recentChats);
     await _db.delete(messeages);
   }
 
-  ///get message by its id from local DB [messages] table
-  ///
-  Future<Message> fetchLocalMessage(int id) async {
+  Future<Message> getMessageWithId(int id) async {
     var re = await _db.rawQuery("SELECT * FROM messages WHERE id = ?", [id]);
     return MessageModel.fromMap(re[0]);
   }
 
+  ///update row [id] in [tableName] with [object].
   Future<void> updateDBColumn(
       {required String tableName,
       required Map<String, dynamic> object,
@@ -50,12 +49,19 @@ class DatabaseHelper {
     await _db.update(tableName, object, where: "id = ?", whereArgs: [id]);
   }
 
+  ///if no user cached with [chatterId], it will cache,
+  ///
+  ///then cache message, also update last message id to the cahed user.
   Future<NewMessages> insertAMessageToDB(
-      Message message, String chatter) async {
-    var userMap = await getOrInsertUsersFromDB(userName: chatter);
-    UserModel user = UserModel.fromMap(userMap[0], message);
+    Message message,
+    String chatterId,
+  ) async {
+    var userMap = await getOrInsertUserFromDB(userName: chatterId);
+    UserModel user = UserModel.fromMap(userMap, message);
+    //setting chatId to the message before caching.
     message.setChatId(user.id);
     int id = await _insertMessage(message);
+    //update last message id to the user cache.
     user.setLastMessageId(id);
     updateDBColumn(
       tableName: recentChats,
@@ -82,27 +88,23 @@ class DatabaseHelper {
         .rawQuery("SELECT * FROM messages WHERE chat_id = ?", [chatId]);
   }
 
-  ///query list of users from table [recent_chats] using id or username
-  ///
-  ///if no argument is passed, it will query all user
+  ///query user from table [recent_chats] using id or username
   ///
   ///if no row exsist with the username, it will create a new.
-  Future<List<Map<String, dynamic>>> getOrInsertUsersFromDB({
+  Future<Map<String, dynamic>> getOrInsertUserFromDB({
     String? userName,
     int? id,
   }) async {
     if (userName != null) {
       var re = await _getFriendWithUserName(userName);
-      if (re.isEmpty) {
+      if (re == null) {
+        //if username not already cached
         int iD = await _insertFriendToDB(userName);
         return await _getFriendWithId(iD);
       }
       return re;
     }
-    if (id != null) {
-      return await _getFriendWithId(id);
-    }
-    return await _getAllFriends();
+    throw ('provide userName or Id to getOrInsertUserFromDB');
   }
 
   Future<int> _insertMessage(Message message) async {
@@ -115,7 +117,7 @@ class DatabaseHelper {
 
   Future<int> _findNewMessageCount({required User user}) async {
     bool istrue = false;
-
+//finding new message count by comparing with last seen message id.
     var messages = await fetchAllMessageFromAChat(user.id);
     if (user.lastSeenMessageId == null) {
       return messages.length;
@@ -139,19 +141,23 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<Map<String, Object?>>> _getAllFriends() async {
+  ///Return Objects from [recent_chats] Db column.
+  Future<List<Map<String, Object?>>> getAllFriends() async {
     return await _db.rawQuery("SELECT * FROM recent_chats");
   }
 
-  Future<List<Map<String, Object?>>> _getFriendWithId(int iD) async {
-    return await _db.rawQuery("SELECT * FROM recent_chats WHERE id = '$iD'");
+  Future<Map<String, Object?>> _getFriendWithId(int iD) async {
+    var re = await _db.rawQuery("SELECT * FROM recent_chats WHERE id = '$iD'");
+    return re.first;
   }
 
-  Future<List<Map<String, Object?>>> _getFriendWithUserName(
-      String userName) async {
+  Future<Map<String, Object?>?> _getFriendWithUserName(String userName) async {
     var re = await _db
         .rawQuery("SELECT * FROM recent_chats WHERE user_name = '$userName'");
-    return re;
+    if (re.isEmpty) {
+      return null;
+    }
+    return re[0];
   }
 
   void _onCreate(Database db, int version) async {

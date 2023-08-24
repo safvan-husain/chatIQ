@@ -20,10 +20,12 @@ abstract class UserLocalDataSource {
   ///But watch out! If the cache is empty, be ready to catch the thrown [CacheException]!
   Future<User> getUser();
 
-  ///wanna cache the [User]? 
+  ///wanna cache the [User]?
   ///
   ///but be careful, I will throw [CacheException] if couldn't do it.
   Future<void> cacheUser(User user);
+
+  ///[CacheException] for any error.
   Future<void> cacheAllNewMessages(List<RemoteMesseageModel> messeges);
 }
 
@@ -55,8 +57,8 @@ class UserLocalDataSourceImpl extends UserLocalDataSource {
       late int chatId;
 
       var users =
-          await dataBaseHelper.getOrInsertUsersFromDB(userName: message.sender);
-      chatId = users[0]['id'];
+          await dataBaseHelper.getOrInsertUserFromDB(userName: message.sender);
+      chatId = users['id'];
       await dataBaseHelper.insertAMessageToDB(
         Message(
           chatId: chatId,
