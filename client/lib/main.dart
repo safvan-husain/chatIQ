@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:client/core/theme/theme_services.dart';
 import 'package:client/core/helper/notification/notification_controller.dart';
 import 'package:client/features/Authentication/data/repositories/user_repository_impl.dart';

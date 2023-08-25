@@ -83,13 +83,6 @@ class _ChatPageState extends State<ChatPage> {
         ));
   }
 
-  PopupMenuItem _buildPopupItem(String action, VoidCallback onTap) {
-    return PopupMenuItem(
-      onTap: onTap,
-      child: Text(action),
-    );
-  }
-
   AppBar _buildAppBar() {
     return AppBar(
       leadingWidth: _config.rW(9),

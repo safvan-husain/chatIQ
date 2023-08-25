@@ -6,7 +6,6 @@ import 'package:client/core/helper/websocket/ws_event.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../../../common/entity/message.dart';
-import '../../../constance/color_log.dart';
 import '../../../constance/constant_variebles.dart';
 import '../../Injector/injector.dart';
 
@@ -36,7 +35,6 @@ class WebSocketHelper {
       _channel.stream.listen(
         (message) async {
           if (json.decode(message)['cmd'] != null) {
-            // log(message);
           } else {
             WSEvent event = WSEvent.fromJson(message);
             switch (event.eventName) {
@@ -70,7 +68,6 @@ class WebSocketHelper {
                 break;
               default:
             }
-            logSuccess(event.eventName);
           }
         },
         onDone: () {
@@ -165,7 +162,7 @@ class WebSocketHelper {
       "request",
       myId,
       recieverId,
-      '',
+      null,
       DateTime.now(),
     );
     _channel.sink.add(data.toJson());
@@ -176,7 +173,7 @@ class WebSocketHelper {
       "busy",
       myId,
       recieverId,
-      '',
+      null,
       DateTime.now(),
     );
     _channel.sink.add(data.toJson());

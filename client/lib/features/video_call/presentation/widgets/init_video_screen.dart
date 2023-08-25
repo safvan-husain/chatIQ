@@ -32,46 +32,34 @@ class InitVideoScreen extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    context.read<VideoCallBloc>().add(EndCallEvent(
-                            context
-                                .read<AuthenticationCubit>()
-                                .state
-                                .user!
-                                .username,
-                            recieverName, () {
-                          context.router.pushAndPopUntil(
-                            const HomeRoute(),
-                            predicate: (_) => false,
-                          );
-                        }));
-                  },
-                  child: const FaIcon(
-                    FontAwesomeIcons.phoneAlt,
-                    color: Colors.red,
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(width: 30),
-                InkWell(
-                  onTap: () {},
-                  child: const FaIcon(
-                    FontAwesomeIcons.microscope,
-                    color: Colors.blue,
-                    size: 40,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: _buildRejectionButton(context),
         )
       ]),
+    );
+  }
+
+  Padding _buildRejectionButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: InkWell(
+        onTap: () async {
+          context.read<VideoCallBloc>().add(
+                EndCallEvent(
+                    context.read<AuthenticationCubit>().state.user!.username,
+                    recieverName, () {
+                  context.router.pushAndPopUntil(
+                    const HomeRoute(),
+                    predicate: (_) => false,
+                  );
+                }),
+              );
+        },
+        child: const FaIcon(
+          FontAwesomeIcons.phoneAlt,
+          color: Colors.red,
+          size: 40,
+        ),
+      ),
     );
   }
 }

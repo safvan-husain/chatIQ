@@ -9,7 +9,6 @@ import 'package:client/features/home/domain/usecases/get_local_chats.dart';
 import 'package:client/features/home/domain/usecases/get_remote_chats.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/contact.dart';
@@ -40,7 +39,7 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  Future<void> getContacts(String token,void Function() showSnackBar) async {
+  Future<void> getContacts(String token, void Function() showSnackBar) async {
     Either<Failure, List<Contact>> result =
         await getRemoteChats.call(appToken: token);
     result.fold(
@@ -78,7 +77,6 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 }
-
 
 List<NewMessages> _sortListByTime(List<NewMessages> userModels) {
   List<NewMessages> sortedUsers = List.from(userModels);

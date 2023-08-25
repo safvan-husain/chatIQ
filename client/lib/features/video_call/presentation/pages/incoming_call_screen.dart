@@ -48,9 +48,20 @@ class _IncomingCallPageState extends State<IncomingCallPage> {
             children: [
               Column(
                 children: [
-                  Text(
-                    '${widget.caller} calling...',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    children: [
+                      //wrap helps to show the full name in fist line
+                      //if there is not enogh space.
+                      Text(
+                        '${widget.caller} ',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const Text(
+                        'Calling...  ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   FutureBuilder(
@@ -70,7 +81,7 @@ class _IncomingCallPageState extends State<IncomingCallPage> {
                 ],
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   InkWell(
                     onTap: () {
@@ -80,8 +91,10 @@ class _IncomingCallPageState extends State<IncomingCallPage> {
                       Navigator.of(context).pop();
                     },
                     child: const CircleAvatar(
-                        backgroundColor: Colors.red,
-                        child: Icon(FontAwesomeIcons.phoneSlash)),
+                      radius: 30,
+                      backgroundColor: Colors.red,
+                      child: Icon(FontAwesomeIcons.phoneSlash,color: Colors.white,),
+                    ),
                   ),
                   InkWell(
                     onTap: () {
@@ -100,8 +113,12 @@ class _IncomingCallPageState extends State<IncomingCallPage> {
                           );
                     },
                     child: const CircleAvatar(
+                        radius: 30,
                         backgroundColor: Colors.green,
-                        child: Icon(FontAwesomeIcons.phone)),
+                        child: Icon(
+                          FontAwesomeIcons.phone,
+                          color: Colors.white,
+                        )),
                   ),
                 ],
               ),

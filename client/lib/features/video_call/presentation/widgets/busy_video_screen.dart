@@ -32,7 +32,13 @@ class BusyVideoScreen extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: Padding(
                   padding: EdgeInsets.only(top: 200),
-                  child: Text('Line is Busy'),
+                  child: Text(
+                    'Line is Busy',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
                 ),
               ),
               Align(

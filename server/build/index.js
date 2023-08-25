@@ -27,7 +27,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-// import * as http from "https";
 const dotenv = __importStar(require("dotenv"));
 const websocket = __importStar(require("ws"));
 const sign_in_route_1 = require("./routes/sign_in_route");
@@ -61,8 +60,7 @@ mongoose_1.default.connect(process.env.MongoUrl, () => {
         ? "MongoDB connected!"
         : "MongoDB Not connected!");
 });
-const server = app
-    .listen(process.env.PORT, function () {
+const server = app.listen(process.env.PORT, function () {
     console.log("port lisenting on " + process.env.PORT);
 });
 const wss = new websocket.Server({ server });

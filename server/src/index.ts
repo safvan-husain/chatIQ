@@ -1,15 +1,12 @@
 import express from "express";
-// import * as http from "https";
 import * as dotenv from "dotenv";
 import * as websocket from "ws";
-import moment from "moment";
 import { SigninRouter } from "./routes/sign_in_route";
-import bodyParser, { json } from "body-parser";
+import bodyParser from "body-parser";
 import { SignUpRouter } from "./routes/sign_up_route";
-import mongoose, { ConnectOptions } from "mongoose";
+import mongoose from "mongoose";
 import cors from "cors";
 import { DataRouter } from "./routes/get_data";
-import { connect } from "http2";
 import { onWebSocket } from "./utils/web_socket";
 import { ProfileRouter } from "./routes/user_account";
 import { aiRouter } from "./routes/ai_generate";
@@ -27,7 +24,7 @@ app.use(SignUpRouter);
 app.use(messageRouter);
 app.use(DataRouter);
 app.use(ProfileRouter);
-app.use(aiRouter); 
+app.use(aiRouter);
 
 app.get("/", (req, res) => {
   res.send("privacy policy");
@@ -42,10 +39,9 @@ mongoose.connect(process.env.MongoUrl!, () => {
   );
 });
 
-const server = app
-  .listen(process.env.PORT, function () {
-    console.log("port lisenting on " + process.env.PORT);
-  }) 
+const server = app.listen(process.env.PORT, function () {
+  console.log("port lisenting on " + process.env.PORT);
+});
 
 const wss = new websocket.Server({ server });
 onWebSocket(wss);

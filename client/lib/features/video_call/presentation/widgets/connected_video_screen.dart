@@ -30,8 +30,8 @@ class ConnectedVideoScreen extends StatelessWidget {
               objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
             ),
             Positioned(
-              top: 10, right: 10,
-              // alignment: Alignment.topRight,
+              top: 10,
+              right: 10,
               child: SizedBox(
                   width: 80,
                   height: 100,
@@ -42,32 +42,32 @@ class ConnectedVideoScreen extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: InkWell(
-                  onTap: () {
-                    context.read<VideoCallBloc>().add(EndCallEvent(
-                            context
-                                .read<AuthenticationCubit>()
-                                .state
-                                .user!
-                                .username,
-                            recieverName, () {
-                          context.router.pushAndPopUntil(
-                            const HomeRoute(),
-                            predicate: (_) => false,
-                          );
-                        }));
-                  },
-                  child: const FaIcon(
-                    FontAwesomeIcons.phoneAlt,
-                    color: Colors.red,
-                    size: 40,
-                  ),
-                ),
-              ),
+              child: _buildRejectionButton(context),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Padding _buildRejectionButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: InkWell(
+        onTap: () {
+          context.read<VideoCallBloc>().add(EndCallEvent(
+                  context.read<AuthenticationCubit>().state.user!.username,
+                  recieverName, () {
+                context.router.pushAndPopUntil(
+                  const HomeRoute(),
+                  predicate: (_) => false,
+                );
+              }));
+        },
+        child: const FaIcon(
+          FontAwesomeIcons.phoneAlt,
+          color: Colors.red,
+          size: 40,
         ),
       ),
     );

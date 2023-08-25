@@ -6,7 +6,6 @@ import '../features/Authentication/presentation/pages/initial_screen.dart';
 import '../features/chat/presentation/pages/chat_view.dart';
 import '../features/home/presentation/pages/contacts/contacts.dart';
 import '../features/home/presentation/pages/default/home_view.dart';
-import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/video_call/presentation/pages/video_call_page.dart';
 import '../features/video_call/presentation/pages/incoming_call_screen.dart';
@@ -19,7 +18,6 @@ import '../features/video_call/presentation/pages/incoming_call_screen.dart';
     AutoRoute(page: GoogleSignUpPage),
     AutoRoute(page: ChatPage),
     AutoRoute(page: ContactsPage),
-    AutoRoute(page: ProfilePage),
     AutoRoute(page: VideoCallPage),
     AutoRoute(page: HomePage),
     AutoRoute(page: SettingsPage),

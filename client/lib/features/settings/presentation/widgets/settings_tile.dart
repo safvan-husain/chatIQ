@@ -1,10 +1,12 @@
+import 'package:client/features/settings/presentation/widgets/pop_up/hero_dialog_route.dart';
 import 'package:flutter/material.dart';
-import 'package:cool_alert/cool_alert.dart';
+
+import 'pop_up/pop_up_card.dart';
 
 class SettingsTile extends StatelessWidget {
   final String title;
   final IconData icon;
-  final String? subtitle;
+  final String subtitle;
   final void Function() onConfirmBtnTap;
 
   const SettingsTile({
@@ -12,40 +14,35 @@ class SettingsTile extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.onConfirmBtnTap,
-    this.subtitle,
+    required this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (subtitle != null) {
-      return InkWell(
-        onTap: () => CoolAlert.show(
-          context: context,
-          type: CoolAlertType.confirm,
-          title: "Do you want to $title?",
-          confirmBtnText: "Yes",
-          cancelBtnText: "No",
-          onConfirmBtnTap: onConfirmBtnTap,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          HeroDialogRoute(
+            builder: (context) {
+              return AddTodoPopupCard(
+                heroTag: title,
+                subtitile: subtitle,
+                onConfirm: onConfirmBtnTap,
+              );
+            },
+            settings: const RouteSettings(),
+          ),
+        );
+      },
+      child: Hero(
+        tag: title,
+        child: Card(
+          elevation: 0,
+          child: ListTile(
+            leading: Icon(icon),
+            title: Text(title),
+          ),
         ),
-        child: ListTile(
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(subtitle!),
-        ),
-      );
-    }
-    return InkWell(
-      onTap: () => CoolAlert.show(
-        context: context,
-        type: CoolAlertType.confirm,
-        title: "Do you want to $title?",
-        confirmBtnText: "Yes",
-        cancelBtnText: "No",
-        onConfirmBtnTap: onConfirmBtnTap,
-      ),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
       ),
     );
   }

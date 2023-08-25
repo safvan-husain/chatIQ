@@ -52,36 +52,6 @@ function onWebSocket(wss) {
                             reciever.send(ws_event.toJson());
                             break;
                     }
-                    // if (ws_event.eventName == "message") {
-                    //   sendMessage({
-                    //     title: ws_event.senderUsername,
-                    //     body: ws_event.data ?? "",
-                    //     username: ws_event.recieverUsername,
-                    //   });
-                    //   var response: string = ws_event.toJson();
-                    //   reciever.send(response);
-                    // } else if (ws_event.eventName == "request") {
-                    //   var response: string = ws_event.toJson();
-                    //   reciever.send(response);
-                    // } else if (ws_event.eventName == "offer") {
-                    //   var response = ws_event.toJson();
-                    //   webSockets[ws_event.recieverUsername].send(response);
-                    // } else if (ws_event.eventName == "answer") {
-                    //   var response = ws_event.toJson();
-                    //   webSockets[ws_event.recieverUsername].send(response);
-                    // } else if (ws_event.eventName === "candidate") {
-                    //   var response = ws_event.toJson();
-                    //   webSockets[ws_event.recieverUsername].send(response);
-                    // } else if (ws_event.eventName == "end") {
-                    //   var response = ws_event.toJson();
-                    //   webSockets[ws_event.recieverUsername].send(response);
-                    // } else if (ws_event.eventName === "busy") {
-                    //   var response: string = ws_event.toJson();
-                    //   reciever.send(response);
-                    // } else if (ws_event.eventName == "rejection") {
-                    //   var response: string = ws_event.toJson();
-                    //   reciever.send(response);
-                    // }
                 }
                 else {
                     if (ws_event.eventName === "message") {
@@ -96,11 +66,7 @@ function onWebSocket(wss) {
                     else if (ws_event.eventName === "request") {
                         (0, push_notification_1.makeCall)(ws_event.recieverUsername, ws_event.senderUsername);
                     }
-                    console.log(`${ws_event.recieverUsername} is not online`);
                 }
-            }
-            else {
-                console.log(message.toString());
             }
         }));
         ws.on("close", function () {

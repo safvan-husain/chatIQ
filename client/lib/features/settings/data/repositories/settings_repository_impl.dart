@@ -3,7 +3,6 @@ import 'package:client/core/error/failure.dart';
 import 'package:client/core/helper/websocket/websocket_helper.dart';
 
 import 'package:dartz/dartz.dart';
-import 'package:flutter_simple_dependency_injection/injector.dart';
 
 import '../../../../core/Injector/injector.dart';
 import '../../domain/repositories/settings_repository.dart';
