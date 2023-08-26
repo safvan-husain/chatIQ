@@ -1,6 +1,8 @@
 import 'package:client/common/entity/message.dart';
+import 'package:client/core/Injector/hom_cubit_injector.dart';
 import 'package:client/core/error/exception.dart';
 import 'package:client/features/Authentication/data/datasources/user_local_data_source.dart';
+import 'package:client/features/home/presentation/cubit/home_cubit.dart';
 import 'package:client/platform/network_info.dart';
 import 'package:dartz/dartz.dart';
 
@@ -26,13 +28,15 @@ class UserRepositoryImpl extends UserRepository {
   Future<Either<Failure, User>> getUser(
     String emailorUsername,
     String password,
-    onNewMessageCachingComplete,
   ) async {
     try {
       User user = await remoteDataSource.getUser(emailorUsername, password);
       localDataSource
           .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
-          .then((value) => onNewMessageCachingComplete());
+          .then((value) {
+        //loading the messages recieved from remote to the ui.
+        HomeCubitInjector.injector.get<HomeCubit>().getChats(() {});
+      });
       localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException {
@@ -60,14 +64,15 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getCachedUser(
-    onNewMessageCachingComplete,
-  ) async {
+  Future<Either<Failure, User>> getCachedUser() async {
     try {
       var user = await localDataSource.getUser();
       localDataSource
           .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
-          .then((value) => onNewMessageCachingComplete());
+          .then((value) {
+        //loading the messages recieved from remote to the ui.
+        HomeCubitInjector.injector.get<HomeCubit>().getChats(() {});
+      });
       return Right(user);
     } on CacheException {
       return Left(CacheFailure());
@@ -75,15 +80,15 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, User>> loginUsingGoogle(
-    String email,
-    onNewMessageCachingComplete,
-  ) async {
+  Future<Either<Failure, User>> loginUsingGoogle(String email) async {
     try {
       var user = await remoteDataSource.getUserWithGoogle(email);
       localDataSource
           .cacheAllNewMessages(await remoteDataSource.getUnredChats(user.token))
-          .then((value) => onNewMessageCachingComplete());
+          .then((value) {
+        //loading the messages recieved from remote to the ui.
+        HomeCubitInjector.injector.get<HomeCubit>().getChats(() {});
+      });
       localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException {

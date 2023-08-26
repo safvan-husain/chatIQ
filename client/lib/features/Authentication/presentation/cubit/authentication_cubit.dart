@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:client/core/usecases/use_case.dart';
 import 'package:client/features/Authentication/domain/usecases/get_cache_user.dart';
 import 'package:client/features/Authentication/domain/usecases/get_user.dart';
 import 'package:client/features/Authentication/domain/usecases/register_user.dart';
@@ -28,12 +29,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     _getCachedUser = getCachedUser;
     _loginWithGoogle = loginWithGoogle;
   }
-  Future<void> loginWithGoogle(
-      String email, void Function() onNewMessageCachingComplete) async {
-    var result = await _loginWithGoogle.call(LoginWithGoogleParams(
-      email: email,
-      onNewMessageCachingComplete: onNewMessageCachingComplete,
-    ));
+  Future<void> loginWithGoogle(String email) async {
+    var result =
+        await _loginWithGoogle.call(LoginWithGoogleParams(email: email));
     result.fold(
       (failure) {
         emit(AuthenticationFailure(
@@ -56,7 +54,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     Either<Failure, User> result = await _getUser(GetUserParams(
       username: email,
       password: password,
-      onNewMessageCachingComplete: onNewMessageCachingComplete,
     ));
     result.fold(
       (failure) {
@@ -77,8 +74,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future<void> getCachedUser(
       void Function() onNewMessageCachingComplete) async {
-    Either<Failure, User> result =
-        await _getCachedUser(GetCachedUserParams(onNewMessageCachingComplete));
+    Either<Failure, User> result = await _getCachedUser(NoParams());
     result.fold(
       (failure) {
         emit(AuthenticationFailure(

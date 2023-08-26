@@ -28,12 +28,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
     await GoogleSignInApi.logout();
     account = await GoogleSignInApi.login();
     if (account?.email != null && context.mounted) {
-      context.read<AuthenticationCubit>().loginWithGoogle(
-            account!.email,
-            () => context.read<HomeCubit>().getChats(
-                  () => showSnackBar(context, "Failed to get recent chats!!"),
-                ),
-          );
+      context.read<AuthenticationCubit>().loginWithGoogle(account!.email);
     }
   }
 
@@ -56,6 +51,7 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(child: _builtForm(context)),
       ),
     );
@@ -111,9 +107,12 @@ class _GoogleSignInPageState extends State<GoogleSignInPage> {
                   fit: BoxFit.fill,
                 ),
               ),
-              label: const Text(
-                'continue with Google',
-                style: TextStyle(fontSize: 20, color: Colors.white),
+              label: const FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Text(
+                  'continue with Google',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 40),

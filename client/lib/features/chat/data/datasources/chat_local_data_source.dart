@@ -41,6 +41,7 @@ class ChatLocalDataSource extends ChatLocalData {
       Message? lastMessage =
           await databaseHelper.fetchLastMessageFromAChat(userMap['id']);
       if (lastMessage != null) {
+        //updating the user in db with the latest message id, and last seen message id.
         var usere = UserModel.fromMap(userMap, lastMessage);
         usere.setLastSeenMessage(lastMessage.id as int);
         await databaseHelper.updateDBColumn(

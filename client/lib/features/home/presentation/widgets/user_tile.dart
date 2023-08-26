@@ -90,10 +90,11 @@ class _UserTileState extends State<UserTile> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Text(
-          _formatDateTime(s[0].user.lastMessage!.time),
-          style: TextStyle(fontSize: _config.smallTextSize),
-        ),
+        if (s[0].user.lastMessage != null)
+          Text(
+            _formatDateTime(s[0].user.lastMessage!.time),
+            style: TextStyle(fontSize: _config.smallTextSize),
+          ),
         s[0].messageCount > 0
             ? CircleAvatar(
                 radius: 10.0,

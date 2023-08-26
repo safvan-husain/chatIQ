@@ -13,15 +13,13 @@ class LoginWithGoogle extends UseCase<User, LoginWithGoogleParams> {
   });
   @override
   Future<Either<Failure, User>> call(params) async {
-    return await userRepository.loginUsingGoogle(params.email,params.onNewMessageCachingComplete);
+    return await userRepository.loginUsingGoogle(params.email);
   }
 }
 
 class LoginWithGoogleParams extends Params {
   final String email;
-  final void Function() onNewMessageCachingComplete;
   LoginWithGoogleParams({
     required this.email,
-    required this.onNewMessageCachingComplete,
   });
 }

@@ -124,7 +124,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             alignment: Alignment.centerLeft,
             height: 50,
             child: FittedBox(
-              fit: BoxFit.scaleDown,
+              fit: BoxFit.fitHeight,
               alignment: Alignment.center,
               child: RichText(
                 textAlign: TextAlign.center,
@@ -204,6 +204,7 @@ Future<void> checkAndNavigationCallingPage(BuildContext context) async {
             );
       }
     } else if (currentCall[0]['accepted'] == false) {
+      //informing caller it rejected.
       Injection.injector
           .get<WebSocketHelper>()
           .sendRejection(recieverId: currentCall[0]['nameCaller']);
