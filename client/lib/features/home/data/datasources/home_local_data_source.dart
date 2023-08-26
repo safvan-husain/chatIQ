@@ -35,24 +35,20 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
   Future<List<NewMessages>> getChats() async {
     List<NewMessages> res = [];
     try {
-      List<dynamic> usersMap = await databaseHelper.getAllFriends();
-      if (usersMap.isNotEmpty) {
+      List<dynamic> usersMapList = await databaseHelper.getAllFriends();
+      if (usersMapList.isNotEmpty) {
         //for showing user tiles in the home screen,
-        for (var i in usersMap) {
-          int? lastMessageId = i['last_message'];
+        for (var userMap in usersMapList) {
+          int? lastMessageId = userMap['last_message'];
           Message? lastMessage;
-          if (lastMessageId != null) {
-            //if there is no last message assigned to the user object in the database.
-            lastMessage = await databaseHelper.getMessageWithId(lastMessageId);
-            User user = UserModel.fromMap(i, lastMessage);
-            res.add(NewMessages(user: user, messageCount: 0));
-          } else {
-            //if there is a last message we want to show that in the home screen user tile.
-            User user = UserModel.fromMap(i, lastMessage);
-            //finding new messages to show the label.
-            int messageCount = await _findNewMessageCount(user: user);
-            res.add(NewMessages(user: user, messageCount: messageCount));
-          }
+          //if there is last message id assigned to the user object in the database.
+          lastMessage = lastMessageId != null
+              ? await databaseHelper.getMessageWithId(lastMessageId)
+              : null;
+          User user = UserModel.fromMap(userMap, lastMessage);
+          //finding new messages to show the label.
+          int messageCount = await _findNewMessageCount(user: user);
+          res.add(NewMessages(user: user, messageCount: messageCount));
         }
       }
       return res;
@@ -94,6 +90,9 @@ class HomeLocalDataSourceImpl extends HomeLocalDataSource {
     bool istrue = false;
 
     var messages = await databaseHelper.fetchAllMessageFromAChat(user.id);
+    if (messages.isEmpty) {
+      return 0;
+    }
     if (user.lastSeenMessageId == null) {
       return messages.length;
     }

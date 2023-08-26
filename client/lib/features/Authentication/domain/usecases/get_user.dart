@@ -12,16 +12,15 @@ class GetUser extends UseCase<User, GetUserParams> {
   GetUser({required this.repository});
   @override
   Future<Either<Failure, User>> call(params) async {
-    return await repository.getUser(params.username, params.password,params.onNewMessageCachingComplete);
+    return await repository.getUser(params.username, params.password);
   }
 }
 
 class GetUserParams extends Params {
   final String username;
-  final String password;final void Function() onNewMessageCachingComplete;
+  final String password;
   GetUserParams({
     required this.username,
     required this.password,
-    required this.onNewMessageCachingComplete,
   });
 }

@@ -18,28 +18,32 @@ class ContactTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<Widget>? avatar = showAvatar(40, username: contact.username);
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              top: (index == 0)
-                  ? BorderSide(color: Theme.of(context).dividerColor)
-                  : BorderSide.none,
-              bottom: BorderSide(color: Theme.of(context).dividerColor))),
-      child: InkWell(
-        onTap: () {
-          context.router.push(ChatRoute(userame: contact.username));
-        },
-        child: ListTile(
-          leading: FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return snapshot.data ?? const CircleAvatar();
-              }
-              return const CircleAvatar();
-            },
-            future: avatar,
+    return InkWell(
+      onTap: () {
+        context.router.push(ChatRoute(userame: contact.username));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Card(
+          elevation: 0,
+          child: ListTile(
+            leading: FutureBuilder(
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return snapshot.data ?? const CircleAvatar();
+                }
+                return const CircleAvatar();
+              },
+              future: avatar,
+            ),
+            title: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                contact.username,
+              ),
+            ),
           ),
-          title: Text(contact.username),
         ),
       ),
     );

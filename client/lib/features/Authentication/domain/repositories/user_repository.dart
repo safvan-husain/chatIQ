@@ -9,16 +9,12 @@ abstract class UserRepository {
   ///
   ///Fear not, for victory brings forth a glorious [User], but beware the cheeky [Failure]
   Future<Either<Failure, User>> getUser(
-    String emailorUsername,
-    String password,
-    void Function() onNewMessageCachingComplete,
-  );
+      String emailorUsername, String password);
 
   ///for victory brings forth a glorious [User],
   ///
   /// but beware the cheeky [Failure]
-  Future<Either<Failure, User>> getCachedUser(
-      void Function() onNewMessageCachingComplete);
+  Future<Either<Failure, User>> getCachedUser();
 
   ///going to reach out http://server.com/auth/sign-up
   ///
@@ -32,11 +28,7 @@ abstract class UserRepository {
   ///going to reach out http://server.com/auth/google-in
   ///
   ///Fear not, for victory brings forth a glorious [User], but beware any [Failure]
-  Future<Either<Failure, User>> loginUsingGoogle(
-    String email,
-    
-    void Function() onNewMessageCachingComplete,
-  );
+  Future<Either<Failure, User>> loginUsingGoogle(String email);
 
   ///
   Future<Either<Failure, Map<User, List<Message>>>> getUnredChats(

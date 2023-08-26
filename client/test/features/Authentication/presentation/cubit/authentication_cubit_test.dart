@@ -44,7 +44,7 @@ void main() {
     ' state should be AuthenticationSuccess when success on method loginWithGoogle',
     () async {
       when(mockLoginWithGoogle.call(any)).thenAnswer((_) async => Right(user));
-      await cubit.loginWithGoogle('',(){});
+      await cubit.loginWithGoogle('');
       expect(
           cubit.state,
           AuthenticationSuccess(
@@ -61,7 +61,7 @@ void main() {
     () async {
       when(mockLoginWithGoogle.call(any))
           .thenAnswer((_) async => Left(ServerFailure()));
-      await cubit.loginWithGoogle('',(){});
+      await cubit.loginWithGoogle('');
       expect(cubit.state.authState, AuthState.unauthenticated);
       verify(mockLoginWithGoogle.call(any)).called(1);
       verifyNoMoreInteractions(mockLoginWithGoogle);
@@ -71,7 +71,7 @@ void main() {
     ' state should be AuthenticationSuccess when success on method getUser',
     () async {
       when(mockGetUser.call(any)).thenAnswer((_) async => Right(user));
-      await cubit.getUser('', '',(){});
+      await cubit.getUser('', '', () {});
       expect(
         cubit.state,
         AuthenticationSuccess(authState: AuthState.authenticated, user: user),
@@ -85,7 +85,7 @@ void main() {
     () async {
       when(mockGetUser.call(any))
           .thenAnswer((_) async => Left(ServerFailure()));
-      await cubit.getUser('', '',(){});
+      await cubit.getUser('', '', () {});
       expect(cubit.state.authState, AuthState.unauthenticated);
       verify(mockGetUser.call(any)).called(1);
       verifyNoMoreInteractions(mockGetUser);
@@ -95,7 +95,7 @@ void main() {
     ' state should be AuthenticationSuccess when success on method getCachedUser',
     () async {
       when(mockGetCachedUser.call(any)).thenAnswer((_) async => Right(user));
-      await cubit.getCachedUser((){});
+      await cubit.getCachedUser(() {});
       expect(
         cubit.state,
         AuthenticationSuccess(authState: AuthState.authenticated, user: user),
@@ -109,7 +109,7 @@ void main() {
     () async {
       when(mockGetCachedUser.call(any))
           .thenAnswer((_) async => Left(ServerFailure()));
-      await cubit.getCachedUser((){});
+      await cubit.getCachedUser(() {});
       expect(cubit.state.authState, AuthState.unauthenticated);
       verify(mockGetCachedUser.call(any)).called(1);
       verifyNoMoreInteractions(mockGetCachedUser);

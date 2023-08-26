@@ -47,7 +47,6 @@ class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
   _i4.Future<_i2.Either<_i5.Failure, _i6.User>> getUser(
     String? emailorUsername,
     String? password,
-    void Function()? onNewMessageCachingComplete,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -55,7 +54,6 @@ class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
           [
             emailorUsername,
             password,
-            onNewMessageCachingComplete,
           ],
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
@@ -66,25 +64,23 @@ class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
             [
               emailorUsername,
               password,
-              onNewMessageCachingComplete,
             ],
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);
   @override
-  _i4.Future<_i2.Either<_i5.Failure, _i6.User>> getCachedUser(
-          void Function()? onNewMessageCachingComplete) =>
+  _i4.Future<_i2.Either<_i5.Failure, _i6.User>> getCachedUser() =>
       (super.noSuchMethod(
         Invocation.method(
           #getCachedUser,
-          [onNewMessageCachingComplete],
+          [],
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
             _FakeEither_0<_i5.Failure, _i6.User>(
           this,
           Invocation.method(
             #getCachedUser,
-            [onNewMessageCachingComplete],
+            [],
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);
@@ -118,26 +114,18 @@ class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);
   @override
   _i4.Future<_i2.Either<_i5.Failure, _i6.User>> loginUsingGoogle(
-    String? email,
-    void Function()? onNewMessageCachingComplete,
-  ) =>
+          String? email) =>
       (super.noSuchMethod(
         Invocation.method(
           #loginUsingGoogle,
-          [
-            email,
-            onNewMessageCachingComplete,
-          ],
+          [email],
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
             _FakeEither_0<_i5.Failure, _i6.User>(
           this,
           Invocation.method(
             #loginUsingGoogle,
-            [
-              email,
-              onNewMessageCachingComplete,
-            ],
+            [email],
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);

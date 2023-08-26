@@ -31,7 +31,7 @@ class WebSocketHelper {
     myId = myid;
     try {
       log('connecting websocket with $myid');
-      _channel = IOWebSocketChannel.connect("ws://$ipAddress:3000/$myid");
+      _channel = IOWebSocketChannel.connect("$wsUri/$myid");
       _channel.stream.listen(
         (message) async {
           if (json.decode(message)['cmd'] != null) {
