@@ -49,6 +49,7 @@ void main() async {
   await Firebase.initializeApp();
   await Injection.initilaizeLocalDB();
   await GetStorage.init();
+  var homeCubit = HomeCubitInjector.init();
 
   if (!kIsWeb) {
     NotificationController.initilize();
@@ -105,7 +106,7 @@ void main() async {
           ),
         ),
         BlocProvider(
-          create: (_) => HomeCubitInjector.init(),
+          create: (_) => homeCubit,
         ),
         BlocProvider(
             create: (_) => ChatBloc(

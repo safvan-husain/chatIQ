@@ -9,7 +9,6 @@ import cors from "cors";
 import { DataRouter } from "./routes/get_data";
 import { onWebSocket } from "./utils/web_socket";
 import { ProfileRouter } from "./routes/user_account";
-import { aiRouter } from "./routes/ai_generate";
 import { messageRouter } from "./routes/message_router";
 
 dotenv.config();
@@ -24,7 +23,6 @@ app.use(SignUpRouter);
 app.use(messageRouter);
 app.use(DataRouter);
 app.use(ProfileRouter);
-app.use(aiRouter);
 
 app.get("/", (req, res) => {
   res.send("privacy policy");

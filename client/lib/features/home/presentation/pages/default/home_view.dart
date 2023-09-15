@@ -12,6 +12,8 @@ import 'package:client/features/video_call/presentation/bloc/video_call_bloc.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:custom_search_bar/custom_search_bar.dart';
+import 'package:client/features/video_call/presentation/pages/incoming_call_screen.dart'
+    as a;
 
 import 'package:client/routes/router.gr.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -244,7 +246,7 @@ void initilizeWebSocket(BuildContext context) {
     },
     onBusy: () => context.read<VideoCallBloc>().add(const BusyEvent()),
     onRequest: (caller) {
-      context.router.push(IncomingCallRoute(caller: caller));
+      Navigator.of(context).push(a.IncomingCallRoute(caller));
     },
   ).then((_) {
     Injection.initWebRTCPeerConnection();

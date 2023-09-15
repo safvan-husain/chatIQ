@@ -33,9 +33,7 @@ dependencies:
   web_socket_channel: ^2.3.0
   sqflite:
   flutter_simple_dependency_injection:
-  salomon_bottom_bar: ^3.3.2
   font_awesome_flutter: ^9.0.0
-  sizer: ^2.0.15
   flutter_webrtc:
   sdp_transform:
   flutter_callkit_incoming: ^2.0.0+1
@@ -43,10 +41,10 @@ dependencies:
   get: ^4.6.5
   get_storage:
   custom_search_bar: ^0.0.3
-  cool_alert: ^2.0.1
   awesome_notifications: ^0.7.4+1
   flutter_ringtone_player: ^3.2.0
   connectivity_plus: ^4.0.2
+  flutter_blurhash: ^0.7.0
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

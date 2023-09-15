@@ -37,7 +37,6 @@ const cors_1 = __importDefault(require("cors"));
 const get_data_1 = require("./routes/get_data");
 const web_socket_1 = require("./utils/web_socket");
 const user_account_1 = require("./routes/user_account");
-const ai_generate_1 = require("./routes/ai_generate");
 const message_router_1 = require("./routes/message_router");
 dotenv.config();
 const app = (0, express_1.default)();
@@ -50,7 +49,6 @@ app.use(sign_up_route_1.SignUpRouter);
 app.use(message_router_1.messageRouter);
 app.use(get_data_1.DataRouter);
 app.use(user_account_1.ProfileRouter);
-app.use(ai_generate_1.aiRouter);
 app.get("/", (req, res) => {
     res.send("privacy policy");
 });

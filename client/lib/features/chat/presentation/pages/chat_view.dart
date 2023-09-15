@@ -129,6 +129,14 @@ class _ChatPageState extends State<ChatPage> {
       actions: [
         InkWell(
           onTap: () async {
+            //used to update last seen message
+            //so we can find unread messages.
+            context.read<ChatBloc>().add(UpdateLastVisitEvent(
+                  userName: widget.userame,
+                  onUpdateLastVisitCompleted: () => context.router
+                      .pushAndPopUntil(const HomeRoute(),
+                          predicate: (_) => false),
+                ));
             await Injection.injector.get<WebrtcHelper>().initVideoRenders();
             await Injection.injector.get<WebrtcHelper>().createPeerConnecion();
             if (context.mounted) {

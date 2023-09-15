@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:client/features/video_call/presentation/pages/incoming_call_screen.dart';
 
 import '../features/Authentication/presentation/pages/google_sign_in.dart';
 import '../features/Authentication/presentation/pages/google_sign_up.dart';
@@ -8,7 +9,6 @@ import '../features/home/presentation/pages/contacts/contacts.dart';
 import '../features/home/presentation/pages/default/home_view.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/video_call/presentation/pages/video_call_page.dart';
-import '../features/video_call/presentation/pages/incoming_call_screen.dart';
 
 @AdaptiveAutoRouter(
   replaceInRouteName: 'Page,Route',
